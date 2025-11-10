@@ -1,0 +1,64 @@
+/* Extra CSS para ajustar tamanho do logo e outros componentes estéticos importantes da documentação*/
+
+/* Alvo múltiplos seletores para cobrir diferentes versões/layouts do tema Material */
+.md-logo img,
+.md-header-nav__logo img,
+.md-header__logo img,
+.md-header .md-logo img,
+.md-nav__logo img,
+.header-logo img {
+  height: 56px !important; /* aumenta um pouco */
+  width: auto !important;
+}
+
+/* Se o logo estiver dentro de um link no cabeçalho */
+.md-header__title img,
+.md-header__title .md-logo img {
+  height: 56px !important;
+  width: auto !important;
+}
+
+/* Ajuste para mobile se necessário */
+@media (max-width: 640px) {
+  .md-logo img,
+  .md-nav__logo img {
+    height: 44px !important;
+  }
+}
+
+/* Cor do cabeçalho superior igual ao azul claro do logo (aproximado) */
+/* Aplica só ao header/topo; mantém sidebar e conteúdo com texto em preto */
+.md-header,
+.md-header__inner,
+.md-top-nav,
+.md-header-nav,
+.md-header--primary,
+.md-header--primary .md-header__inner {
+  background-color: #4DA6FF !important; /* azul claro aproximado */
+}
+
+/* Texto / links *apenas* dentro do cabeçalho em branco para contraste */
+.md-header a,
+.md-header .md-nav__title,
+.md-header .md-nav__icon,
+.md-header .md-logo,
+.md-header__title,
+.md-header__title a {
+  color: #ffffff !important;
+}
+
+/* Hover states apenas no header */
+.md-header a:hover {
+  opacity: 0.9;
+}
+
+/* Manter sidebar e conteúdo com texto em preto (padrão) */
+.md-sidebar,
+.md-sidebar--primary,
+.md-sidebar a,
+.md-sidebar .md-nav__title,
+.md-main__inner,
+.md-content {
+  color: #000000 !important;
+  background-color: transparent !important;
+}
