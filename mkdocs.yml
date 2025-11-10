@@ -1,0 +1,22 @@
+site_name: Projeto Mercado - Anonna
+
+theme:
+    name: material
+    logo: img/logo_projeto_mercado.png
+    favicon: img/logo_projeto_mercado.png
+
+extra_css:
+    - css/extra.css
+
+copyright: Copyright &copy; 2025 Projeto Anonna. Todos os direitos reservados.
+
+extra:
+    generator: false # Remove a frase "Made with Material for MkDocs"
+
+nav: # Estrutura de navegação principal (menu lateral)
+    - Home: index.md
+    - Telas do Projeto:
+        - Tela Inicial: telas/tela-inicial.md
+        - Tela de Busca: telas/tela-de-busca.md
+        - Perfil: telas/perfil.md
+    - API: API/api.md
