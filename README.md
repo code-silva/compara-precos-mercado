@@ -9,6 +9,10 @@
 
 O **Compara preços (Projeto Mercado)** é um aplicativo mobile focado em **comparação inteligente de preços** para compras de supermercado. Nosso objetivo é simplificar a economia, oferecendo ao usuário uma visão consolidada das melhores ofertas próximas e permitindo a **personalização de preços máximos** e busca eficiente de melhores promoções para sua "feira".
 
+<img width="1424" height="455" alt="Group 39156" src="https://github.com/user-attachments/assets/93ea50b9-0104-4eef-a888-77578d4acac2" />
+
+---
+
 ## ✨ Funcionalidades Principais
 
 | Recurso | Descrição |
