@@ -44,3 +44,8 @@ nav: # Estrutura de navegação principal (menu lateral)
         - Tela de Busca: telas/tela-de-busca.md
         - Perfil: telas/perfil.md
     - API: API/api.md
+    - Requisitos: 
+        - Requisitos Funcionais: requisitos/requisitos_funcionais.md
+        - Requisitos Não Funcionais: requisitos/requisitos_nao_funcionais.md
+        - Backlog de Produto: requisitos/Backlog.md
+        - DoR e DoD: requisitos/Dor_Dod.md
