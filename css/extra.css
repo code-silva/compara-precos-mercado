@@ -62,3 +62,60 @@
   color: #000000 !important;
   background-color: transparent !important;
 }
+
+
+/* Estiliza a linha horizontal (HR) */
+hr {
+    /* Define a cor de fundo/borda como preto. 
+       Use um código hexadecimal para cor específica. */
+    background-color: #000000;
+    
+    /* Remove a borda padrão do navegador (se houver) */
+    border: none;
+    
+    /* Define a altura (espessura) da linha */
+    height: 1px; /* Você pode ajustar este valor (ex: 3px, 5px, etc.) */
+    
+    /* Garante que a linha ocupe toda a largura do conteúdo */
+    width: 100%;
+    
+    /* Adiciona uma margem para separação */
+    margin: 30px 0; 
+}
+
+/* Oculta a barra lateral direita (Table of Contents) */
+.md-sidebar--secondary {
+    display: none;
+}
+
+/* Expande a área de conteúdo principal para ocupar o espaço liberado */
+.md-content {
+    /* O valor exato pode variar, mas este geralmente funciona para maximizar a largura */
+    padding-right: 0 !important; 
+    width: 100%;
+    max-width: 100%;
+}
+
+@media screen and (min-width: 1220px) {
+    /* Esta regra é aplicada SOMENTE quando a tela tem 1220px ou mais (Desktop/PC) */
+    
+    /* 1. Container Interno (Ajusta a largura máxima e centraliza) */
+    .md-content__inner {
+        /* Define a largura máxima que você deseja para o conteúdo (ex: 1200px) */
+        max-width: 1200px; 
+        
+        /* Centraliza o container de conteúdo horizontalmente na área disponível */
+        margin-left: auto;
+        margin-right: auto;
+        
+        /* Adiciona a margem para afastar o conteúdo da barra lateral esquerda */
+        padding-left: 5rem; 
+    }
+
+    /* 2. Container Externo (Garante que a centralização funcione) */
+    .md-content {
+        /* Zera o padding lateral para que o .md-content__inner possa usar 100% da largura */
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
