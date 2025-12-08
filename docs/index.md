@@ -3,6 +3,8 @@ hide:
   - toc
 ---
 
+<img src="img/capa_page_home.png" alt="Tela Inicial" height="100px" width="650px" style="border-radius: 10px;">
+
 ## 🏠 
 
 # Bem-vindo(a) ao Anonna: Seu Comparador de Preços Inteligente!

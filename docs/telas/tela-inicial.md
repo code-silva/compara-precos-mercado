@@ -6,7 +6,7 @@ hide:
 # 📱 Tela Inicial
 
 <div align="center">
-    <img src="../../img/tela_inicial.png" alt="Tela Inicial" width="200">
+    <img src="../../img/tela_inicial.png" alt="Tela Inicial" width="200px">
 </div>
 
 Esta é a tela principal do aplicativo Anonna, focada em mostrar as melhores ofertas e mercados próximos.
