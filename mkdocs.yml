@@ -38,7 +38,7 @@ nav: # Estrutura de navegação principal (menu lateral)
     - Home: index.md
     # 2. Página de Arquitetura (Inserir este bloco)
     - Arquitetura: 
-        - Diagrama da Arquitetura: Arquitetura/arquitetura.md
+        - Diagrama da Arquitetura: Arquitetura/arq.md
     - Telas do Projeto:
         - Tela Inicial: telas/tela-inicial.md
         - Tela de Busca: telas/tela-de-busca.md
