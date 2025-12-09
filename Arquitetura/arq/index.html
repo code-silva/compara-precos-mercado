@@ -281,6 +281,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrama da Arquitetura
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -297,6 +315,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-visao-geral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Visão Geral
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Visão Geral">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#por-que-monolito-modular" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por que Monolito Modular?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-stack-tecnologica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Stack Tecnológica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Stack Tecnológica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processamento-e-fila" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ Processamento e Fila
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persistencia-e-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💾 Persistência e Cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -661,6 +765,81 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-visao-geral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Visão Geral
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Visão Geral">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#por-que-monolito-modular" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por que Monolito Modular?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-stack-tecnologica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Stack Tecnológica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Stack Tecnológica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processamento-e-fila" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ Processamento e Fila
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persistencia-e-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💾 Persistência e Cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -685,9 +864,45 @@
 </ul>
 </div>
 <p><a href="https://excalidraw.com/#room=4df017c8a4b515a8cac6,Q6P3RxNnlMaJP3La_ZXlIw">Altere a seguinte Arquitetura aqui</a></p>
-<p><img alt="Diagrama de Arquitetura do Projeto" src="/img/arquitetura_modulos_white.png" /></p>
+<p><img alt="Diagrama de Arquitetura do Projeto" src="https://raw.githubusercontent.com/code-silva/compara-precos-mercado/refs/heads/main/docs/img/arquitetura_modulos_black.png" /></p>
+<h2 id="1-visao-geral">1. Visão Geral</h2>
+<p>O sistema é construído sobre o <strong>Framework Django</strong>, adaptando sua estrutura padrão (MVT) para um design <strong>Monolítico Modular</strong>. Essa abordagem centraliza a gestão de dados enquanto desacopla processos pesados e assíncronos.</p>
+<h3 id="por-que-monolito-modular">Por que Monolito Modular?</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Vantagem</th>
+<th style="text-align: left;">Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Agilidade</strong></td>
+<td style="text-align: left;">Ideal para a equipe - que é pequena - e é simples de implementar.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Baixo Custo</strong></td>
+<td style="text-align: left;">Custos reduzidos pois não há a necessidade de realizar deploy de diversos servidores.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Baixo Tráfego</strong></td>
+<td style="text-align: left;">Ideal para a aplicação, considerando que não há expectativa de tráfego alto no momento.</td>
+</tr>
+</tbody>
+</table>
 <hr />
-<p><img alt="Diagrama de Arquitetura do Projeto" src="/img/arquitetura_modulos_black.png" /></p>
+<h2 id="2-stack-tecnologica">2. Stack Tecnológica</h2>
+<p>Para garantir performance em um cenário de <strong>leitura intensiva</strong> (<em>read-heavy</em>) e processamento de imagens, utilizamos os seguintes componentes:</p>
+<h3 id="processamento-e-fila">⚡ Processamento e Fila</h3>
+<ul>
+<li><strong><a href="https://docs.celeryq.dev/">Celery</a>:</strong> Gerenciador de tarefas distribuídas. Responsável por executar os módulos de <em>Scraping</em>, <em>OCR (IA)</em> e <em>Recorte de Imagens</em> sem bloquear a API principal.</li>
+<li><strong><a href="https://redis.io/">Redis (Broker)</a>:</strong> Atua como canal de mensageria, transportando as tarefas da API Django para os Workers do Celery com latência mínima.</li>
+</ul>
+<h3 id="persistencia-e-cache">💾 Persistência e Cache</h3>
+<ul>
+<li><strong><a href="https://redis.io/">Redis (Cache)</a>:</strong> Implementa a estratégia <strong>Cache-First</strong>. Permite armazenar os dados frequentemente consultados em cache, reduzindo o número de operações de I/O no banco principal.</li>
+<li><strong>Storage (S3/Local):</strong> Responsável por guardar imagens brutas (panfletos) e processadas (recortes), retirando a carga pesada do banco de dados principal.</li>
+</ul>
 
 
 
