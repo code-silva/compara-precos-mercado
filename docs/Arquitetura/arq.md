@@ -7,11 +7,7 @@
 
 [Altere a seguinte Arquitetura aqui](https://excalidraw.com/#room=4df017c8a4b515a8cac6,Q6P3RxNnlMaJP3La_ZXlIw)
 
-![Diagrama de Arquitetura do Projeto](/img/arquitetura_modulos_white.png)
-
----
-
-![Diagrama de Arquitetura do Projeto](/img/arquitetura_modulos_black.png)
+![Diagrama de Arquitetura do Projeto](https://raw.githubusercontent.com/code-silva/compara-precos-mercado/refs/heads/main/docs/img/arquitetura_modulos_black.png)
 
 ## 1. Visão Geral
 
