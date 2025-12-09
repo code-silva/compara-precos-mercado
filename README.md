@@ -47,7 +47,7 @@ A DEFINIR
 
 ## 📄 Documentação
 
-A documentação completa do projeto (incluindo descrições detalhadas de telas, regras de negócio e a estrutura do banco de dados) está disponível em [Link da sua documentação MkDocs].
+A documentação completa do projeto (incluindo descrições detalhadas de telas, regras de negócio e a estrutura do banco de dados) está disponível em [Documentação - Compara Preços](https://code-silva.github.io/compara-precos-mercado/)
 
 ## 👤 Colaboradores
 
