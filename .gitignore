@@ -2,8 +2,11 @@
 site/
 
 # Arquivos de cache do Python (opcional)
-__pycache__/
+*__pycache__/
 *.pyc
 
 # Arquivos de backup e outros
 *.bak
+
+#
+.venv
