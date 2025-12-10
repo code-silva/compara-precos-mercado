@@ -1,3 +1,6 @@
+
+<img width="1000" height="350" alt="Group 238959" src="https://github.com/user-attachments/assets/c61937c3-023f-4035-a47e-2de94f339cda" />
+
 # ⏱️ Sprints
 
 Confira nesta seção as entregas, objetivos e retrospectivas de cada ciclo de desenvolvimento (Sprint). 
