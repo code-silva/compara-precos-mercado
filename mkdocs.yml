@@ -49,3 +49,5 @@ nav: # Estrutura de navegação principal (menu lateral)
         - Requisitos Não Funcionais: requisitos/requisitos_nao_funcionais.md
         - Backlog de Produto: requisitos/Backlog.md
         - DoR e DoD: requisitos/Dor_Dod.md
+    - Sprints: 
+        - Sprints e Reuniões: sprints/sprint.md
