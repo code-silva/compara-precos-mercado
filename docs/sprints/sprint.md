@@ -14,7 +14,8 @@ Confira nesta seção as entregas, objetivos e retrospectivas de cada ciclo de d
 * **Link da Apresentação:** [Sprint - 0](https://www.canva.com/design/DAG7CXUrUn8/Nl_GFt53XurTGvgA7lTL8A/view?utm_content=DAG7CXUrUn8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha04b66da65)
 
 ---
-## Sprint 1: A definir...
+## Sprint 1: Protótipo e Requisitos da Tela de Login / Cadastro do Mercado...
 
+* **Período:** 16/12/2025 – 23/12/2025
 
-A definir...
+* **Link da Apresentação:** [Sprint - 1](https://www.canva.com/design/DAG7mxMYhI8/U7MD2VI1Yhv-ZL5D3VeYwg/view?utm_content=DAG7mxMYhI8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hf164d6e1b9)
