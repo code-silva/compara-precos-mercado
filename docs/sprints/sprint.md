@@ -16,6 +16,18 @@ Confira nesta seção as entregas, objetivos e retrospectivas de cada ciclo de d
 ---
 ## Sprint 1: Protótipo e Requisitos da Tela de Login / Cadastro do Mercado...
 
+**Status:**
+
 * **Período:** 16/12/2025 – 23/12/2025
 
 * **Link da Apresentação:** [Sprint - 1](https://www.canva.com/design/DAG7mxMYhI8/U7MD2VI1Yhv-ZL5D3VeYwg/view?utm_content=DAG7mxMYhI8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hf164d6e1b9)
+
+---
+
+## Sprint 2: Enfrentando a Complexidade do Domínio(DDD)
+
+**Status:**
+
+* **Período:** 24/12/2025 – 15/01/2025
+
+* **Link da Apresentação:** [Sprint - 2](https://www.canva.com/design/DAG8Vf_GIsI/hGmZ6_0IjxLzBILEgkQb5w/view?utm_content=DAG8Vf_GIsI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h41bbe95d46)
