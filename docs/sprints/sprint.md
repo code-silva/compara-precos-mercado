@@ -31,3 +31,13 @@ Confira nesta seção as entregas, objetivos e retrospectivas de cada ciclo de d
 * **Período:** 24/12/2025 – 15/01/2025
 
 * **Link da Apresentação:** [Sprint - 2](https://www.canva.com/design/DAG8Vf_GIsI/hGmZ6_0IjxLzBILEgkQb5w/view?utm_content=DAG8Vf_GIsI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h41bbe95d46)
+
+---
+
+## Sprint 3: Requisitos e IA
+
+**Status:**
+
+* **Período:** 15/01/2025 – 22/01/2025
+
+* **Link da Apresentação:** [Sprint - 3](https://www.canva.com/design/DAG-g8eVDHY/CgJolahTFh0BZKHupYaZBw/view?utm_content=DAG-g8eVDHY&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h4967455894)

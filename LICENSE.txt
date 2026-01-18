@@ -1,0 +1,12 @@
+Copyright (c) 2026 Equipe Compara Preços
+
+TODOS OS DIREITOS RESERVADOS.
+
+Este software e todos os arquivos associados são de propriedade exclusiva da Equipe Compara Preços.
+
+É estritamente proibida a cópia, modificação, redistribuição, publicação ou uso comercial 
+deste código, total ou parcial, sem a autorização expressa e por escrito dos detentores 
+dos direitos autorais.
+
+O projeto "Compara Preços" é um trabalho proprietário desenvolvido para fins específicos 
+de monitoramento e comparação de preços de mercados, padarias e comércios correlatos.
