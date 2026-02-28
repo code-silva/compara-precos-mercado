@@ -8,5 +8,8 @@ site/
 # Arquivos de backup e outros
 *.bak
 
-#
+# Ambiente
 .venv
+
+# Variáveis de ambiente
+*.env
