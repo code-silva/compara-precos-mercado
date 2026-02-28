@@ -6,117 +6,304 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Categoria',
+            name="Categoria",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(max_length=50, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(max_length=50, unique=True)),
             ],
             options={
-                'verbose_name': 'Categoria',
-                'verbose_name_plural': 'Categorias',
+                "verbose_name": "Categoria",
+                "verbose_name_plural": "Categorias",
             },
         ),
         migrations.CreateModel(
-            name='Localidade',
+            name="Localidade",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uf', models.CharField(choices=[('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'), ('BA', 'Bahia'), ('CE', 'Ceará'), ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'), ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'), ('MS', 'Mato Grosso do Sul'), ('MG', 'Minas Gerais'), ('PA', 'Pará'), ('PB', 'Paraíba'), ('PR', 'Paraná'), ('PE', 'Pernambuco'), ('PI', 'Piauí'), ('RJ', 'Rio de Janeiro'), ('RN', 'Rio Grande do Norte'), ('RS', 'Rio Grande do Sul'), ('RO', 'Rondônia'), ('RR', 'Roraima'), ('SC', 'Santa Catarina'), ('SP', 'São Paulo'), ('SE', 'Sergipe'), ('TO', 'Tocantins')], max_length=20)),
-                ('cidade', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "uf",
+                    models.CharField(
+                        choices=[
+                            ("AC", "Acre"),
+                            ("AL", "Alagoas"),
+                            ("AP", "Amapá"),
+                            ("AM", "Amazonas"),
+                            ("BA", "Bahia"),
+                            ("CE", "Ceará"),
+                            ("DF", "Distrito Federal"),
+                            ("ES", "Espírito Santo"),
+                            ("GO", "Goiás"),
+                            ("MA", "Maranhão"),
+                            ("MT", "Mato Grosso"),
+                            ("MS", "Mato Grosso do Sul"),
+                            ("MG", "Minas Gerais"),
+                            ("PA", "Pará"),
+                            ("PB", "Paraíba"),
+                            ("PR", "Paraná"),
+                            ("PE", "Pernambuco"),
+                            ("PI", "Piauí"),
+                            ("RJ", "Rio de Janeiro"),
+                            ("RN", "Rio Grande do Norte"),
+                            ("RS", "Rio Grande do Sul"),
+                            ("RO", "Rondônia"),
+                            ("RR", "Roraima"),
+                            ("SC", "Santa Catarina"),
+                            ("SP", "São Paulo"),
+                            ("SE", "Sergipe"),
+                            ("TO", "Tocantins"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("cidade", models.CharField(max_length=50)),
             ],
             options={
-                'verbose_name': 'Localidade',
-                'verbose_name_plural': 'Localidades',
+                "verbose_name": "Localidade",
+                "verbose_name_plural": "Localidades",
             },
         ),
         migrations.CreateModel(
-            name='MercadoMatriz',
+            name="MercadoMatriz",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(max_length=100)),
             ],
             options={
-                'verbose_name': 'Mercado Matriz',
-                'verbose_name_plural': 'Mercados Matrizes',
+                "verbose_name": "Mercado Matriz",
+                "verbose_name_plural": "Mercados Matrizes",
             },
         ),
         migrations.CreateModel(
-            name='Oferta',
+            name="Oferta",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('url', models.URLField(max_length=2083)),
-                ('data_validade', models.DateField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("url", models.URLField(max_length=2083)),
+                ("data_validade", models.DateField()),
             ],
             options={
-                'verbose_name': 'Oferta',
-                'verbose_name_plural': 'Ofertas',
+                "verbose_name": "Oferta",
+                "verbose_name_plural": "Ofertas",
             },
         ),
         migrations.CreateModel(
-            name='MercadoFilial',
+            name="MercadoFilial",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('coordenadas', django.contrib.gis.db.models.fields.PointField(geography=True, srid=4326)),
-                ('localidade', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='filiais', to='app_mercados.localidade')),
-                ('mercado_matriz', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='filiais', to='app_mercados.mercadomatriz')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "coordenadas",
+                    django.contrib.gis.db.models.fields.PointField(
+                        geography=True, srid=4326
+                    ),
+                ),
+                (
+                    "localidade",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="filiais",
+                        to="app_mercados.localidade",
+                    ),
+                ),
+                (
+                    "mercado_matriz",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="filiais",
+                        to="app_mercados.mercadomatriz",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Mercado Filial',
-                'verbose_name_plural': 'Mercados Filiais',
+                "verbose_name": "Mercado Filial",
+                "verbose_name_plural": "Mercados Filiais",
             },
         ),
         migrations.CreateModel(
-            name='Denuncia',
+            name="Denuncia",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('motivo', models.CharField(choices=[('PE', 'Preço Errado'), ('PI', 'Produto Inexistente'), ('OE', 'Oferta Expirada'), ('O', 'Outro')], max_length=20)),
-                ('descricao', models.CharField(blank=True, max_length=500)),
-                ('status', models.CharField(choices=[('R', 'Resolvido'), ('P', 'Pendente'), ('I', 'Improcedente')], max_length=20)),
-                ('id_dispositivo', models.CharField(max_length=255)),
-                ('data_criacao', models.DateTimeField(auto_now_add=True)),
-                ('oferta', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='denuncias', to='app_mercados.oferta')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "motivo",
+                    models.CharField(
+                        choices=[
+                            ("PE", "Preço Errado"),
+                            ("PI", "Produto Inexistente"),
+                            ("OE", "Oferta Expirada"),
+                            ("O", "Outro"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("descricao", models.CharField(blank=True, max_length=500)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("R", "Resolvido"),
+                            ("P", "Pendente"),
+                            ("I", "Improcedente"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("id_dispositivo", models.CharField(max_length=255)),
+                ("data_criacao", models.DateTimeField(auto_now_add=True)),
+                (
+                    "oferta",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="denuncias",
+                        to="app_mercados.oferta",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Denúncia',
-                'verbose_name_plural': 'Denúncias',
+                "verbose_name": "Denúncia",
+                "verbose_name_plural": "Denúncias",
             },
         ),
         migrations.CreateModel(
-            name='Produto',
+            name="Produto",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(max_length=50)),
-                ('marca', models.CharField(max_length=50)),
-                ('medida', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('imagem', models.ImageField(upload_to='produtos/')),
-                ('unidade_medida', models.CharField(choices=[('KG', 'Quilograma'), ('G', 'Grama'), ('L', 'Litro'), ('ML', 'Mililitro'), ('UN', 'Unidade')], default='UN', max_length=50)),
-                ('ean', models.CharField(blank=True, max_length=20, null=True, unique=True)),
-                ('categoria', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='produtos', to='app_mercados.categoria')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(max_length=50)),
+                ("marca", models.CharField(max_length=50)),
+                ("medida", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("imagem", models.ImageField(upload_to="produtos/")),
+                (
+                    "unidade_medida",
+                    models.CharField(
+                        choices=[
+                            ("KG", "Quilograma"),
+                            ("G", "Grama"),
+                            ("L", "Litro"),
+                            ("ML", "Mililitro"),
+                            ("UN", "Unidade"),
+                        ],
+                        default="UN",
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "ean",
+                    models.CharField(blank=True, max_length=20, null=True, unique=True),
+                ),
+                (
+                    "categoria",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="produtos",
+                        to="app_mercados.categoria",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Produto',
-                'verbose_name_plural': 'Produtos',
+                "verbose_name": "Produto",
+                "verbose_name_plural": "Produtos",
             },
         ),
         migrations.CreateModel(
-            name='Produto_Oferta_Filial',
+            name="Produto_Oferta_Filial",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('preco', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('mercado_filial', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ternario', to='app_mercados.mercadofilial')),
-                ('oferta', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ternario', to='app_mercados.oferta')),
-                ('produto', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ternario', to='app_mercados.produto')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("preco", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "mercado_filial",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ternario",
+                        to="app_mercados.mercadofilial",
+                    ),
+                ),
+                (
+                    "oferta",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ternario",
+                        to="app_mercados.oferta",
+                    ),
+                ),
+                (
+                    "produto",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ternario",
+                        to="app_mercados.produto",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Ofertado',
-                'verbose_name_plural': 'Ofertados',
+                "verbose_name": "Ofertado",
+                "verbose_name_plural": "Ofertados",
             },
         ),
     ]

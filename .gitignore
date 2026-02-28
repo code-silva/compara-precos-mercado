@@ -1,9 +1,10 @@
 # MkDocs Build Output
 site/
 
-# Arquivos de cache do Python (opcional)
+# Arquivos de cache do Python
 *__pycache__/
 *.pyc
+*.ruff_cache
 
 # Arquivos de backup e outros
 *.bak
