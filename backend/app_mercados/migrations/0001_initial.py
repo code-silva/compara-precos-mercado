@@ -137,9 +137,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "coordenadas",
-                    django.contrib.gis.db.models.fields.PointField(
-                        geography=True, srid=4326
-                    ),
+                    django.contrib.gis.db.models.fields.PointField(geography=True, srid=4326),
                 ),
                 (
                     "localidade",
