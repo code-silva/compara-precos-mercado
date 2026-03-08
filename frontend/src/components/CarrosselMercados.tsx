@@ -1,5 +1,7 @@
-import React from 'react';
+import {useState, useEffect} from 'react';
 import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { fetchMercados } from '../api/mercados';
+import { Mercado } from '../types/mercado';
 
 const CARD_MIN_WIDTH = 160;     // A largura mínima de um card na tela
 const MIN_CARDS_VISIBLE = 1;    // A quantidade mínima de cards inteiros visíveis na tela
@@ -12,19 +14,40 @@ const quantidade = Math.max(MIN_CARDS_VISIBLE, cardsQueCabem);
 const divisor = quantidade + NEXT_CARD_PEEK;
 const cardWidth = (width / divisor) - CARD_MARGIN_OFFSET;
 
-const MERCADOS_MOCK = [
-  { id: 1, nome: 'Comper', cor_texto: '#0D69AB' },
-  { id: 2, nome: 'Dia a Dia', cor_texto: '#A6CE39' },
-  { id: 3, nome: 'Atacadão', cor_texto: '#F67300' },
-];
+const gerarCorAleatoria = () => {
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = 65 + Math.random() * 20;
+  const lightness = 40 + Math.random() * 15;
+
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
 
 export const CarrosselMercados = () => {
+
+  const [mercados, setMercados] = useState<Mercado[]>([]);
+
+  useEffect(() => {
+    const carregarDados = async () => {
+      let dados = await fetchMercados();
+
+      // Adicionando uma cor para o texto
+      dados = dados.map((mercado: Mercado) => ({
+        ...mercado,
+        cor_nome: gerarCorAleatoria(),
+      }));
+
+      setMercados(dados);
+    }
+
+    carregarDados();
+  }, []);
+
 
   // Função para renderizar os cards na tela
   const renderItem = ({item}) => (
 
     <View style={styles.card}>
-      <Text style={[styles.nome, {color: item.cor_texto}]}>
+      <Text style={[styles.nome, {color: item.cor_nome}]}>
         {item.nome}
       </Text>
     </View>
@@ -34,7 +57,7 @@ export const CarrosselMercados = () => {
     <View style={styles.container}>
       <Text style={styles.titulo}>Mercados Próximos</Text>
       <FlatList
-        data={MERCADOS_MOCK}
+        data={mercados}
         keyExtractor= {(item) => item.id.toString()}
         renderItem={renderItem}
         horizontal
@@ -79,7 +102,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_700Bold',
     color: '#333333',
     marginBottom: 4,
-    alignContent: 'center',
+    textAlign: 'center',
   },
 
 });
