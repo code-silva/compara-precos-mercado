@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { fetchMercados } from '../api/mercados';
 import { Mercado } from '../types/mercado';
+import * as Location from 'expo-location';
 
 const CARD_MIN_WIDTH = 160;     // A largura mínima de um card na tela
 const MIN_CARDS_VISIBLE = 1;    // A quantidade mínima de cards inteiros visíveis na tela
@@ -28,7 +29,21 @@ export const CarrosselMercados = () => {
 
   useEffect(() => {
     const carregarDados = async () => {
-      let dados = await fetchMercados();
+      let lat = undefined;
+      let lon = undefined;
+
+      // Pedindo permissão da localização ao usuário
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      // Se ele aceitar, pegamos a posição atual
+      if (status === 'granted') {
+        let location = await Location.getCurrentPositionAsync({});
+        lat = location.coords.latitude;
+        lon = location.coords.longitude;
+        console.log(lat, lon)
+      }
+
+      let dados = await fetchMercados(lon, lat);
 
       // Adicionando uma cor para o texto
       dados = dados.map((mercado: Mercado) => ({
