@@ -20,7 +20,7 @@ const separador = () => <View style={styles.divisor} />;
 // O cabecalho para que o React saiba que ele nunca muda
 const cabecalho = React.memo(() => (
   <View style={styles.containerCabecalho}>
-    <Text style={styles.titulo}>Renderizar a barra de pesquisa e o aviso pop up aqui</Text>
+    <Text style={styles.titulo}>Referenciar o carrossel de Mercados aqui</Text>
   </View>
 ));
 
