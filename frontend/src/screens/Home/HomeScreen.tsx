@@ -10,7 +10,6 @@ import { TelaErro } from '../../components/TelaErro';
 import { EmptyProductState } from '../../components/EmptyProductState';
 import { useCallback } from 'react';
 
-// Ajuste o caminho conforme sua pasta
 
 
 // FUNÇÕES DE APOIO (Lá fora para performance)
@@ -34,6 +33,16 @@ const HomeScreen = () => {
   const [temMaisDados, setTemMaisDados] = useState(true);
   const [localizacao, setLocalizacao] = useState<Location.LocationObject | null>(null);
   const [erroLocalizacao, setErroLocalizacao] = useState<string | null>(null);
+
+  // funções de ação (useCallback) 
+  const handlePress = useCallback((produto: Produto) => {
+    console.log('Abriu detalhes de:', produto.nome_produto);
+    // No futuro, aqui entrará o navigation.navigate('ProductDetails', { produto });
+  }, []);
+
+  const handleAdd = useCallback((produto: Produto) => {
+    console.log('Adicionou à lista:', produto.nome_produto);
+  }, []);
 
   // cálculo derivado apenas para exibição
   const localizacaoUsuario = localizacao
@@ -128,8 +137,8 @@ useEffect(() => {
   const renderizarItem = useCallback(({ item }: { item: Produto }) => (
   <CardProduto
     produto={item}
-    aoPressionar={() => console.log('Abriu detalhes de:', item.nome_produto)}
-    aoAdicionarNaLista={() => console.log('Adicionou:', item.nome_produto, 'à lista de compras')}
+    aoPressionar={() => handlePress(item)}
+    aoAdicionarNaLista={() => handleAdd(item)}
   />
 ), []);
 
@@ -170,7 +179,8 @@ useEffect(() => {
       ) : (
         <FlatList
           data={produtos}
-          initialNumToRender={14}
+          initialNumToRender={5}
+          windowSize={5}
           renderItem={renderizarItem}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           ItemSeparatorComponent={separador}
@@ -180,8 +190,7 @@ useEffect(() => {
           showsVerticalScrollIndicator={false}
           onEndReached={buscarProdutos}
           onEndReachedThreshold={0.1}
-          maxToRenderPerBatch={14}
-          ListEmptyComponent={!carregando && produtos.length === 0 ? EmptyProductState : null}
+          maxToRenderPerBatch={5}
           ListFooterComponent={renderRodape}
         />
       )}

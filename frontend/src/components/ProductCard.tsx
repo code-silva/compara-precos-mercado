@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Produto } from '../types/product';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { memo } from 'react';
 
 /**
  * Interface 'Propriedades':
@@ -250,4 +251,4 @@ const estilos = StyleSheet.create({
   
 });
 
-export default CardProduto;
+export default memo(CardProduto); // Exporta o componente memoizado para evitar re-renderizações desnecessárias
