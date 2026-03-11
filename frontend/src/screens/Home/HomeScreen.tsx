@@ -9,6 +9,7 @@ import { styles } from './HomeScreen.styles';
 import { TelaErro } from '../../components/TelaErro';
 import { EmptyProductState } from '../../components/EmptyProductState';
 import { useCallback } from 'react';
+import { fetchProdutos } from '../../api/produtos';
 
 
 
@@ -70,36 +71,36 @@ const HomeScreen = () => {
 }, [carregando]); // Só muda se o estado de carregando mudar
 
   // função que busca “mais” produtos (mock)
+// Substitua a sua função buscarProdutos por esta:
 const buscarProdutos = useCallback(async () => {
-  // 1. A TRAVA (DEBOUNCE)
+  // 1. A TRAVA: Não busca se já estiver carregando, se não houver mais dados ou se não tiver GPS
   if (carregando || !temMaisDados || !localizacao) {
     return; 
   }
 
-  // 2. O BLOQUEIO IMEDIATO
   setCarregando(true);
 
   try {
     const { latitude, longitude } = localizacao.coords;
     
-    // Simulação de chamada ao Backend (Django)
-    await new Promise(res => setTimeout(res, 1500));
-    
-    const LIMITE = 14;
-    const inicio = (pagina - 1) * LIMITE;
-    const fim = pagina * LIMITE;
-    const novos = PRODUTOS_TESTE.slice(inicio, fim);
+    //  CHAMADA REAL: A a função que chama o arquivo api/produtos.ts
+    // Passamos lat, lon e a página atual
+    const novos = await fetchProdutos(latitude, longitude, pagina);
 
-    if (novos.length > 0) {
+    // 3. LÓGICA DE ATUALIZAÇÃO:
+    if (novos && novos.length > 0) {
+      // Se vieram produtos, juntamos com os que já temos e aumentamos a página
       setProdutos(prev => [...prev, ...novos]);
       setPagina(prev => prev + 1);
     } else {
+      // Se a lista vier vazia [], o Django informou que não há mais produtos próximos
       setTemMaisDados(false);
     }
+
   } catch (error) {
-    console.error("Erro na busca:", error);
+    console.error("Erro na busca real:", error);
+    setErroLocalizacao("Erro de conexão com o servidor.");
   } finally {
-    // 3. A LIBERAÇÃO
     setCarregando(false);
   }
 }, [carregando, temMaisDados, localizacao, pagina]); // <--- Dependências importantes!
