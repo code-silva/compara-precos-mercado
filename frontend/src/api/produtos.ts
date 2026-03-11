@@ -1,47 +1,44 @@
 import { Produto } from '../types/product';
 
-// Busca a URL do seu arquivo .env
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 /**
  * Busca produtos do backend filtrados por localização e página.
+ * Padronizado com a lógica de mercados.ts
  */
-export const fetchProdutos = async (
-  lat: number, 
-  lon: number, 
-  page: number = 1
-): Promise<Produto[]> => {
+export async function fetchProdutos(latitude: number, longitude: number, page: number = 1): Promise<Produto[]> {
   try {
-    // 1. Monta a URL (ex: http://192.168.x.x:8000/api/produtos/?lat=-15&lon=-47&page=1)
-    const urlCompleta = `${API_URL}/produtos/?lat=${lat}&lon=${lon}&page=${page}`;
-    
-    console.log("--- TENTANDO CONECTAR ---");
-    console.log("URL:", urlCompleta);
+    // 1. Mantém o padrão de sufixo com barra '/' antes dos parâmetros
+    let url = `${BASE_URL}/produtos/`;
 
-    // 2. Faz a chamada ao servidor
-    const response = await fetch(urlCompleta);
-
-    // 3. Se o servidor responder com erro (404, 500, etc)
-    if (!response.ok) {
-      console.error(`ERRO NO SERVIDOR: Status ${response.status}`);
-      return [];
+    // 2. Padroniza os nomes dos parâmetros (latitude/longitude por extenso)
+    if (latitude && longitude) {
+      url += `?latitude=${latitude}&longitude=${longitude}&page=${page}`;
+    } else {
+      url += `?page=${page}`;
     }
 
-    // 4. Converte os dados para JSON
-    const dados = await response.json();
+    console.log("--- TENTANDO CONECTAR PRODUTOS ---");
+    console.log("URL:", url);
 
-    
-    // Se o Django usa paginação padrão, os produtos estarão em dados.results
-    // Se o Django devolve a lista direta, é apenas dados.
+    const resposta = await fetch(url);
+
+    // 3. Verifica se a conexão foi bem sucedida (Padrão mercado.ts)
+    if (!resposta.ok) {
+      throw new Error(`Erro no servidor: ${resposta.status}`);
+    }
+
+    const dados = await resposta.json();
+
+    // 4. Ajuste para lidar com a paginação do Django (results) ou lista pura
     const produtosFinais = dados.results ? dados.results : dados;
 
     console.log(`SUCESSO: ${produtosFinais.length} produtos recebidos.`);
     return produtosFinais;
 
-  } catch (error) {
-    // 6. Se o servidor estiver desligado ou o IP estiver errado no .env
-    console.error("ERRO DE CONEXÃO: Verifique se o Django está rodando e o IP no .env está correto.");
-    console.error("Detalhe do erro:", error);
-    return [];
+  } catch (erro) {
+    // 5. Segue o padrão de log e re-lançamento de erro do mercado.ts
+    console.error('Erro na API de produtos:', erro);
+    throw erro; 
   }
-};
+}
