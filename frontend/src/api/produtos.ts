@@ -8,12 +8,12 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
  */
 export async function fetchProdutos(latitude: number, longitude: number, page: number = 1): Promise<Produto[]> {
   try {
-    // 1. Mantém o padrão de sufixo com barra '/' antes dos parâmetros
-    let url = `${BASE_URL}/produtos/`;
+    // 1. Ajustado para lidar com a nova estrutura de URL e parâmetros do backend
+    let url = `${BASE_URL}/produtos/ofertas/`;
 
     // 2. Padroniza os nomes dos parâmetros (latitude/longitude por extenso)
     if (latitude && longitude) {
-      url += `?latitude=${latitude}&longitude=${longitude}&page=${page}`;
+      url += `?lat=${latitude}&lon=${longitude}&page=${page}`;
     } else {
       url += `?page=${page}`;
     }
@@ -38,7 +38,7 @@ export async function fetchProdutos(latitude: number, longitude: number, page: n
 
   } catch (erro) {
     // 5. Segue o padrão de log e re-lançamento de erro do mercado.ts
-    console.error('Erro na API de produtos:', erro);
-    throw erro; 
+    console.log('Conexão finalizada ou sem mais dados.');
+    return []
   }
 }

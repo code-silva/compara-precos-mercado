@@ -28,7 +28,8 @@ export const styles = StyleSheet.create({
   // Estilização do conteúdo da lista (essencial para o respiro do layout)
   listaConteudo: {
     paddingHorizontal: 16, // Margem nas laterais para os cards não encostarem na borda
-    paddingBottom: 100,     // Espaço extra no fim para o último card não ficar colado na barra de navegação
+    paddingBottom: 100, 
+    flexGrow: 1,    // Espaço extra no fim para o último card não ficar colado na barra de navegação
   },
 
   // O divisor entre um card e outro

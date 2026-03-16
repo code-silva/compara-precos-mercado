@@ -47,13 +47,13 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
       
       {/* Rótulo de Ranking (canto superior esquerdo) */}
       <View style={estilos.seloRanking}>
-        <Text style={estilos.textoRanking}>#{produto.id}</Text> 
+        <Text style={estilos.textoRanking}>#{produto.ranking || produto.id}</Text>
       </View>
 
       {/* Rótulo de Preço */}
       <View style={estilos.rotuloPreco}>
         <Text style={estilos.textoPreco}>
-          R$ {produto.preco.toFixed(2).replace('.', ',')}
+          R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
         </Text>
       </View>
 
@@ -91,6 +91,15 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
           {produto.nome_mercado}
         </Text>
       </View>
+
+      {produto.distancia_km !== undefined && (
+        <View style={estilos.containerDistancia}>
+          <MaterialCommunityIcons name="map-marker-distance" size={14} color="#666" />
+          <Text style={estilos.textoDistancia}>
+            {produto.distancia_km} km
+          </Text>
+        </View>
+      )}
 
     </View>
 
@@ -248,6 +257,23 @@ const estilos = StyleSheet.create({
     color: '#28a8b5',
     flex: 1, // Faz o nome do mercado ocupar o resto da linha e usar reticências se for longo
 },
+
+containerDistancia: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0F0F0', // Fundo cinza suave para combinar com o peso
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginLeft: 8, // Espaço entre o nome do mercado e a distância
+  },
+
+  textoDistancia: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 11,
+    color: '#666',
+    marginLeft: 2, // Espaço entre o ícone e o número
+  },
   
 });
 

@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CardProduto from '../../components/ProductCard'; // Ajuste o caminho
 import { Produto } from '../../types/product';
 import * as Location from 'expo-location';
-import { PRODUTOS_TESTE } from '../../mocks/produtosMock';
 import { styles } from './HomeScreen.styles';
 import { TelaErro } from '../../components/TelaErro';
 import { EmptyProductState } from '../../components/EmptyProductState';
@@ -52,23 +51,24 @@ const HomeScreen = () => {
 
   // B. BUSCA SIMPLIFICADA (O que você enviará para o Django)
   const obterLocalizacao = useCallback(async () => {
-  if (carregando) return; 
-  setCarregando(true);
+  setCarregando(true); // Começa carregando
   try {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       setErroLocalizacao('Precisamos da localização para mostrar as ofertas próximas.');
       return;
     }
-    const location = await Location.getCurrentPositionAsync({});
+    const location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
     setLocalizacao(location);
     setErroLocalizacao(null);
   } catch (error) {
     setErroLocalizacao('Não foi possível obter sua localização atual.');
   } finally {
-    setCarregando(false);
+    setCarregando(false); // Termina carregando
   }
-}, [carregando]); // Só muda se o estado de carregando mudar
+}, []); // Função estável
 
   // função que busca “mais” produtos (mock)
 // Substitua a sua função buscarProdutos por esta:
@@ -89,21 +89,20 @@ const buscarProdutos = useCallback(async () => {
 
     // 3. LÓGICA DE ATUALIZAÇÃO:
     if (novos && novos.length > 0) {
-      // Se vieram produtos, juntamos com os que já temos e aumentamos a página
       setProdutos(prev => [...prev, ...novos]);
       setPagina(prev => prev + 1);
     } else {
-      // Se a lista vier vazia [], o Django informou que não há mais produtos próximos
+      // Se a API retornar sucesso (200) mas lista vazia
       setTemMaisDados(false);
     }
-
   } catch (error) {
-    console.error("Erro na busca real:", error);
-    setErroLocalizacao("Erro de conexão com o servidor.");
+    // Se a API retornar 404 (Fim das páginas) ou erro de rede
+    console.log("Busca finalizada ou erro: ", error);
+    setTemMaisDados(false); // <--- A CHAVE PARA PARAR O ACTIVITY INDICATOR
   } finally {
     setCarregando(false);
   }
-}, [carregando, temMaisDados, localizacao, pagina]); // <--- Dependências importantes!
+}, [localizacao, temMaisDados, carregando, pagina]); // Garanta que 'pagina' esteja aqui
 
   const alternarLocalizacao = useCallback(() => {
   setProdutos([]);
@@ -113,35 +112,39 @@ const buscarProdutos = useCallback(async () => {
 }, [obterLocalizacao]);
 
   // C. DISPARO INICIAL E TRAVA DE MONTAGEM
-useEffect(() => {
-  let isMounted = true; // 1. Criamos a variável de controle
+  // --- EFEITOS (Corrigidos e Separados) ---
 
-  const inicializar = async () => {
-    // Só prossegue se o componente ainda estiver na tela
-    if (isMounted) {
-      await obterLocalizacao();
-    }
-  };
-
-  inicializar();
-
-  // 2. FUNÇÃO DE CLEANUP: Executada quando o usuário sai da tela
-  return () => {
-    isMounted = false; 
-  };
-}, []);
-
+  // 1. Disparo Inicial: Obtém apenas a localização
   useEffect(() => {
-    if (localizacao) buscarProdutos();
-  }, [localizacao]);
+    let isMounted = true;
+    
+    const inicializar = async () => {
+      if (isMounted) {
+        await obterLocalizacao();
+      }
+    };
 
-  const renderizarItem = useCallback(({ item }: { item: Produto }) => (
+    inicializar();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [obterLocalizacao]);
+
+  // 2. Segurança: Assim que a localização chegar, se a lista estiver vazia, busca produtos
+  useEffect(() => {
+    if (localizacao && produtos.length === 0 && !carregando && temMaisDados) {
+      buscarProdutos();
+    }
+  }, [localizacao, produtos.length, carregando, temMaisDados, buscarProdutos]);
+
+  const renderizarItem = useCallback(({ item, index }: { item: Produto; index: number }) => (
   <CardProduto
-    produto={item}
+    produto={{...item, ranking: index + 1}}
     aoPressionar={() => handlePress(item)}
     aoAdicionarNaLista={() => handleAdd(item)}
   />
-), []);
+), [handlePress, handleAdd]);
 
   // --- D. COMPONENTE DE RODAPÉ DINÂMICO ---
   const renderRodape = () => {
@@ -180,17 +183,16 @@ useEffect(() => {
       ) : (
         <FlatList
           data={produtos}
-          initialNumToRender={5}
+          initialNumToRender={10}
           windowSize={5}
           renderItem={renderizarItem}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           ItemSeparatorComponent={separador}
           ListHeaderComponent={cabecalho}
-          removeClippedSubviews={true}
           contentContainerStyle={styles.listaConteudo}
           showsVerticalScrollIndicator={false}
           onEndReached={buscarProdutos}
-          onEndReachedThreshold={0.1}
+          onEndReachedThreshold={0.5}
           maxToRenderPerBatch={5}
           ListFooterComponent={renderRodape}
         />
