@@ -43,14 +43,20 @@ export const SearchBar = () => {
           value={termo}
           onChangeText={setTermo}
           autoCapitalize="none"
+          underlineColorAndroid="transparent"
         />
 
         <View style={styles.iconContainer}>
-          {carregando ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Feather name="search" size={24} color="#FFFFFF" />
-          )}
+          <View style={styles.shapeLight} />
+          <View style={styles.shapeDark} />
+
+          <View style={styles.iconWrapper}>
+            {carregando ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Feather name="search" size={24} color="#FFFFFF" />
+            )}
+          </View>
         </View>
         
       </View>
@@ -83,10 +89,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textPrimary,
     fontFamily: 'Inter_400Regular',
+    outlineStyle: 'none' as any,
   },
   iconContainer: {
-    width: 65,
-    backgroundColor: '#2CB3B1',
+    width: 85,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  shapeLight: {
+    position: 'absolute',
+    left: -15,
+    width: 60,
+    height: 100,
+    backgroundColor: '#82D2D5', 
+    transform: [{ rotate: '30deg' }],
+  },
+  shapeDark: {
+    position: 'absolute',
+    right: -20,
+    width: 80,
+    height: 100,
+    backgroundColor: '#1EAEB5', 
+    transform: [{ rotate: '-15deg' }],
+  },
+  iconWrapper: {
+    position: 'absolute',
+    right: 15,
     justifyContent: 'center',
     alignItems: 'center',
   }
