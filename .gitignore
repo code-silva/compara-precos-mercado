@@ -1,12 +1,59 @@
 # MkDocs Build Output
 site/
 
-# Arquivos de cache do Python (opcional)
+# Arquivos de cache do Python
 *__pycache__/
 *.pyc
+*.ruff_cache
 
 # Arquivos de backup e outros
 *.bak
 
-#
+# Ambiente
 .venv
+
+# Variáveis de ambiente
+*.env
+
+*node_modules
+*.expo
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
