@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Produto, MercadoFilial, Produto_Oferta_Filial
+
+from .models import MercadoFilial, Produto, Produto_Oferta_Filial
 
 """
 o serializer transforma o que seria um campo com um ID e busca na tabela de onde o ID
@@ -15,7 +16,9 @@ class OfertaProdutoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Produto_Oferta_Filial
-        fields = ['id', 'preco', 'produto_nome', 'produto_marca', 'produto_imagem', 'mercado_nome', 'cidade']
+        fields = ['id', 'preco', 'produto_nome', 'produto_marca', 'produto_imagem', 'mercado_nome',
+                  'cidade']
+
 
 class ProdutoSerializer(serializers.ModelSerializer):
     categoria_nome = serializers.ReadOnlyField(source='categoria.nome')
@@ -24,10 +27,12 @@ class ProdutoSerializer(serializers.ModelSerializer):
         model = Produto
         fields = ['id', 'nome', 'marca', 'medida', 'unidade_medida', 'categoria_nome', 'imagem']
 
+
 class MercadoSerializer(serializers.ModelSerializer):
     nome_exibicao = serializers.ReadOnlyField(source='mercado_matriz.nome')
     cidade = serializers.ReadOnlyField(source='localidade.cidade')
     uf = serializers.ReadOnlyField(source='localidade.uf')
+
 
 class MercadoFilialSerializer(serializers.ModelSerializer):
     """
@@ -61,8 +66,7 @@ class MercadoFilialSerializer(serializers.ModelSerializer):
 
     # Este atributo não existe na entidade 'MercadoFilial', mas é
     # necessário para calcular a distância entre o usuário e os mercados.
-    # Assim, esse atributo será calculado e deteminado pelo método 'get_<atributo>',
-    # ou seja, 'get_distancia_km'.
+    # Assim, esse atributo será calculado e deteminado pelo método 'get_<atributo>'
     distancia_km = serializers.SerializerMethodField()
 
     # Método que define o valor do atributo 'distancia_km'
@@ -72,7 +76,3 @@ class MercadoFilialSerializer(serializers.ModelSerializer):
         if hasattr(obj_mercado_filial, "distancia") and obj_mercado_filial.distancia is not None:
             return round(obj_mercado_filial.distancia.km, 2)
         return None
-
-    class Meta:
-        model = MercadoFilial
-        fields = ['id', 'nome_exibicao', 'cidade', 'uf', 'coordenadas']

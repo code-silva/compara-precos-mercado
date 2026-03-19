@@ -1,13 +1,15 @@
 # Create your views here.
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import generics
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
-from django.db.models import Q
 from django.contrib.postgres.search import TrigramSimilarity
-from .models import Produto_Oferta_Filial, MercadoFilial
-from .serializers import OfertaProdutoSerializer, MercadoSerializer, MercadoFilialSerializer
+from django.db.models import Q
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import MercadoFilial, Produto_Oferta_Filial
+from .serializers import MercadoFilialSerializer, MercadoSerializer, OfertaProdutoSerializer
+
 
 class BuscaHibridaView(APIView):
     def get(self, request):
@@ -15,7 +17,7 @@ class BuscaHibridaView(APIView):
 
         if not query:
             return Response({"ofertas": [], "mercados": []})
-        
+
         ofertas = Produto_Oferta_Filial.objects.annotate(
             sim_nome=TrigramSimilarity('produto__nome', query),
             sim_marca=TrigramSimilarity('produto__marca', query)
@@ -41,7 +43,7 @@ class BuscaHibridaView(APIView):
             "ofertas": OfertaProdutoSerializer(ofertas, many=True).data,
             "mercados": MercadoSerializer(mercados, many=True).data
         })
-      
+
 class MercadoFilialListView(generics.ListAPIView):
     """
     View responsável por retornar os mercados ao frontend, num raio de até 5Km
