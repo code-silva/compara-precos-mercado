@@ -1,9 +1,11 @@
-from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
 from rest_framework import generics
-from rest_framework.pagination import PageNumberPagination 
+from rest_framework.pagination import PageNumberPagination
+
 from .models import Produto_Oferta_Filial
 from .serializers import ProdutoOfertaSerializer
+
 
 class OfertasPagination(PageNumberPagination):
     page_size = 14
@@ -17,18 +19,18 @@ class Produto_Oferta_FilialListView(generics.ListAPIView):
     def get_queryset(self):
         # 1. Sua Hierarquia de Categorias (Matches com o Supabase)
         ORDEM_PRIORIDADE = [
-            'ALIMENTOS', 
-            'ALIMENTOS BÁSICOS', 
-            'FRIOS E LATICÍNIOS', 
-            'BEBIDAS', 
-            'HORTIFRUTI', 
+            'ALIMENTOS',
+            'ALIMENTOS BÁSICOS',
+            'FRIOS E LATICÍNIOS',
+            'BEBIDAS',
+            'HORTIFRUTI',
             'LIMPEZA',
             'OUTROS'
         ]
 
         # 2. QuerySet com Joins para performance
         queryset = Produto_Oferta_Filial.objects.all().select_related(
-            'produto', 'produto__categoria', 
+            'produto', 'produto__categoria',
             'mercado_filial', 'mercado_filial__mercado_matriz'
         )
 
@@ -50,14 +52,14 @@ class Produto_Oferta_FilialListView(generics.ListAPIView):
 
         # 4. TRANSFORMA EM LISTA (A proximidade já está garantida aqui)
         lista_por_proximidade = list(queryset)
-        
+
         # 5. AGRUPA POR CATEGORIA (Preservando a ordem de proximidade dentro do grupo)
         categorias_dict = {}
         for item in lista_por_proximidade:
             nome_cat = str(item.produto.categoria.nome).strip().upper()
             if nome_cat not in categorias_dict:
                 categorias_dict[nome_cat] = []
-            # Como lista_por_proximidade está ordenada, o primeiro item 
+            # Como lista_por_proximidade está ordenada, o primeiro item
             # adicionado aqui será o mais próximo desta categoria.
             categorias_dict[nome_cat].append(item)
 
@@ -70,7 +72,7 @@ class Produto_Oferta_FilialListView(generics.ListAPIView):
                     'nome': nome,
                     'it': iter(categorias_dict.pop(nome))
                 })
-        
+
         # Categorias extras
         for nome, lista in categorias_dict.items():
             iteradores.append({
@@ -87,5 +89,5 @@ class Produto_Oferta_FilialListView(generics.ListAPIView):
                     resultado_final.append(item)
                 except StopIteration:
                     iteradores.pop(i) # Remove a categoria que esgotou
-        
+
         return resultado_final
