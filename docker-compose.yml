@@ -17,5 +17,9 @@ services:
     env_file:
       - ./frontend/.env
     tty: true
+<<<<<<< HEAD
     stdin_open: true
 
+=======
+    stdin_open: true
+>>>>>>> feat/product-card
