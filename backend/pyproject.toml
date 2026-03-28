@@ -18,3 +18,6 @@ exclude = ["migrations/*"]
 docstring-code-format = true
 quote-style = "double"
 indent-style = "space"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "core.settings_test"

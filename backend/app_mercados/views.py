@@ -1,4 +1,3 @@
-# Create your views here.
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.contrib.postgres.search import TrigramSimilarity
@@ -9,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import MercadoFilial, Produto_Oferta_Filial
+from .pagination import MercadoFilialPagination, OfertasPagination
 from .serializers import (
     MercadoFilialSerializer,
     OfertaProdutoSerializer,
@@ -56,43 +56,39 @@ class MercadoFilialListView(generics.ListAPIView):
     View responsável por retornar os mercados ao frontend, num raio de até 5Km
     do usuário. Esta view SEMPRE retorna uma lista de objetos."""
 
-    # Estou definindo quem será o serializador nessa view
-    # Significa que o retorno dessa view serão os campos definidos neste serializer
     serializer_class = MercadoFilialSerializer
+    pagination_class = MercadoFilialPagination
 
-    # Método responsável por retornar dados ao frontend
     def get_queryset(self):
 
-        # 'latitude' e 'longitude' são parâmetros passados pelo frontend mobile
-        latitude_usuario = self.request.query_params.get("latitude")
-        longitude_usuario = self.request.query_params.get("longitude")
+        user_latitude = self.request.query_params.get("latitude")
+        user_longitude = self.request.query_params.get("longitude")
 
-        # Se o usuário não informar sua localização, o retorno será de mercados
-        # em ordem alfabética
-        if not latitude_usuario or not longitude_usuario:
+        # If the user doesn't inform his location, it'll return the supermarkets
+        # ordered alphabetically.
+        if not user_latitude or not user_longitude:
             return MercadoFilial.objects.all().order_by("mercado_matriz__nome")
 
-        # Caso a localização seja informada, vou tentar converter a localização do usuário
-        # para o objeto Point(), compatível com o banco de dados
         try:
-            ponto_usuario = Point(float(longitude_usuario), float(latitude_usuario), srid=4326)
+            user_location = Point(float(user_longitude), float(user_latitude), srid=4326)
 
-            return (
-                MercadoFilial.objects.filter(coordenadas__dwithin=(ponto_usuario, 5000))
-                .annotate(distancia=Distance("coordenadas", ponto_usuario))
-                .order_by("distancia")
-            )
-
-        # Se não for possível definir sua localização, então será retornado a lista
-        # de mercados ordenadas por nome
-        except ValueError:
+        # If it's not possible to define user's location, it'll return the supermarkets
+        # ordered alphabetically.
+        except (ValueError, TypeError):
             return MercadoFilial.objects.all().order_by("mercado_matriz__nome")
 
+        RADIUS = 5000 # Maximum radius in meters
+        results = (
+            MercadoFilial.objects.filter(coordenadas__dwithin=(user_location, RADIUS))
+            .annotate(distancia=Distance("coordenadas", user_location))
+            .order_by("distancia")
+        )
 
-class OfertasPagination(PageNumberPagination):
-    page_size = 14
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+        if not results.exists():
+            return MercadoFilial.objects.all().order_by("mercado_matriz__nome")
+
+        return results
+
 
 class Produto_Oferta_FilialListView(generics.ListAPIView):
     serializer_class = ProdutoOfertaSerializer
