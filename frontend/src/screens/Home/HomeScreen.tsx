@@ -9,7 +9,9 @@ import { TelaErro } from '../../components/TelaErro';
 import { EmptyProductState } from '../../components/EmptyProductState';
 import { useCallback } from 'react';
 import { fetchProdutos } from '../../api/produtos';
-
+import { SearchBar } from '../../components/SearchBar';
+import { InfoBanner } from '../../components/InfoBanner';
+import { CarrosselMercados } from '../../components/CarrosselMercados';
 
 
 // FUNÇÕES DE APOIO (Lá fora para performance)
@@ -17,14 +19,17 @@ import { fetchProdutos } from '../../api/produtos';
 const separador = () => <View style={styles.divisor} />;
 
 // O cabecalho para que o React saiba que ele nunca muda
-const cabecalho = React.memo(() => (
-  <View style={styles.containerCabecalho}>
-    <Text style={styles.titulo}>Referenciar o carrossel de Mercados aqui</Text>
-  </View>
-));
 
 const chaveUnica = (item: Produto) => item.id.toString();
 
+const CabecalhoLista = React.memo(({ localizacao }: { localizacao: any }) => (
+  <View style={[styles.containerCabecalho, { alignSelf: 'stretch' }]}>
+    <SearchBar />
+    <CarrosselMercados coords={localizacao?.coords} /> 
+    <InfoBanner/>
+    <Text style={styles.tituloSecao}>Ofertas do Dia</Text>
+  </View>
+));
 
 const HomeScreen = () => {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -187,9 +192,10 @@ const buscarProdutos = useCallback(async () => {
           windowSize={5}
           renderItem={renderizarItem}
           keyExtractor={(item, index) => `${item.id}-${index}`}
+          style={{ flex: 1 }} 
+          contentContainerStyle={[styles.listaConteudo, { minHeight: '100%' }]}
           ItemSeparatorComponent={separador}
-          ListHeaderComponent={cabecalho}
-          contentContainerStyle={styles.listaConteudo}
+          ListHeaderComponent={<CabecalhoLista localizacao={localizacao} />}
           showsVerticalScrollIndicator={false}
           onEndReached={buscarProdutos}
           onEndReachedThreshold={0.5}

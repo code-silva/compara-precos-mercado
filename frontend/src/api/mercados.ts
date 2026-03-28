@@ -1,13 +1,13 @@
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 // Função utilizada para requisitar os dados de mercados próximos ao usuário
-export async function fetchMercados(longitude?: number, latitude?: number) {
+export async function fetchMercados(latitude?: number, longitude?: number) {
   try {
     let url = `${BASE_URL}/mercados-proximos/`
 
     // Verifica se o usuário disponibilizou a latitude e longitude
     if (latitude && longitude) {
-      url += `?latitude=${latitude}&longitude=${longitude}`;
+      url += `?lat=${latitude}&longitude=${longitude}`;
     }
 
     const resposta = await fetch(url);

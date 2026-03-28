@@ -38,10 +38,20 @@ export const styles = StyleSheet.create({
   },
 
   // Estilização do cabeçalho (Header)
-  containerCabecalho: {
-    marginBottom: 20,   // Espaço entre o título e o primeiro card
-    paddingHorizontal: 4, // Alinhamento leve com os cards
-  },
+containerCabecalho: {
+  width: '100%',        // Obrigatório para o header aparecer
+  // Adicione isso temporariamente:
+  minHeight: 300,       // Se o problema for altura, isso vai forçar o laranja a aparecer
+},
+
+tituloSecao: {
+  fontSize: 22,
+  fontFamily: 'Inter-Bold', // Mesma fonte do Carrossel
+  color: '#333333',
+  marginLeft: 16,
+  marginTop: 10,      // Alinhado com a borda do InfoBanner e do Carrossel
+  // Espaço antes de começar os cards de produtos
+},
 
   containerVazio: {
     flex: 1,

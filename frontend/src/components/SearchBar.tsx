@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TextInput, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
+
+// Pegamos a largura da tela para criar regras de responsividade
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// Definição de breakpoints para facilitar a leitura
+const IS_ULTRA_NARROW = SCREEN_WIDTH < 330; // Ex: Galaxy Fold (tela externa)
+const IS_SMALL = SCREEN_WIDTH < 350;       // Ex: iPhone SE
 
 export const SearchBar = () => {
   const [termo, setTermo] = useState('');
@@ -18,7 +25,6 @@ export const SearchBar = () => {
     const delayBusca = setTimeout(async () => {
       try {
         const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-        
         const response = await fetch(`${apiUrl}/busca/?q=${termo}`);
         const data = await response.json();
         console.log(data);
@@ -37,14 +43,17 @@ export const SearchBar = () => {
       <View style={styles.searchContainer}>
         
         <TextInput
-          style={styles.input}
-          placeholder="Search ..."
+          style={[
+            styles.input, 
+            { fontSize: IS_ULTRA_NARROW ? 13 : (IS_SMALL ? 14 : 16) }
+        ]}
+          placeholder="Busque por produtos..."
           placeholderTextColor="#A0AAB2"
           value={termo}
           onChangeText={setTermo}
           autoCapitalize="none"
           underlineColorAndroid="transparent"
-        />
+      />
 
         <View style={styles.iconContainer}>
           <View style={styles.shapeLight} />
@@ -52,9 +61,19 @@ export const SearchBar = () => {
 
           <View style={styles.iconWrapper}>
             {carregando ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator 
+                size="small" 
+                color="#FFFFFF" 
+                // Diminui o loading no Fold para não quebrar o layout
+                style={IS_ULTRA_NARROW ? { transform: [{ scale: 0.8 }] } : null}
+              />
             ) : (
-              <Feather name="search" size={24} color="#FFFFFF" />
+              <Feather 
+                name="search" 
+                // Ícone ainda menor para o Fold
+                size={IS_ULTRA_NARROW ? 18 : (IS_SMALL ? 20 : 24)} 
+                color="#FFFFFF" 
+              />
             )}
           </View>
         </View>
@@ -86,13 +105,16 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingLeft: 20,
-    fontSize: 16,
     color: colors.textPrimary,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Inter-Regular',
     outlineStyle: 'none' as any,
   },
   iconContainer: {
-    width: 85,
+    // AJUSTE CRÍTICO PARA O FOLD:
+    // Em telas ultra estreitas, fixamos uma largura mínima pequena (55px)
+    // para garantir que o input tenha espaço, mas o ícone ainda caiba.
+    width: IS_ULTRA_NARROW ? 55 : (IS_SMALL ? '20%' : 85),
+    minWidth: 55,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
@@ -114,9 +136,15 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-15deg' }],
   },
   iconWrapper: {
-    position: 'absolute',
-    right: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
+  // Ocupa todo o espaço do iconContainer
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  // Centraliza o conteúdo (ícone ou activity indicator) no meio exato
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 10, // Garante que fique acima das formas coloridas
   }
 });

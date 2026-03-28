@@ -2,7 +2,6 @@ import {useState, useEffect} from 'react';
 import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { fetchMercados } from '../api/mercados';
 import { Mercado } from '../types/mercado';
-import * as Location from 'expo-location';
 
 const CARD_MIN_WIDTH = 160;     // A largura mínima de um card na tela
 const MIN_CARDS_VISIBLE = 1;    // A quantidade mínima de cards inteiros visíveis na tela
@@ -23,39 +22,40 @@ const gerarCorAleatoria = () => {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-export const CarrosselMercados = () => {
+interface CarrosselProps {
+  coords?: {
+    latitude: number;
+    longitude: number;
+  } | null;
+}
+
+export const CarrosselMercados = ({ coords }: CarrosselProps) => {
 
   const [mercados, setMercados] = useState<Mercado[]>([]);
 
   useEffect(() => {
     const carregarDados = async () => {
-      let lat = undefined;
-      let lon = undefined;
+      // Se a HomeScreen ainda não pegou o GPS, não fazemos a chamada
+      if (!coords) return;
 
-      // Pedindo permissão da localização ao usuário
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      try {
+        // Agora usamos latitude e longitude que vieram via props!
+        let dados = await fetchMercados(coords.latitude, coords.longitude);
 
-      // Se ele aceitar, pegamos a posição atual
-      if (status === 'granted') {
-        let location = await Location.getCurrentPositionAsync({});
-        lat = location.coords.latitude;
-        lon = location.coords.longitude;
-        console.log(lat, lon)
+        // Adicionando uma cor para o texto (sua lógica original)
+        const dadosComCores = dados.map((mercado: Mercado) => ({
+          ...mercado,
+          cor_nome: gerarCorAleatoria(),
+        }));
+
+        setMercados(dadosComCores);
+      } catch (error) {
+        console.error("Erro ao buscar mercados:", error);
       }
-
-      let dados = await fetchMercados(lon, lat);
-
-      // Adicionando uma cor para o texto
-      dados = dados.map((mercado: Mercado) => ({
-        ...mercado,
-        cor_nome: gerarCorAleatoria(),
-      }));
-
-      setMercados(dados);
-    }
+    };
 
     carregarDados();
-  }, []);
+  }, [coords]);
 
 
   // Função para renderizar os cards na tela
@@ -89,12 +89,13 @@ export const CarrosselMercados = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
+    paddingVertical: 10,// ADICIONE ISSO
+    minHeight: 150,           // ADICIONE ISSO
   },
 
   titulo: {
     fontSize: 22,
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter-Bold',
     color: '#333333',
     marginLeft: 16,
     marginBottom: 8,
@@ -113,8 +114,8 @@ const styles = StyleSheet.create({
   },
 
   nome: {
-    fontSize: 18,
-    fontFamily: 'Inter_700Bold',
+    fontSize: 15,
+    fontFamily: 'Inter-Bold',
     color: '#333333',
     marginBottom: 4,
     textAlign: 'center',
