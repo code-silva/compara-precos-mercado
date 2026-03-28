@@ -7,25 +7,33 @@ o serializer transforma o que seria um campo com um ID e busca na tabela de onde
 veio para retornar o valor que passamos e entrega no final um json
 """
 
+
 class OfertaProdutoSerializer(serializers.ModelSerializer):
-    produto_nome = serializers.ReadOnlyField(source='produto.nome')
-    produto_marca = serializers.ReadOnlyField(source='produto.marca')
-    produto_imagem = serializers.ImageField(source='produto.imagem', read_only=True)
-    mercado_nome = serializers.ReadOnlyField(source='mercado_filial.mercado_matriz.nome')
-    cidade = serializers.ReadOnlyField(source='mercado_filial.localidade.cidade')
+    produto_nome = serializers.ReadOnlyField(source="produto.nome")
+    produto_marca = serializers.ReadOnlyField(source="produto.marca")
+    produto_imagem = serializers.ImageField(source="produto.imagem", read_only=True)
+    mercado_nome = serializers.ReadOnlyField(source="mercado_filial.mercado_matriz.nome")
+    cidade = serializers.ReadOnlyField(source="mercado_filial.localidade.cidade")
 
     class Meta:
         model = Produto_Oferta_Filial
-        fields = ['id', 'preco', 'produto_nome', 'produto_marca', 'produto_imagem', 'mercado_nome',
-                  'cidade']
+        fields = [
+            "id",
+            "preco",
+            "produto_nome",
+            "produto_marca",
+            "produto_imagem",
+            "mercado_nome",
+            "cidade",
+        ]
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
-    categoria_nome = serializers.ReadOnlyField(source='categoria.nome')
+    categoria_nome = serializers.ReadOnlyField(source="categoria.nome")
 
     class Meta:
         model = Produto
-        fields = ['id', 'nome', 'marca', 'medida', 'unidade_medida', 'categoria_nome', 'imagem']
+        fields = ["id", "nome", "marca", "medida", "unidade_medida", "categoria_nome", "imagem"]
 
 
 class MercadoFilialSerializer(serializers.ModelSerializer):
@@ -65,7 +73,6 @@ class MercadoFilialSerializer(serializers.ModelSerializer):
 
     # Método que define o valor do atributo 'distancia_km'
     def get_distancia_km(self, obj_mercado_filial):
-
         # 'distancia' é o campo virtual definido pelo 'annotate'
         if hasattr(obj_mercado_filial, "distancia") and obj_mercado_filial.distancia is not None:
             return round(obj_mercado_filial.distancia.km, 2)
@@ -74,47 +81,46 @@ class MercadoFilialSerializer(serializers.ModelSerializer):
 
 class ProdutoOfertaSerializer(serializers.ModelSerializer):
     # read_only=True para evitar erros de validação em campos de outras tabelas
-    nome_produto = serializers.CharField(source='produto.nome', read_only=True)
-    marca = serializers.CharField(source='produto.marca', read_only=True)
-    imagem = serializers.ImageField(source='produto.imagem', read_only=True)
+    nome_produto = serializers.CharField(source="produto.nome", read_only=True)
+    marca = serializers.CharField(source="produto.marca", read_only=True)
+    imagem = serializers.ImageField(source="produto.imagem", read_only=True)
 
     # O Django gera automaticamente o display para choices.
     # Se o método falhar, use apenas source='produto.unidade_medida'
     unidade_medida = serializers.CharField(
-        source='produto.get_unidade_medida_display',
-        read_only=True
+        source="produto.get_unidade_medida_display", read_only=True
     )
 
     medida = serializers.DecimalField(
-        source='produto.medida',
-        max_digits=10,
-        decimal_places=2,
-        read_only=True
+        source="produto.medida", max_digits=10, decimal_places=2, read_only=True
     )
 
     nome_mercado = serializers.CharField(
-        source='mercado_filial.mercado_matriz.nome',
-        read_only=True
+        source="mercado_filial.mercado_matriz.nome", read_only=True
     )
 
-    nome_categoria = serializers.CharField(
-        source='produto.categoria.nome',
-        read_only=True
-    )
+    nome_categoria = serializers.CharField(source="produto.categoria.nome", read_only=True)
 
     distancia_km = serializers.SerializerMethodField()
 
     class Meta:
         model = Produto_Oferta_Filial
         fields = [
-            'id', 'nome_produto', 'marca', 'preco', 'imagem',
-            'unidade_medida', 'medida', 'nome_mercado',
-            'nome_categoria', 'distancia_km'
+            "id",
+            "nome_produto",
+            "marca",
+            "preco",
+            "imagem",
+            "unidade_medida",
+            "medida",
+            "nome_mercado",
+            "nome_categoria",
+            "distancia_km",
         ]
 
     # ESTA FUNÇÃO TEM QUE FICAR FORA DA META (alinhada com o class Meta)
     def get_distancia_km(self, obj):
-        distancia = getattr(obj, 'distancia', None)
+        distancia = getattr(obj, "distancia", None)
         print(f"DEBUG: Produto {obj.id} - Distancia: {distancia}")
         if distancia is not None:
             # Se for um objeto de distância do GeoDjango, usamos .km

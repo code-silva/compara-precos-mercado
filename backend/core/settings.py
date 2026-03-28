@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure-$w#jh1r8x1r_&@lqd%=mni+tn+-m&a26qf9czkryhfvnr(@!af
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -131,4 +131,3 @@ CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS") == "True"
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
-

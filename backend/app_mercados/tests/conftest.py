@@ -8,7 +8,7 @@ from app_mercados.models import Localidade, MercadoFilial, MercadoMatriz
 
 @pytest.fixture(autouse=True)
 def register_gis_generator():
-    baker.generators.add('django.contrib.gis.db.models.fields.PointField', lambda: Point(0, 0))
+    baker.generators.add("django.contrib.gis.db.models.fields.PointField", lambda: Point(0, 0))
 
 
 @pytest.fixture
@@ -19,12 +19,12 @@ def client():
 
 @pytest.fixture
 def location(db):
-    return baker.make(Localidade, uf='DF', cidade='Gama')
+    return baker.make(Localidade, uf="DF", cidade="Gama")
 
 
 @pytest.fixture
 def parent_supermarket(db):
-    return baker.make(MercadoMatriz, nome='Mercado Super')
+    return baker.make(MercadoMatriz, nome="Mercado Super")
 
 
 @pytest.fixture
@@ -34,8 +34,9 @@ def subsidiary_supermarket(db, location, parent_supermarket):
         MercadoFilial,
         mercado_matriz=parent_supermarket,
         localidade=location,
-        coordenadas=Point(-47.9292, -15.7801)
+        coordenadas=Point(-47.9292, -15.7801),
     )
+
 
 @pytest.fixture
 def supermarkets_array(db):
