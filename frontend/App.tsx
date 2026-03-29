@@ -1,15 +1,17 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SplashScreen from 'expo-splash-screen';
+import * as NavigationBar from 'expo-navigation-bar';
 
 // Hooks e Telas
 import { useCarregarFontes } from './src/theme/useCarregarFontes';
-import HomeScreen from './src/screens/Home/HomeScreen';
+import { BottomNavbar } from './src/components/BottomNavbar';
 
-// Cria o navegador de pilhas
-const Stack = createNativeStackNavigator();
+
+// Option to hide the phone's native navigation bar
+NavigationBar.setBehaviorAsync('overlay-swipe');
+NavigationBar.setVisibilityAsync('hidden');
 
 // Mantém a Splash Screen até as fontes carregarem
 SplashScreen.preventAutoHideAsync();
@@ -23,17 +25,9 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          id="root_stack"
-          initialRouteName="Home"
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="Home" component={HomeScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <SafeAreaView style={{flex: 1}} edges={['top']}>
+        <BottomNavbar></BottomNavbar>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 }

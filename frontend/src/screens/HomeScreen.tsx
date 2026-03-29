@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CardProduto from '../../components/ProductCard'; // Ajuste o caminho
-import { Produto } from '../../types/product';
+import CardProduto from '../components/ProductCard'; // Ajuste o caminho
+import { Produto } from '../types/product';
 import * as Location from 'expo-location';
-import { styles } from './HomeScreen.styles';
-import { TelaErro } from '../../components/TelaErro';
-import { EmptyProductState } from '../../components/EmptyProductState';
+import { TelaErro } from '../components/TelaErro';
+import { EmptyProductState } from '../components/EmptyProductState';
 import { useCallback } from 'react';
-import { fetchProdutos } from '../../api/produtos';
-import { SearchBar } from '../../components/SearchBar';
-import { InfoBanner } from '../../components/InfoBanner';
-import { CarrosselMercados } from '../../components/CarrosselMercados';
+import { fetchProdutos } from '../api/produtos';
+import { SearchBar } from '../components/SearchBar';
+import { InfoBanner } from '../components/InfoBanner';
+import { CarrosselMercados } from '../components/CarrosselMercados';
 
 
 // FUNÇÕES DE APOIO (Lá fora para performance)
@@ -31,7 +30,7 @@ const CabecalhoLista = React.memo(({ localizacao }: { localizacao: any }) => (
   </View>
 ));
 
-const HomeScreen = () => {
+export function HomeScreen() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [pagina, setPagina] = useState(1);
   const [carregando, setCarregando] = useState(false);
@@ -179,8 +178,7 @@ const buscarProdutos = useCallback(async () => {
 };
 
   return (
-    <SafeAreaView style={styles.tela}>
-      {/* Lógica de Renderização Condicional */}
+    <View style={{ flex: 1, backgroundColor: '#FFF' }}>
       {erroLocalizacao && produtos.length === 0 ? (
         <TelaErro mensagem={erroLocalizacao}
           aoTentarNovamente={alternarLocalizacao}
@@ -203,8 +201,53 @@ const buscarProdutos = useCallback(async () => {
           ListFooterComponent={renderRodape}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 
-export default HomeScreen;
+export const styles = StyleSheet.create({
+  textoBotao: {
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+
+  listaConteudo: {
+    paddingHorizontal: 20,
+    paddingBottom: 100,
+    flexGrow: 1,
+  },
+
+  divisor: {
+    height: 16,
+  },
+
+  containerCabecalho: {
+    width: '100%',
+    minHeight: 300,
+  },
+
+  tituloSecao: {
+    fontSize: 22,
+    fontFamily: 'Inter-Bold',
+    color: '#333333',
+    marginTop: 10,
+  },
+
+  containerVazio: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  textoVazio: {
+    fontSize: 16,
+    color: '#888',
+  },
+
+  titulo: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 24,
+    color: '#1A1A1A',
+    letterSpacing: -0.5,
+  },
+});

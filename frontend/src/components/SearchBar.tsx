@@ -7,8 +7,8 @@ import { colors } from '../theme/colors';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Definição de breakpoints para facilitar a leitura
-const IS_ULTRA_NARROW = SCREEN_WIDTH < 330; // Ex: Galaxy Fold (tela externa)
-const IS_SMALL = SCREEN_WIDTH < 350;       // Ex: iPhone SE
+const IS_ULTRA_NARROW = SCREEN_WIDTH < 330; 
+const IS_SMALL = SCREEN_WIDTH < 350;
 
 export const SearchBar = () => {
   const [termo, setTermo] = useState('');
