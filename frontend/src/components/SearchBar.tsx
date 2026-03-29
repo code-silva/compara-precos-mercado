@@ -41,10 +41,10 @@ export const SearchBar = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        
+
         <TextInput
           style={[
-            styles.input, 
+            styles.input,
             { fontSize: IS_ULTRA_NARROW ? 13 : (IS_SMALL ? 14 : 16) }
         ]}
           placeholder="Busque por produtos..."
@@ -61,23 +61,23 @@ export const SearchBar = () => {
 
           <View style={styles.iconWrapper}>
             {carregando ? (
-              <ActivityIndicator 
-                size="small" 
-                color="#FFFFFF" 
+              <ActivityIndicator
+                size="small"
+                color="#FFFFFF"
                 // Diminui o loading no Fold para não quebrar o layout
                 style={IS_ULTRA_NARROW ? { transform: [{ scale: 0.8 }] } : null}
               />
             ) : (
-              <Feather 
-                name="search" 
+              <Feather
+                name="search"
                 // Ícone ainda menor para o Fold
-                size={IS_ULTRA_NARROW ? 18 : (IS_SMALL ? 20 : 24)} 
-                color="#FFFFFF" 
+                size={IS_ULTRA_NARROW ? 18 : (IS_SMALL ? 20 : 24)}
+                color="#FFFFFF"
               />
             )}
           </View>
         </View>
-        
+
       </View>
     </View>
   );
@@ -85,54 +85,56 @@ export const SearchBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
     paddingVertical: 12,
   },
+
   searchContainer: {
     flexDirection: 'row',
     height: 50,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 25, 
-    overflow: 'hidden', 
+    borderRadius: 25,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#E0E4E8',
-    elevation: 3, 
-    shadowColor: '#000',
+    elevation: 3,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    justifyContent: 'space-between',
   },
+
   input: {
-    flex: 1,
+    flexShrink: 1,
+    minWidth: 200,
     paddingLeft: 20,
     color: colors.textPrimary,
     fontFamily: 'Inter-Regular',
-    outlineStyle: 'none' as any,
   },
+
   iconContainer: {
     // AJUSTE CRÍTICO PARA O FOLD:
     // Em telas ultra estreitas, fixamos uma largura mínima pequena (55px)
     // para garantir que o input tenha espaço, mas o ícone ainda caiba.
     width: IS_ULTRA_NARROW ? 55 : (IS_SMALL ? '20%' : 85),
-    minWidth: 55,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   shapeLight: {
     position: 'absolute',
     left: -15,
     width: 60,
     height: 100,
-    backgroundColor: '#82D2D5', 
+    backgroundColor: '#82D2D5',
     transform: [{ rotate: '30deg' }],
   },
+
   shapeDark: {
     position: 'absolute',
     right: -20,
     width: 80,
     height: 100,
-    backgroundColor: '#1EAEB5', 
+    backgroundColor: '#1EAEB5',
     transform: [{ rotate: '-15deg' }],
   },
   iconWrapper: {

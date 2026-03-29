@@ -25,7 +25,7 @@ const chaveUnica = (item: Produto) => item.id.toString();
 const CabecalhoLista = React.memo(({ localizacao }: { localizacao: any }) => (
   <View style={[styles.containerCabecalho, { alignSelf: 'stretch' }]}>
     <SearchBar />
-    <CarrosselMercados coords={localizacao?.coords} /> 
+    <CarrosselMercados coords={localizacao?.coords} />
     <InfoBanner/>
     <Text style={styles.tituloSecao}>Ofertas do Dia</Text>
   </View>
@@ -39,7 +39,7 @@ const HomeScreen = () => {
   const [localizacao, setLocalizacao] = useState<Location.LocationObject | null>(null);
   const [erroLocalizacao, setErroLocalizacao] = useState<string | null>(null);
 
-  // funções de ação (useCallback) 
+  // funções de ação (useCallback)
   const handlePress = useCallback((produto: Produto) => {
     console.log('Abriu detalhes de:', produto.nome_produto);
     // No futuro, aqui entrará o navigation.navigate('ProductDetails', { produto });
@@ -80,14 +80,14 @@ const HomeScreen = () => {
 const buscarProdutos = useCallback(async () => {
   // 1. A TRAVA: Não busca se já estiver carregando, se não houver mais dados ou se não tiver GPS
   if (carregando || !temMaisDados || !localizacao) {
-    return; 
+    return;
   }
 
   setCarregando(true);
 
   try {
     const { latitude, longitude } = localizacao.coords;
-    
+
     //  CHAMADA REAL: A a função que chama o arquivo api/produtos.ts
     // Passamos lat, lon e a página atual
     const novos = await fetchProdutos(latitude, longitude, pagina);
@@ -122,7 +122,7 @@ const buscarProdutos = useCallback(async () => {
   // 1. Disparo Inicial: Obtém apenas a localização
   useEffect(() => {
     let isMounted = true;
-    
+
     const inicializar = async () => {
       if (isMounted) {
         await obterLocalizacao();
@@ -183,7 +183,7 @@ const buscarProdutos = useCallback(async () => {
       {/* Lógica de Renderização Condicional */}
       {erroLocalizacao && produtos.length === 0 ? (
         <TelaErro mensagem={erroLocalizacao}
-          aoTentarNovamente={alternarLocalizacao}        
+          aoTentarNovamente={alternarLocalizacao}
         />
       ) : (
         <FlatList
@@ -192,7 +192,7 @@ const buscarProdutos = useCallback(async () => {
           windowSize={5}
           renderItem={renderizarItem}
           keyExtractor={(item, index) => `${item.id}-${index}`}
-          style={{ flex: 1 }} 
+          style={{ flex: 1 }}
           contentContainerStyle={[styles.listaConteudo, { minHeight: '100%' }]}
           ItemSeparatorComponent={separador}
           ListHeaderComponent={<CabecalhoLista localizacao={localizacao} />}
@@ -202,13 +202,6 @@ const buscarProdutos = useCallback(async () => {
           maxToRenderPerBatch={5}
           ListFooterComponent={renderRodape}
         />
-      )}
-
-      {/* Botão Flutuante (Opcional: aparece apenas se não houver erro crítico) */}
-      {!erroLocalizacao && (
-        <TouchableOpacity style={styles.botaoFlutuante} onPress={alternarLocalizacao}>
-          <Text style={styles.textoBotao}>📍 Local: {localizacaoUsuario}</Text>
-        </TouchableOpacity>
       )}
     </SafeAreaView>
   );

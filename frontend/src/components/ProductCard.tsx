@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Produto } from '../types/product';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { memo } from 'react';
 
 /**
@@ -22,29 +22,29 @@ interface Propriedades {
  * Representa a interface visual de um item da lista de compras.
  * * Suas Funcionalidades principais são:
  * 1. Exibição de Dados: Renderiza informações do 'produto' (imagem, nome, preço e mercado).
- 
- * 2. Interatividade: 
+
+ * 2. Interatividade:
  * - O card inteiro é clicável (aoPressionar) para ver detalhes.
  * - Possui um botão específico (aoAdicionarNaLista) para salvar o item.
- 
+
  * 3. Estrutura: Utiliza 'React.FC' (Functional Component) com TypeScript para garantir
  * que todas as propriedades obrigatórias sejam recebidas corretamente.
  **/
- 
+
 
 const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdicionarNaLista }) => {
   return (
   <TouchableOpacity style={estilos.cartao} onPress={aoPressionar} activeOpacity={0.9}>
-    
+
     {/* 1. Container da Imagem + Preço Canto superior direito */}
     {/* Esta View serve para que o preço saiba que deve flutuar dentro dela */}
     <View style={estilos.containerImagem}>
-      <Image 
-        source={{ uri: produto.imagem }} 
-        style={estilos.imagemProduto} 
+      <Image
+        source={{ uri: produto.imagem }}
+        style={estilos.imagemProduto}
         resizeMode="contain"
-      />  
-      
+      />
+
       {/* Rótulo de Ranking (canto superior esquerdo) */}
       <View style={estilos.seloRanking}>
         <Text style={estilos.textoRanking}>#{produto.ranking || produto.id}</Text>
@@ -65,7 +65,7 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
     </View>
 
     <View style={estilos.containerInformacoes}>
-  
+
       {/* Nome do Produto */}
       <Text style={estilos.nomeProduto}>
         {produto.nome_produto}
@@ -82,11 +82,11 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
         {produto.unidade_medida && (
         <View style={estilos.etiquetaPeso}>
          <Text style={estilos.textoPeso}>
-            {produto.unidade_medida} 
+            {produto.unidade_medida}
           </Text>
         </View>
       )}
-    
+
         <Text style={estilos.nomeMercado} numberOfLines={1}>
           {produto.nome_mercado}
         </Text>
@@ -109,11 +109,10 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
 
 const estilos = StyleSheet.create({
   cartao: {
-    width: '92%', // Ocupa quase toda a largura, deixando um espaço nas laterais
+    width: '100%', // Ocupa quase toda a largura, deixando um espaço nas laterais
     maxWidth: 400, // Não deixa o card ficar gigante em tablets
     backgroundColor: '#fff',
     borderRadius: 21.6,
-    padding: 10.8,
     marginVertical: 16,
     alignSelf: 'center',
     elevation: 4,
@@ -121,6 +120,7 @@ const estilos = StyleSheet.create({
     shadowOffset: { width: 0, height: 4.3 },
     shadowOpacity: 0.25,
     shadowRadius: 4.3,
+    padding: 10,
   },
   containerImagem: {
   width: '100%',
@@ -148,12 +148,12 @@ const estilos = StyleSheet.create({
   top: 10,  // Distância do topo
   left: 10, // Distância da esquerda (oposto ao preço)
 
-  // 2. Visual do selo 
+  // 2. Visual do selo
   backgroundColor: 'rgba(241, 241, 241, 0.9)', // Um cinza claro levemente transparente
   paddingHorizontal: 8,
   paddingVertical: 4,
   borderRadius: 6,
-  
+
   // Sombra leve para garantir leitura sobre fotos claras
   elevation: 2,
   shadowColor: '#000',
@@ -162,7 +162,7 @@ const estilos = StyleSheet.create({
   shadowRadius: 2,
   },
   estiloMarca: {
-  fontFamily: 'Inter-Regular', 
+  fontFamily: 'Inter-Regular',
   fontSize: 15,
   color: '#2e2d2d', // Um cinza escuro para diferenciar do nome preto
   marginBottom: 4,
@@ -175,18 +175,18 @@ const estilos = StyleSheet.create({
   },
 
   rotuloPreco: {
-  
+
   minWidth: 70,
   height: 35,
   backgroundColor: '#28a8b5',
   borderRadius: 10.8,
   padding: 5,
-  
+
   // Posicionamento absoluto (o "pulo do gato")
   position: 'absolute',
   top: 10,
   right: 10,
-  
+
   // Alinhamento do texto
   justifyContent: 'center',
   alignItems: 'center',
@@ -198,19 +198,19 @@ const estilos = StyleSheet.create({
   fontSize: 15,
   textAlign: 'center',
   },
- 
+
   botaoAdicionar: {
   position: 'absolute',
   bottom: 16,
   alignSelf: 'center',
-  
+
   // Dimensões circulares
-  width: 42, 
+  width: 42,
   height: 42,
   borderRadius: 21, // Metade para ser círculo perfeito
-  
+
   backgroundColor: '#FFFFFF',
-  
+
   // Centraliza o ícone de adicionar perfeitamente
   justifyContent: 'center',
   alignItems: 'center',
@@ -222,7 +222,7 @@ const estilos = StyleSheet.create({
   shadowOpacity: 0.15,
   shadowRadius: 3,
   },
- 
+
   containerInformacoes: {
     padding: 12,
     width: '100%',
@@ -260,8 +260,7 @@ const estilos = StyleSheet.create({
 
 containerDistancia: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F0F0F0', // Fundo cinza suave para combinar com o peso
+    alignSelf: 'flex-end',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -270,11 +269,11 @@ containerDistancia: {
 
   textoDistancia: {
     fontFamily: 'Inter-Bold',
-    fontSize: 11,
+    fontSize: 12,
     color: '#666',
     marginLeft: 2, // Espaço entre o ícone e o número
   },
-  
+
 });
 
 export default memo(CardProduto); // Exporta o componente memoizado para evitar re-renderizações desnecessárias

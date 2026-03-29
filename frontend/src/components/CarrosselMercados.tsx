@@ -52,7 +52,7 @@ export const CarrosselMercados = ({ coords }: CarrosselProps) => {
         ItemSeparatorComponent={() => <View style={{ width: CARD_MARGIN_OFFSET }}/>}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
-          paddingHorizontal: 16,
+
           paddingVertical: 8,
         }}
       />
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: 'Inter-Bold',
     color: '#333333',
-    marginLeft: 16,
+
     marginBottom: 8,
   },
 
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 2px 4px rgba(99, 12, 12, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
