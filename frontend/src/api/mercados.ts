@@ -1,29 +1,14 @@
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-// Função utilizada para requisitar os dados de mercados próximos ao usuário
+
 export async function fetchMercados(latitude?: number, longitude?: number) {
-  try {
-    let url = `${BASE_URL}/mercados-proximos/`
+  // Function used to request supermarkets close to the user
 
-    // Verifica se o usuário disponibilizou a latitude e longitude
-    if (latitude && longitude) {
-      url += `?lat=${latitude}&longitude=${longitude}`;
-    }
+  let url = new URL(`${BASE_URL}/mercados-proximos/`)
+  url.searchParams.append('latitude', String(latitude))
+  url.searchParams.append('longitude', String(longitude))
 
-    const resposta = await fetch(url);
+  const response = await fetch(url);
+  return await response.json();
 
-    // Verifica se a conexão com o servidor foi bem sucedida
-    if (!resposta.ok) {
-      throw new Error(`Erro no servidor: ${resposta.status}`);
-    }
-
-    // Retorna os dados dos mercados
-    const dados = await resposta.json();
-    return dados;
-
-    // Em caso de erros diversos
-    } catch (erro) {
-        console.error('Erro na API de mercados:', erro);
-        throw erro;
-    }
 };

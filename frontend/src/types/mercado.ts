@@ -1,10 +1,17 @@
 export interface Mercado {
   id: number;
-  nome: string;
+  name: string;
   latitude: number;
   longitude: number;
   uf: string;
-  cidade: string;
-  distancia_km: number | null;
-  cor_nome: null | string;
+  city: string;
+  distance_km: number | null;
+  name_color: null | string;
+}
+
+export interface CarrosselProps {
+  coords?: {
+    latitude: number;
+    longitude: number;
+  } | null;
 }

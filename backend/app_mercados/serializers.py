@@ -57,22 +57,22 @@ class MercadoFilialSerializer(serializers.ModelSerializer):
 
     class Meta:
         # Campos que serão serializados (enviados para o frontend)
-        fields = ["id", "nome", "latitude", "longitude", "uf", "cidade", "distancia_km"]
+        fields = ["id", "name", "latitude", "longitude", "uf", "city", "distance_km"]
         model = MercadoFilial
 
-    nome = serializers.CharField(source="mercado_matriz.nome", read_only=True)
+    name = serializers.CharField(source="mercado_matriz.nome", read_only=True)
     latitude = serializers.FloatField(source="coordenadas.y", read_only=True)
     longitude = serializers.FloatField(source="coordenadas.x", read_only=True)
     uf = serializers.CharField(source="localidade.uf", read_only=True)
-    cidade = serializers.CharField(source="localidade.cidade", read_only=True)
+    city = serializers.CharField(source="localidade.cidade", read_only=True)
 
     # Este atributo não existe na entidade 'MercadoFilial', mas é
     # necessário para calcular a distância entre o usuário e os mercados.
     # Assim, esse atributo será calculado e deteminado pelo método 'get_<atributo>'
-    distancia_km = serializers.SerializerMethodField()
+    distance_km = serializers.SerializerMethodField()
 
     # Método que define o valor do atributo 'distancia_km'
-    def get_distancia_km(self, obj_mercado_filial):
+    def get_distance_km(self, obj_mercado_filial):
         # 'distancia' é o campo virtual definido pelo 'annotate'
         if hasattr(obj_mercado_filial, "distancia") and obj_mercado_filial.distancia is not None:
             return round(obj_mercado_filial.distancia.km, 2)
