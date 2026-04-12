@@ -14,4 +14,6 @@ export interface CarrosselProps {
     latitude: number;
     longitude: number;
   } | null;
+
+  onPressMercado: (mercado: Mercado) => void
 }

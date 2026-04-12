@@ -13,8 +13,9 @@ import { memo } from 'react';
 
 interface Propriedades {
   produto: Produto;
-  aoPressionar: () => void;
-  aoAdicionarNaLista: () => void;
+  aoPressionar: (produto: Produto) => void;      
+  aoAdicionarNaLista: (produto: Produto) => void; 
+  ehGrade?: boolean;
 }
 
 /**
@@ -32,9 +33,21 @@ interface Propriedades {
  **/
 
 
-const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdicionarNaLista }) => {
+const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdicionarNaLista, ehGrade }) => {
+
+  const distanciaFormatada = produto.distancia_km !== undefined 
+    ? produto.distancia_km < 1 
+      ? `${Math.round(produto.distancia_km * 1000)} m` 
+      : `${produto.distancia_km.toFixed(1)} km`
+    : null;
+
   return (
-  <TouchableOpacity style={estilos.cartao} onPress={aoPressionar} activeOpacity={0.9}>
+
+    <TouchableOpacity 
+      style={[estilos.cartao, ehGrade && { padding: 8 }]} 
+      onPress={() => aoPressionar(produto)} 
+      activeOpacity={0.9}
+    >
 
     {/* 1. Container da Imagem + Preço Canto superior direito */}
     {/* Esta View serve para que o preço saiba que deve flutuar dentro dela */}
@@ -51,15 +64,28 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
       </View>
 
       {/* Rótulo de Preço */}
-      <View style={estilos.rotuloPreco}>
-        <Text style={estilos.textoPreco}>
+      <View style={[
+          estilos.rotuloPreco, 
+          ehGrade && { minWidth: 20, height: 23, padding: 5, top: 10, right: 6 }
+      ]}>
+        <Text style={[estilos.textoPreco, ehGrade && { fontSize: 12 }]}>
           R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
         </Text>
-      </View>
 
+      </View>
       {/* Botão Adicionar à Lista */}
-      <TouchableOpacity style={estilos.botaoAdicionar} onPress={aoAdicionarNaLista}>
-        <MaterialCommunityIcons name="playlist-plus" size={24} color="#28a8b5" />
+      <TouchableOpacity 
+          style={[
+            estilos.botaoAdicionar, 
+            ehGrade && { width: 25, height: 25, borderRadius: 20, bottom: 8 }
+      ]} 
+      onPress={() => aoAdicionarNaLista(produto)}
+      >
+        <MaterialCommunityIcons 
+          name="playlist-plus" 
+          size={ehGrade ? 18 : 24} 
+          color="#28a8b5" 
+      />
       </TouchableOpacity>
 
     </View>
@@ -67,12 +93,15 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
     <View style={estilos.containerInformacoes}>
 
       {/* Nome do Produto */}
-      <Text style={estilos.nomeProduto}>
+      <Text 
+        style={[estilos.nomeProduto, ehGrade && { fontSize: 14, lineHeight: 18 }]} 
+        numberOfLines={2}
+      >
         {produto.nome_produto}
       </Text>
 
       {/* Marca (Coca - Cola) */}
-      <Text style={estilos.estiloMarca}>
+      <Text style={estilos.estiloMarca} numberOfLines={1}>
         {produto.marca}
       </Text>
 
@@ -92,11 +121,11 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
         </Text>
       </View>
 
-      {produto.distancia_km !== undefined && (
+     {distanciaFormatada && (
         <View style={estilos.containerDistancia}>
-          <MaterialCommunityIcons name="map-marker-distance" size={14} color="#666" />
+          <MaterialCommunityIcons name="map-marker-distance" size={12} color="#666" />
           <Text style={estilos.textoDistancia}>
-            {produto.distancia_km} km
+            {distanciaFormatada}
           </Text>
         </View>
       )}
@@ -109,10 +138,11 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
 
 const estilos = StyleSheet.create({
   cartao: {
+    flex: 1,
     width: '100%', // Ocupa quase toda a largura, deixando um espaço nas laterais
     maxWidth: 400, // Não deixa o card ficar gigante em tablets
     backgroundColor: '#fff',
-    borderRadius: 21.6,
+    borderRadius: 18,
     marginVertical: 16,
     alignSelf: 'center',
     elevation: 4,
@@ -123,14 +153,14 @@ const estilos = StyleSheet.create({
     padding: 10,
   },
   containerImagem: {
-  width: '100%',
-  aspectRatio: 1, // Altura usada na imagem
-  position: 'relative', // Importante para o preço flutuar aqui dentro
-  overflow: 'hidden',
-  borderRadius: 10,
-  marginBottom: 10,
-  backgroundColor: '#f5f5f5', // Fundo leve para destacar produtos brancos
-  padding: 70, // Cria espaço entre o fundo cinza e a imagem (faça o teste com 15, 20 ou 25)
+    width: '100%',
+    aspectRatio: 1, // Altura usada na imagem
+    position: 'relative', // Importante para o preço flutuar aqui dentro
+    overflow: 'hidden',
+    borderRadius: 10,
+    marginBottom: 5,
+    backgroundColor: '#f5f5f5', // Fundo leve para destacar produtos brancos
+    padding: 15, // Cria espaço entre o fundo cinza e a imagem (faça o teste com 15, 20 ou 25)
   },
   imagemProduto: {
     width: '100%',
@@ -138,8 +168,9 @@ const estilos = StyleSheet.create({
   },
   nomeProduto: {
     fontFamily: 'Inter-Bold', // Usando a fonte Inter, negrito para destacar o nome
-    fontSize: 18,
+    fontSize: 14,
     color: '#333',
+    lineHeight: 18,
     flexShrink: 1, // Permite que o nome encolha se for muito longo, evitando overflow
   },
   seloRanking: {
@@ -163,9 +194,9 @@ const estilos = StyleSheet.create({
   },
   estiloMarca: {
   fontFamily: 'Inter-Regular',
-  fontSize: 15,
+  fontSize: 12,
   color: '#2e2d2d', // Um cinza escuro para diferenciar do nome preto
-  marginBottom: 4,
+  marginBottom: 6,
   },
 
   textoRanking: {
@@ -224,8 +255,10 @@ const estilos = StyleSheet.create({
   },
 
   containerInformacoes: {
-    padding: 12,
+    padding: 5,
     width: '100%',
+     // Garante que o card tenha uma altura mínima mesmo com pouco texto
+    justifyContent: 'flex-start',
   },
 
   marca: {
@@ -236,9 +269,12 @@ const estilos = StyleSheet.create({
   },
 
   linhaRodape: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginTop: 'auto',
   },
+
   etiquetaPeso: {
     backgroundColor: '#F0F0F0',
     paddingHorizontal: 6,
@@ -260,6 +296,7 @@ const estilos = StyleSheet.create({
 
 containerDistancia: {
     flexDirection: 'row',
+    alignItems: 'center',
     alignSelf: 'flex-end',
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -271,7 +308,7 @@ containerDistancia: {
     fontFamily: 'Inter-Bold',
     fontSize: 12,
     color: '#666',
-    marginLeft: 2, // Espaço entre o ícone e o número
+    marginLeft: 3, // Espaço entre o ícone e o número
   },
 
 });

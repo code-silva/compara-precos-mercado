@@ -1,13 +1,16 @@
+// 1. Importação do TouchableOpacity para permitir o clique e de outras bibliotecas necessárias
+
 import {useState, useEffect} from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'; 
 import { fetchMercados } from '../api/mercados';
 import { Mercado } from '../types/mercado';
 import { CarrosselProps } from '../types/mercado';
 
-const CARD_MIN_WIDTH = 160;     // A card's minium width
-const MIN_CARDS_VISIBLE = 1;    // The minium number of cards visible on the screen
-const NEXT_CARD_PEEK = 0.2;     // Fraction of the next card visible (0.2 = 20%)
-const CARD_MARGIN_OFFSET = 16;  // The margin between 2 cards
+// 2. Constantes de cálculo 
+const CARD_MIN_WIDTH = 160;
+const MIN_CARDS_VISIBLE = 1;
+const NEXT_CARD_PEEK = 0.2;
+const CARD_MARGIN_OFFSET = 16;
 
 const { width, height } = Dimensions.get('window');
 const cardsQueCabem = Math.floor(width / CARD_MIN_WIDTH);
@@ -15,30 +18,33 @@ const quantity = Math.max(MIN_CARDS_VISIBLE, cardsQueCabem);
 const divisor = quantity + NEXT_CARD_PEEK;
 const cardWidth = (width / divisor) - CARD_MARGIN_OFFSET;
 
-
-export const CarrosselMercados = ({ coords }: CarrosselProps) => {
+// 3. Adicionado o onPressMercado à desestruturação das props
+export const CarrosselMercados = ({ coords, onPressMercado }: CarrosselProps & { onPressMercado: (mercado: Mercado) => void }) => {
 
   const [supermarkets, setSupermarkets] = useState<Mercado[]>([]);
 
   useEffect(() => {
     async function loadSupermarkets() {
       if (!coords) return;
-
       let data = await fetchMercados(coords.latitude, coords.longitude);
       setSupermarkets(data.results);
     };
-
     loadSupermarkets();
   }, [coords]);
 
 
-  // Function to render items on the FlatList
-  const renderItem = ({item}) => (
-    <View style={styles.card}>
+  // 4. Transformação da View do card em um TouchableOpacity e chamada da trigger no onPress
+
+  const renderItem = ({item}: {item: Mercado}) => (
+    <TouchableOpacity 
+      style={styles.card} 
+      onPress={() => onPressMercado(item)}
+      activeOpacity={0.7}
+    >
       <Text style={styles.name}>
         {item.name}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -52,13 +58,15 @@ export const CarrosselMercados = ({ coords }: CarrosselProps) => {
         ItemSeparatorComponent={() => <View style={{ width: CARD_MARGIN_OFFSET }}/>}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
-
           paddingVertical: 8,
         }}
       />
     </View>
   );
 };
+
+
+// 5. Estilos para o carrossel e os cards dos Mercados Horizontais
 
 const styles = StyleSheet.create({
   container: {

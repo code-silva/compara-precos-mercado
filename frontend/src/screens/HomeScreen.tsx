@@ -11,6 +11,8 @@ import { fetchProdutos } from '../api/produtos';
 import { SearchBar } from '../components/SearchBar';
 import { InfoBanner } from '../components/InfoBanner';
 import { CarrosselMercados } from '../components/CarrosselMercados';
+import { useNavigation } from '@react-navigation/native';
+import { LoadingFooter } from '../components/LoadingFooter';
 
 
 // FUNÇÕES DE APOIO (Lá fora para performance)
@@ -21,10 +23,21 @@ const separador = () => <View style={styles.divisor} />;
 
 const chaveUnica = (item: Produto) => item.id.toString();
 
-const CabecalhoLista = React.memo(({ localizacao }: { localizacao: any }) => (
+// Atualizada a interface dentro do React.memo para incluir a nova função
+const CabecalhoLista = React.memo(({ 
+  localizacao, 
+  aoPressionarMercado // <--- Adicione aqui
+}: { 
+  localizacao: any, 
+  aoPressionarMercado: (mercado: any) => void // <--- Defina o tipo aqui
+}) => (
   <View style={[styles.containerCabecalho, { alignSelf: 'stretch' }]}>
     <SearchBar />
-    <CarrosselMercados coords={localizacao?.coords} />
+    {/* Agora passamos a função para a prop que o Carrossel exige */}
+    <CarrosselMercados 
+      coords={localizacao?.coords} 
+      onPressMercado={aoPressionarMercado} 
+    />
     <InfoBanner/>
     <Text style={styles.tituloSecao}>Ofertas do Dia</Text>
   </View>
@@ -47,6 +60,23 @@ export function HomeScreen() {
   const handleAdd = useCallback((produto: Produto) => {
     console.log('Adicionou à lista:', produto.nome_produto);
   }, []);
+
+  // Inicializa o objeto de navegação
+  const navigation = useNavigation<any>();
+
+  // Cria a função que o TypeScript não estava encontrando
+  const handleMercadoPress = useCallback((mercado: any) => {
+    // Navega para a tela SearchResults passando os parâmetros necessários
+    navigation.navigate('SearchResults', { 
+      query: '', // Busca de texto vazia
+      mercadoSelecionado: { 
+        id: mercado.id, 
+        nome: mercado.name || mercado.nome_mercado,
+      },
+        latitude: localizacao?.coords.latitude,
+        longitude: localizacao?.coords.longitude,
+    });
+  }, [navigation, localizacao]);
 
   // cálculo derivado apenas para exibição
   const localizacaoUsuario = localizacao
@@ -160,12 +190,7 @@ const buscarProdutos = useCallback(async () => {
   }
   // Se estiver carregando E já existirem produtos na tela (pedindo os próximos 14)
   if (carregando) {
-    return (
-      <View style={{ paddingVertical: 30, alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#28a8b5" />
-        <Text style={{ marginTop: 10, color: '#28a8b5' }}>Carregando mais ofertas...</Text>
-      </View>
-    );
+    return <LoadingFooter isLoading={carregando} />;
   }
 
   // 2. Se NÃO estiver carregando E não houver mais dados (chegou ao fim do banco)
@@ -193,7 +218,12 @@ const buscarProdutos = useCallback(async () => {
           style={{ flex: 1 }}
           contentContainerStyle={[styles.listaConteudo, { minHeight: '100%' }]}
           ItemSeparatorComponent={separador}
-          ListHeaderComponent={<CabecalhoLista localizacao={localizacao} />}
+          ListHeaderComponent={
+            <CabecalhoLista 
+              localizacao={localizacao} 
+              aoPressionarMercado={handleMercadoPress} 
+            />
+          }
           showsVerticalScrollIndicator={false}
           onEndReached={buscarProdutos}
           onEndReachedThreshold={0.5}

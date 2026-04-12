@@ -11,3 +11,9 @@ export interface Produto {
   distancia_km?: number; // Ajustado para bater com o Serializer do backend
   ranking?: number;
 }
+export interface CardProdutoProps {
+  produto: Produto;
+  aoPressionar: (produto: Produto) => void;
+  aoAdicionarNaLista: (produto: Produto) => void;
+  ehGrade?: boolean;
+}

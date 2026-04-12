@@ -1,19 +1,17 @@
 import React from 'react';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { BottomNavbar } from './src/components/BottomNavbar'; // Importação já presente
 import * as SplashScreen from 'expo-splash-screen';
-import * as NavigationBar from 'expo-navigation-bar';
 
 // Hooks e Telas
 import { useCarregarFontes } from './src/theme/useCarregarFontes';
-import { BottomNavbar } from './src/components/BottomNavbar';
+// Removida a importação direta da HomeScreen aqui, pois ela agora é gerenciada pelo BottomNavbar
+import { SearchResults } from './src/screens/SearchResults';
 
+const Stack = createNativeStackNavigator();
 
-// Option to hide the phone's native navigation bar
-NavigationBar.setBehaviorAsync('overlay-swipe');
-NavigationBar.setVisibilityAsync('hidden');
-
-// Mantém a Splash Screen até as fontes carregarem
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -25,9 +23,22 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{flex: 1}} edges={['top']}>
-        <BottomNavbar></BottomNavbar>
-      </SafeAreaView>
+      <NavigationContainer>
+        <Stack.Navigator
+          id="root_stack"
+          // 1. Alterado para iniciar pelas abas (MainTabs) em vez de apenas uma tela
+          initialRouteName="MainTabs" 
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade',
+          }}
+        >
+          {/* 2. Esta tela agora carrega o conjunto de 3 abas (Início, Mercados, Lista) */}
+          <Stack.Screen name="MainTabs" component={BottomNavbar} />
+
+          
+        </Stack.Navigator>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }

@@ -9,10 +9,20 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // Definição de breakpoints para facilitar a leitura
 const IS_ULTRA_NARROW = SCREEN_WIDTH < 330; 
 const IS_SMALL = SCREEN_WIDTH < 350;
+interface SearchBarProps {
+  initialValue?: string;
+}
 
-export const SearchBar = () => {
-  const [termo, setTermo] = useState('');
+// 2. ADICIONAR AS PROPS NA FUNÇÃO (Com valor padrão vazio)
+export const SearchBar = ({ initialValue = '' }: SearchBarProps) => {
+  
+  // 3. INICIAR O ESTADO COM O VALOR RECEBIDO
+  const [termo, setTermo] = useState(initialValue);
   const [carregando, setCarregando] = useState(false);
+
+  useEffect(() => {
+    setTermo(initialValue);
+  }, [initialValue]);
 
   useEffect(() => {
     if (termo.length < 2) {
@@ -107,7 +117,6 @@ const styles = StyleSheet.create({
     minWidth: 200,
     paddingLeft: 20,
     color: colors.textPrimary,
-    fontFamily: 'Inter-Regular',
   },
 
   iconContainer: {

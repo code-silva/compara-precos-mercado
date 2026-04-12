@@ -14,27 +14,27 @@ export const EmptyProductState = () => (
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100, // Dá um destaque para não ficar colado no topo
-    paddingHorizontal: 40,
+    padding: 20,
+    //paddingTop: 50, // Dá um destaque para não ficar colado no topo
+    // paddingHorizontal: 40,
   },
   icone: {
-    fontSize: 50,
+    fontSize: 30,
     marginBottom: 15,
   },
   titulo: {
     fontSize: 18,
     fontFamily: 'Inter-Bold', // Se já configurou as fontes
     color: '#333',
-    marginBottom: 8,
+    marginBottom: 5,
     textAlign: 'center',
   },
   subtitulo: {
     fontSize: 14,
     color: '#888',
     textAlign: 'center',
-    lineHeight: 20,
+    //lineHeight: 20,
   },
 });
