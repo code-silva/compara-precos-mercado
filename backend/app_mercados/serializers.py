@@ -46,8 +46,6 @@ class MercadoFilialSerializer(serializers.ModelSerializer):
     {
         "id": Identificador único do mercado,
         "nome": Nome do mercado,
-        "latitude": Coordenada y da localização do mercado,
-        "longitude": Coordenada x da localização do mercado,
         "uf": Estado em que o mercado está localizado,
         "cidade": Cidade em que o mercado está localizado,
         "distancia_km": Distância em linha reta até o usuário
@@ -57,36 +55,51 @@ class MercadoFilialSerializer(serializers.ModelSerializer):
 
     class Meta:
         # Campos que serão serializados (enviados para o frontend)
-        fields = ["id", "name", "latitude", "longitude", "uf", "city", "distance_km"]
+        fields = ["id", "name", "uf", "city", "distance_km"]
         model = MercadoFilial
 
     name = serializers.CharField(source="mercado_matriz.nome", read_only=True)
-    latitude = serializers.FloatField(source="coordenadas.y", read_only=True)
-    longitude = serializers.FloatField(source="coordenadas.x", read_only=True)
     uf = serializers.CharField(source="localidade.uf", read_only=True)
     city = serializers.CharField(source="localidade.cidade", read_only=True)
 
-    # Este atributo não existe na entidade 'MercadoFilial', mas é
-    # necessário para calcular a distância entre o usuário e os mercados.
-    # Assim, esse atributo será calculado e deteminado pelo método 'get_<atributo>'
+    # Esse atributo será calculado e deteminado pelo método 'get_<atributo>'
     distance_km = serializers.SerializerMethodField()
 
     # Método que define o valor do atributo 'distancia_km'
-    def get_distance_km(self, obj_mercado_filial):
+    def get_distance_km(self, obj):
         # 'distancia' é o campo virtual definido pelo 'annotate'
-        if hasattr(obj_mercado_filial, "distancia") and obj_mercado_filial.distancia is not None:
-            return round(obj_mercado_filial.distancia.km, 2)
+        if hasattr(obj, "distancia") and obj.distancia is not None:
+            return round(obj.distancia.km, 2)
         return None
 
 
 class ProdutoOfertaSerializer(serializers.ModelSerializer):
-    # read_only=True para evitar erros de validação em campos de outras tabelas
+    """
+    Serializador responsável por retornar as informações da entidade 'Produto_Oferta_Filial'
+    de forma estruturada e legível para o frontend mobile (JSON).
+    Este serializador agrega dados de múltiplas entidades relacionadas: Produto,
+    Categoria e Mercado.
+
+    É retornado:
+
+    {
+        "id": Identificador único da oferta,
+        "nome_produto": Nome do produto associado à oferta,
+        "marca": Marca do produto,
+        "preco": Preço atual do produto no mercado,
+        "imagem": URL da imagem do produto,
+        "unidade_medida": Unidade de medida do produto (ex: kg, un, L),
+        "medida": Quantidade correspondente à unidade de medida,
+        "nome_mercado": Nome do mercado onde a oferta está disponível,
+        "nome_categoria": Categoria do produto,
+        "distancia_km": Distância em linha reta até o usuário (quando disponível)
+    }
+    """
+
     nome_produto = serializers.CharField(source="produto.nome", read_only=True)
     marca = serializers.CharField(source="produto.marca", read_only=True)
     imagem = serializers.ImageField(source="produto.imagem", read_only=True)
 
-    # O Django gera automaticamente o display para choices.
-    # Se o método falhar, use apenas source='produto.unidade_medida'
     unidade_medida = serializers.CharField(
         source="produto.get_unidade_medida_display", read_only=True
     )
@@ -118,15 +131,7 @@ class ProdutoOfertaSerializer(serializers.ModelSerializer):
             "distancia_km",
         ]
 
-    # ESTA FUNÇÃO TEM QUE FICAR FORA DA META (alinhada com o class Meta)
     def get_distancia_km(self, obj):
-        distancia = getattr(obj, "distancia", None)
-        print(f"DEBUG: Produto {obj.id} - Distancia: {distancia}")
-        if distancia is not None:
-            # Se for um objeto de distância do GeoDjango, usamos .km
-            try:
-                return round(distancia.km, 2)
-            except AttributeError:
-                # Caso o banco retorne apenas o número bruto (float)
-                return round(float(distancia), 2)
+        if hasattr(obj, "distancia"):
+            return round(obj.distancia.km, 2)
         return None

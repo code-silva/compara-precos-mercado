@@ -24,19 +24,19 @@ const separador = () => <View style={styles.divisor} />;
 const chaveUnica = (item: Produto) => item.id.toString();
 
 // Atualizada a interface dentro do React.memo para incluir a nova função
-const CabecalhoLista = React.memo(({ 
-  localizacao, 
+const CabecalhoLista = React.memo(({
+  localizacao,
   aoPressionarMercado // <--- Adicione aqui
-}: { 
-  localizacao: any, 
+}: {
+  localizacao: any,
   aoPressionarMercado: (mercado: any) => void // <--- Defina o tipo aqui
 }) => (
   <View style={[styles.containerCabecalho, { alignSelf: 'stretch' }]}>
     <SearchBar />
     {/* Agora passamos a função para a prop que o Carrossel exige */}
-    <CarrosselMercados 
-      coords={localizacao?.coords} 
-      onPressMercado={aoPressionarMercado} 
+    <CarrosselMercados
+      coords={localizacao?.coords}
+      onPressMercado={aoPressionarMercado}
     />
     <InfoBanner/>
     <Text style={styles.tituloSecao}>Ofertas do Dia</Text>
@@ -50,6 +50,7 @@ export function HomeScreen() {
   const [temMaisDados, setTemMaisDados] = useState(true);
   const [localizacao, setLocalizacao] = useState<Location.LocationObject | null>(null);
   const [erroLocalizacao, setErroLocalizacao] = useState<string | null>(null);
+  const [selectedSupermarketId, setSelectedSupermarketId] = useState<number | undefined>(undefined);
 
   // funções de ação (useCallback)
   const handlePress = useCallback((produto: Produto) => {
@@ -64,19 +65,17 @@ export function HomeScreen() {
   // Inicializa o objeto de navegação
   const navigation = useNavigation<any>();
 
-  // Cria a função que o TypeScript não estava encontrando
   const handleMercadoPress = useCallback((mercado: any) => {
-    // Navega para a tela SearchResults passando os parâmetros necessários
-    navigation.navigate('SearchResults', { 
-      query: '', // Busca de texto vazia
-      mercadoSelecionado: { 
-        id: mercado.id, 
-        nome: mercado.name || mercado.nome_mercado,
-      },
-        latitude: localizacao?.coords.latitude,
-        longitude: localizacao?.coords.longitude,
-    });
-  }, [navigation, localizacao]);
+    // 1. Limpa a lista atual e reseta a paginação
+    setProdutos([]);
+    setPagina(1);
+    setTemMaisDados(true);
+
+    // 2. Define o mercado que queremos filtrar
+    setSelectedSupermarketId(mercado.id);
+
+    console.log('Filtrando produtos do mercado:', mercado.id);
+  }, []);
 
   // cálculo derivado apenas para exibição
   const localizacaoUsuario = localizacao
@@ -104,39 +103,45 @@ export function HomeScreen() {
   }
 }, []); // Função estável
 
-  // função que busca “mais” produtos (mock)
-// Substitua a sua função buscarProdutos por esta:
+// função que busca “mais” produtos (mock)
 const buscarProdutos = useCallback(async () => {
-  // 1. A TRAVA: Não busca se já estiver carregando, se não houver mais dados ou se não tiver GPS
-  if (carregando || !temMaisDados || !localizacao) {
-    return;
-  }
+  if (carregando || !temMaisDados || !localizacao) return;
 
   setCarregando(true);
 
   try {
     const { latitude, longitude } = localizacao.coords;
 
-    //  CHAMADA REAL: A a função que chama o arquivo api/produtos.ts
-    // Passamos lat, lon e a página atual
-    const novos = await fetchProdutos(latitude, longitude, pagina);
+    // A chamada agora retorna o objeto completo do Django
+    const resposta = await fetchProdutos(
+      latitude,
+      longitude,
+      pagina,
+      undefined,
+      selectedSupermarketId,
+    );
 
-    // 3. LÓGICA DE ATUALIZAÇÃO:
-    if (novos && novos.length > 0) {
-      setProdutos(prev => [...prev, ...novos]);
-      setPagina(prev => prev + 1);
+    const novosProdutos = resposta.results || [];
+    const proximaPagina = resposta.next;
+
+    if (novosProdutos.length > 0) {
+      setProdutos(prev => [...prev, ...novosProdutos]);
+
+      if (proximaPagina === null) {
+        setTemMaisDados(false);
+      } else {
+        setPagina(prev => prev + 1);
+      }
     } else {
-      // Se a API retornar sucesso (200) mas lista vazia
       setTemMaisDados(false);
     }
   } catch (error) {
-    // Se a API retornar 404 (Fim das páginas) ou erro de rede
     console.log("Busca finalizada ou erro: ", error);
-    setTemMaisDados(false); // <--- A CHAVE PARA PARAR O ACTIVITY INDICATOR
+    setTemMaisDados(false);
   } finally {
     setCarregando(false);
   }
-}, [localizacao, temMaisDados, carregando, pagina]); // Garanta que 'pagina' esteja aqui
+}, [localizacao, temMaisDados, carregando, pagina, selectedSupermarketId]);
 
   const alternarLocalizacao = useCallback(() => {
   setProdutos([]);
@@ -219,14 +224,14 @@ const buscarProdutos = useCallback(async () => {
           contentContainerStyle={[styles.listaConteudo, { minHeight: '100%' }]}
           ItemSeparatorComponent={separador}
           ListHeaderComponent={
-            <CabecalhoLista 
-              localizacao={localizacao} 
-              aoPressionarMercado={handleMercadoPress} 
+            <CabecalhoLista
+              localizacao={localizacao}
+              aoPressionarMercado={handleMercadoPress}
             />
           }
           showsVerticalScrollIndicator={false}
           onEndReached={buscarProdutos}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={0.7}
           maxToRenderPerBatch={5}
           ListFooterComponent={renderRodape}
         />

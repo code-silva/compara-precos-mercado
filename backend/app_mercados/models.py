@@ -6,6 +6,7 @@ class Categoria(models.Model):
     """Classe representante da entidade 'Categoria' do banco de dados."""
 
     nome = models.CharField(max_length=50, blank=False, unique=True)
+    prioridade = models.IntegerField(null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "Categoria"

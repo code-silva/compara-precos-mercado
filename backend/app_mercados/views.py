@@ -73,10 +73,15 @@ class MercadoFilialListView(generics.ListAPIView):
         user_latitude = self.request.query_params.get("latitude")
         user_longitude = self.request.query_params.get("longitude")
 
+        queryset_base = MercadoFilial.objects.select_related(
+            "mercado_matriz",
+            "localidade",
+        ).all()
+
         # If the user doesn't inform his location, it'll return the supermarkets
         # ordered alphabetically.
         if not user_latitude or not user_longitude:
-            return MercadoFilial.objects.all().order_by("mercado_matriz__nome")
+            return queryset_base.order_by("mercado_matriz__nome")
 
         try:
             user_location = Point(float(user_longitude), float(user_latitude), srid=4326)
@@ -84,17 +89,17 @@ class MercadoFilialListView(generics.ListAPIView):
         # If it's not possible to define user's location, it'll return the supermarkets
         # ordered alphabetically.
         except (ValueError, TypeError):
-            return MercadoFilial.objects.all().order_by("mercado_matriz__nome")
+            return queryset_base.order_by("mercado_matriz__nome")
 
         RADIUS = 5000  # Maximum radius in meters
         results = (
-            MercadoFilial.objects.filter(coordenadas__dwithin=(user_location, RADIUS))
+            queryset_base.filter(coordenadas__dwithin=(user_location, RADIUS))
             .annotate(distancia=Distance("coordenadas", user_location))
             .order_by("distancia")
         )
 
-        if not results.exists():
-            return MercadoFilial.objects.all().order_by("mercado_matriz__nome")
+        if not results:
+            return queryset_base.order_by("mercado_matriz__nome")
 
         return results
 
@@ -104,70 +109,39 @@ class Produto_Oferta_FilialListView(generics.ListAPIView):
     pagination_class = OfertasPagination
 
     def get_queryset(self):
-        # 1. Sua Hierarquia de Categorias (Matches com o Supabase)
-        ORDEM_PRIORIDADE = [
-            "ALIMENTOS",
-            "ALIMENTOS BÁSICOS",
-            "FRIOS E LATICÍNIOS",
-            "BEBIDAS",
-            "HORTIFRUTI",
-            "LIMPEZA",
-            "OUTROS",
-        ]
-
-        # 2. QuerySet com Joins para performance
-        queryset = Produto_Oferta_Filial.objects.all().select_related(
-            "produto", "produto__categoria", "mercado_filial", "mercado_filial__mercado_matriz"
+        queryset = Produto_Oferta_Filial.objects.select_related(
+            "produto",
+            "produto__categoria",
+            "mercado_filial__mercado_matriz"
         )
 
-        # 3. RECEBE POR PROXIMIDADE PRIMEIRO
-        lat = self.request.query_params.get("lat")
-        lon = self.request.query_params.get("lon")
+        user_latitude = self.request.query_params.get("lat")
+        user_longitude = self.request.query_params.get("lon")
+        supermarket_id = self.request.query_params.get("supermarket_id")
 
-        if lat and lon:
-            try:
-                user_location = Point(float(lon), float(lat), srid=4326)
-                # O banco já nos entrega a lista ordenada do mais perto para o mais longe
-                queryset = queryset.annotate(
-                    distancia=Distance("mercado_filial__coordenadas", user_location)
-                ).order_by("distancia")
-            except (ValueError, TypeError):
-                queryset = queryset.order_by("id")
-        else:
-            queryset = queryset.order_by("id")
+        if supermarket_id:
+            queryset = queryset.filter(mercado_filial__id=supermarket_id)
 
-        # 4. TRANSFORMA EM LISTA (A proximidade já está garantida aqui)
-        lista_por_proximidade = list(queryset)
+        try:
+            if user_latitude and user_longitude:
+                user_location = Point(
+                    float(user_longitude),
+                    float(user_latitude),
+                    srid=4326
+                )
+                search_radius_meters = 5000
 
-        # 5. AGRUPA POR CATEGORIA (Preservando a ordem de proximidade dentro do grupo)
-        categorias_dict = {}
-        for item in lista_por_proximidade:
-            nome_cat = str(item.produto.categoria.nome).strip().upper()
-            if nome_cat not in categorias_dict:
-                categorias_dict[nome_cat] = []
-            # Como lista_por_proximidade está ordenada, o primeiro item
-            # adicionado aqui será o mais próximo desta categoria.
-            categorias_dict[nome_cat].append(item)
+                queryset = (
+                    queryset.filter(
+                        mercado_filial__coordenadas__dwithin=(user_location, search_radius_meters)
+                    )
+                    .annotate(distancia=Distance("mercado_filial__coordenadas", user_location))
+                    .order_by("produto__categoria__prioridade", "distancia")
+                )
+            else:
+                queryset = queryset.order_by("produto__categoria__prioridade")
 
-        # 6. MONTA OS ITERADORES SEGUINDO A HIERARQUIA
-        iteradores = []
-        for nome in ORDEM_PRIORIDADE:
-            if nome in categorias_dict:
-                # Criamos uma tupla (nome, iterador) para saber o que estamos tirando
-                iteradores.append({"nome": nome, "it": iter(categorias_dict.pop(nome))})
+        except (ValueError, TypeError):
+            queryset = queryset.order_by("produto__categoria__prioridade")
 
-        # Categorias extras
-        for nome, lista in categorias_dict.items():
-            iteradores.append({"nome": nome, "it": iter(lista)})
-
-        # 7. EXIBE COM INTERCALAÇÃO REAL
-        resultado_final = []
-        while iteradores:
-            for i in range(len(iteradores) - 1, -1, -1):
-                try:
-                    item = next(iteradores[i]["it"])
-                    resultado_final.append(item)
-                except StopIteration:
-                    iteradores.pop(i)  # Remove a categoria que esgotou
-
-        return resultado_final
+        return queryset
