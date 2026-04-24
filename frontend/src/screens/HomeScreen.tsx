@@ -1,39 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { FlatList, View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import CardProduto from '../components/ProductCard'; // Ajuste o caminho
+import React, { useState, useEffect, useCallback } from 'react';
+import { FlatList, View, StyleSheet, Text } from 'react-native';
 import { Produto } from '../types/product';
 import * as Location from 'expo-location';
 import { TelaErro } from '../components/TelaErro';
 import { EmptyProductState } from '../components/EmptyProductState';
-import { useCallback } from 'react';
 import { fetchProdutos } from '../api/produtos';
 import { SearchBar } from '../components/SearchBar';
 import { InfoBanner } from '../components/InfoBanner';
 import { CarrosselMercados } from '../components/CarrosselMercados';
 import { useNavigation } from '@react-navigation/native';
 import { LoadingFooter } from '../components/LoadingFooter';
+import CardProduto from '../components/ProductCard';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
-// FUNÇÕES DE APOIO (Lá fora para performance)
-
+// FUNÇÕES DE APOIO
 const separador = () => <View style={styles.divisor} />;
 
-// O cabecalho para que o React saiba que ele nunca muda
-
-const chaveUnica = (item: Produto) => item.id.toString();
-
-// Atualizada a interface dentro do React.memo para incluir a nova função
 const CabecalhoLista = React.memo(({
   localizacao,
-  aoPressionarMercado // <--- Adicione aqui
+  aoPressionarMercado
 }: {
   localizacao: any,
-  aoPressionarMercado: (mercado: any) => void // <--- Defina o tipo aqui
+  aoPressionarMercado: (mercado: any) => void
 }) => (
   <View style={[styles.containerCabecalho, { alignSelf: 'stretch' }]}>
     <SearchBar />
-    {/* Agora passamos a função para a prop que o Carrossel exige */}
     <CarrosselMercados
       coords={localizacao?.coords}
       onPressMercado={aoPressionarMercado}
@@ -44,133 +35,103 @@ const CabecalhoLista = React.memo(({
 ));
 
 export function HomeScreen() {
+  const insets = useSafeAreaInsets(); 
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [pagina, setPagina] = useState(1);
   const [carregando, setCarregando] = useState(false);
   const [temMaisDados, setTemMaisDados] = useState(true);
   const [localizacao, setLocalizacao] = useState<Location.LocationObject | null>(null);
   const [erroLocalizacao, setErroLocalizacao] = useState<string | null>(null);
-  const [selectedSupermarketId, setSelectedSupermarketId] = useState<number | undefined>(undefined);
 
-  // funções de ação (useCallback)
+  const navigation = useNavigation<any>();
+
+  // AÇÃO AO CLICAR NO PRODUTO
   const handlePress = useCallback((produto: Produto) => {
     console.log('Abriu detalhes de:', produto.nome_produto);
-    // No futuro, aqui entrará o navigation.navigate('ProductDetails', { produto });
   }, []);
 
   const handleAdd = useCallback((produto: Produto) => {
     console.log('Adicionou à lista:', produto.nome_produto);
   }, []);
 
-  // Inicializa o objeto de navegação
-  const navigation = useNavigation<any>();
-
+  // NAVEGAÇÃO PARA A TELA DE MERCADO ESPECÍFICO
   const handleMercadoPress = useCallback((mercado: any) => {
-    // 1. Limpa a lista atual e reseta a paginação
+  // Agora chamamos direto, pois a tela está no mesmo Stack da Home
+  navigation.navigate('StoreProducts', { 
+    mercadoSelecionado: {
+      id: mercado.id,
+      name: mercado.name
+    },
+    latitude: localizacao?.coords.latitude,
+    longitude: localizacao?.coords.longitude
+  });
+}, [localizacao, navigation]);
+
+  // OBTENÇÃO DA LOCALIZAÇÃO (Gama/Santa Maria)
+  const obterLocalizacao = useCallback(async () => {
+    setCarregando(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErroLocalizacao('Precisamos da localização para mostrar as ofertas próximas.');
+        return;
+      }
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      setLocalizacao(location);
+      setErroLocalizacao(null);
+    } catch (error) {
+      setErroLocalizacao('Não foi possível obter sua localização atual.');
+    } finally {
+      setCarregando(false);
+    }
+  }, []);
+
+  // BUSCA DE PRODUTOS GERAIS (Sem filtro de mercado)
+  const buscarProdutos = useCallback(async () => {
+    if (carregando || !temMaisDados || !localizacao) return;
+
+    setCarregando(true);
+    try {
+      const { latitude, longitude } = localizacao.coords;
+
+      // Busca global baseada na localização, sem ID de mercado fixo
+      const resposta = await fetchProdutos(latitude, longitude, pagina);
+
+      const novosProdutos = resposta.results || [];
+      const proximaPagina = resposta.next;
+
+      if (novosProdutos.length > 0) {
+        setProdutos(prev => [...prev, ...novosProdutos]);
+        if (proximaPagina === null) {
+          setTemMaisDados(false);
+        } else {
+          setPagina(prev => prev + 1);
+        }
+      } else {
+        setTemMaisDados(false);
+      }
+    } catch (error) {
+      console.log("Erro ao buscar produtos na Home:", error);
+      setTemMaisDados(false);
+    } finally {
+      setCarregando(false);
+    }
+  }, [localizacao, temMaisDados, carregando, pagina]);
+
+  const alternarLocalizacao = useCallback(() => {
     setProdutos([]);
     setPagina(1);
     setTemMaisDados(true);
-
-    // 2. Define o mercado que queremos filtrar
-    setSelectedSupermarketId(mercado.id);
-
-    console.log('Filtrando produtos do mercado:', mercado.id);
-  }, []);
-
-  // cálculo derivado apenas para exibição
-  const localizacaoUsuario = localizacao
-    ? `${localizacao.coords.latitude.toFixed(2)}, ${localizacao.coords.longitude.toFixed(2)}`
-    : '...';
-
-  // B. BUSCA SIMPLIFICADA (O que você enviará para o Django)
-  const obterLocalizacao = useCallback(async () => {
-  setCarregando(true); // Começa carregando
-  try {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setErroLocalizacao('Precisamos da localização para mostrar as ofertas próximas.');
-      return;
-    }
-    const location = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.Balanced,
-    });
-    setLocalizacao(location);
-    setErroLocalizacao(null);
-  } catch (error) {
-    setErroLocalizacao('Não foi possível obter sua localização atual.');
-  } finally {
-    setCarregando(false); // Termina carregando
-  }
-}, []); // Função estável
-
-// função que busca “mais” produtos (mock)
-const buscarProdutos = useCallback(async () => {
-  if (carregando || !temMaisDados || !localizacao) return;
-
-  setCarregando(true);
-
-  try {
-    const { latitude, longitude } = localizacao.coords;
-
-    // A chamada agora retorna o objeto completo do Django
-    const resposta = await fetchProdutos(
-      latitude,
-      longitude,
-      pagina,
-      undefined,
-      selectedSupermarketId,
-    );
-
-    const novosProdutos = resposta.results || [];
-    const proximaPagina = resposta.next;
-
-    if (novosProdutos.length > 0) {
-      setProdutos(prev => [...prev, ...novosProdutos]);
-
-      if (proximaPagina === null) {
-        setTemMaisDados(false);
-      } else {
-        setPagina(prev => prev + 1);
-      }
-    } else {
-      setTemMaisDados(false);
-    }
-  } catch (error) {
-    console.log("Busca finalizada ou erro: ", error);
-    setTemMaisDados(false);
-  } finally {
-    setCarregando(false);
-  }
-}, [localizacao, temMaisDados, carregando, pagina, selectedSupermarketId]);
-
-  const alternarLocalizacao = useCallback(() => {
-  setProdutos([]);
-  setPagina(1);
-  setTemMaisDados(true);
-  obterLocalizacao();
-}, [obterLocalizacao]);
-
-  // C. DISPARO INICIAL E TRAVA DE MONTAGEM
-  // --- EFEITOS (Corrigidos e Separados) ---
-
-  // 1. Disparo Inicial: Obtém apenas a localização
-  useEffect(() => {
-    let isMounted = true;
-
-    const inicializar = async () => {
-      if (isMounted) {
-        await obterLocalizacao();
-      }
-    };
-
-    inicializar();
-
-    return () => {
-      isMounted = false;
-    };
+    obterLocalizacao();
   }, [obterLocalizacao]);
 
-  // 2. Segurança: Assim que a localização chegar, se a lista estiver vazia, busca produtos
+  // EFEITOS
+  useEffect(() => {
+    obterLocalizacao();
+  }, [obterLocalizacao]);
+
   useEffect(() => {
     if (localizacao && produtos.length === 0 && !carregando && temMaisDados) {
       buscarProdutos();
@@ -178,41 +139,24 @@ const buscarProdutos = useCallback(async () => {
   }, [localizacao, produtos.length, carregando, temMaisDados, buscarProdutos]);
 
   const renderizarItem = useCallback(({ item, index }: { item: Produto; index: number }) => (
-  <CardProduto
-    produto={{...item, ranking: index + 1}}
-    aoPressionar={() => handlePress(item)}
-    aoAdicionarNaLista={() => handleAdd(item)}
-  />
-), [handlePress, handleAdd]);
+    <CardProduto
+      produto={{...item, ranking: index + 1}}
+      aoPressionar={() => handlePress(item)}
+      aoAdicionarNaLista={() => handleAdd(item)}
+    />
+  ), [handlePress, handleAdd]);
 
-  // --- D. COMPONENTE DE RODAPÉ DINÂMICO ---
   const renderRodape = () => {
-
-  // Se estiver carregando, MAS ainda não houver produtos (carregamento inicial do GPS/App),
-  // não mostre nada no rodapé para não confundir o usuário.
-  if (carregando && produtos.length === 0) {
+    if (carregando && produtos.length === 0) return null;
+    if (carregando) return <LoadingFooter isLoading={carregando} />;
+    if (!temMaisDados && produtos.length > 0) return <EmptyProductState />;
     return null;
-  }
-  // Se estiver carregando E já existirem produtos na tela (pedindo os próximos 14)
-  if (carregando) {
-    return <LoadingFooter isLoading={carregando} />;
-  }
-
-  // 2. Se NÃO estiver carregando E não houver mais dados (chegou ao fim do banco)
-  // E você já tem produtos na tela (para não confundir com lista vazia inicial)
-  if (!temMaisDados && produtos.length > 0) {
-      return <EmptyProductState />;
-  }
-
-  return null;
-};
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFF' }}>
+    <View style={{ flex: 1, backgroundColor: '#FFF', paddingTop: insets.top }}>
       {erroLocalizacao && produtos.length === 0 ? (
-        <TelaErro mensagem={erroLocalizacao}
-          aoTentarNovamente={alternarLocalizacao}
-        />
+        <TelaErro mensagem={erroLocalizacao} aoTentarNovamente={alternarLocalizacao} />
       ) : (
         <FlatList
           data={produtos}
@@ -221,7 +165,10 @@ const buscarProdutos = useCallback(async () => {
           renderItem={renderizarItem}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           style={{ flex: 1 }}
-          contentContainerStyle={[styles.listaConteudo, { minHeight: '100%' }]}
+          contentContainerStyle={[
+          styles.listaConteudo, 
+          { paddingBottom: insets.bottom + 5 } // <--- Isso evita que o último card fique atrás da BottomNavbar
+          ]}
           ItemSeparatorComponent={separador}
           ListHeaderComponent={
             <CabecalhoLista
@@ -232,57 +179,30 @@ const buscarProdutos = useCallback(async () => {
           showsVerticalScrollIndicator={false}
           onEndReached={buscarProdutos}
           onEndReachedThreshold={0.7}
-          maxToRenderPerBatch={5}
           ListFooterComponent={renderRodape}
         />
       )}
     </View>
   );
-};
+}
 
 export const styles = StyleSheet.create({
-  textoBotao: {
-    color: '#FFF',
-    fontWeight: 'bold',
-  },
-
   listaConteudo: {
     paddingHorizontal: 20,
     paddingBottom: 100,
     flexGrow: 1,
   },
-
   divisor: {
     height: 16,
   },
-
   containerCabecalho: {
     width: '100%',
-    minHeight: 300,
+    paddingBottom: 10,
   },
-
   tituloSecao: {
     fontSize: 22,
     fontFamily: 'Inter-Bold',
     color: '#333333',
     marginTop: 10,
-  },
-
-  containerVazio: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  textoVazio: {
-    fontSize: 16,
-    color: '#888',
-  },
-
-  titulo: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 24,
-    color: '#1A1A1A',
-    letterSpacing: -0.5,
   },
 });

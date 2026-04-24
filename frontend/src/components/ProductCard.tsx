@@ -1,15 +1,8 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Produto } from '../types/product';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { memo } from 'react';
-
-/**
- * Interface 'Propriedades':
- * Define o "contrato ou regras" de dados que o componente CardProduto deve receber.
- * No React, é conhecido como'Props'. Sempre que alguém usar o CardProduto,
- * o TypeScript exigirá que esses três itens sejam passados.
- */
 
 interface Propriedades {
   produto: Produto;
@@ -18,299 +11,248 @@ interface Propriedades {
   ehGrade?: boolean;
 }
 
-/**
- * Componente 'CardProduto':
- * Representa a interface visual de um item da lista de compras.
- * * Suas Funcionalidades principais são:
- * 1. Exibição de Dados: Renderiza informações do 'produto' (imagem, nome, preço e mercado).
-
- * 2. Interatividade:
- * - O card inteiro é clicável (aoPressionar) para ver detalhes.
- * - Possui um botão específico (aoAdicionarNaLista) para salvar o item.
-
- * 3. Estrutura: Utiliza 'React.FC' (Functional Component) com TypeScript para garantir
- * que todas as propriedades obrigatórias sejam recebidas corretamente.
- **/
-
-
 const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdicionarNaLista, ehGrade }) => {
-
-  const distanciaFormatada = produto.distancia_km !== undefined 
-    ? produto.distancia_km < 1 
-      ? `${Math.round(produto.distancia_km * 1000)} m` 
-      : `${produto.distancia_km.toFixed(1)} km`
-    : null;
+  
+  const distanciaFormatada = React.useMemo(() => {
+    if (produto.distancia_km === undefined || produto.distancia_km === null) return null;
+    
+    const valor = Number(produto.distancia_km);
+    if (valor < 1) {
+      return `${Math.ceil(valor * 1000)} m`;
+    }
+    return `${valor.toFixed(1)} km`;
+  }, [produto.distancia_km]);
 
   return (
-
     <TouchableOpacity 
-      style={[estilos.cartao, ehGrade && { padding: 8 }]} 
+      style={[
+        estilos.cartao, 
+        ehGrade ? estilos.estiloGrade : estilos.estiloLista
+      ]} 
       onPress={() => aoPressionar(produto)} 
       activeOpacity={0.9}
     >
+      <View style={estilos.containerImagem}>
+        <Image
+          source={{ uri: produto.imagem || 'https://via.placeholder.com/150' }}
+          style={estilos.imagemProduto}
+          resizeMode="contain"
+        />
 
-    {/* 1. Container da Imagem + Preço Canto superior direito */}
-    {/* Esta View serve para que o preço saiba que deve flutuar dentro dela */}
-    <View style={estilos.containerImagem}>
-      <Image
-        source={{ uri: produto.imagem }}
-        style={estilos.imagemProduto}
-        resizeMode="contain"
-      />
+        <View style={estilos.seloRanking}>
+          <Text style={estilos.textoRanking}>#{produto.ranking || produto.id}</Text>
+        </View>
 
-      {/* Rótulo de Ranking (canto superior esquerdo) */}
-      <View style={estilos.seloRanking}>
-        <Text style={estilos.textoRanking}>#{produto.ranking || produto.id}</Text>
-      </View>
-
-      {/* Rótulo de Preço */}
-      <View style={[
-          estilos.rotuloPreco, 
-          ehGrade && { minWidth: 20, height: 23, padding: 5, top: 10, right: 6 }
-      ]}>
-        <Text style={[estilos.textoPreco, ehGrade && { fontSize: 12 }]}>
-          R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
-        </Text>
-
-      </View>
-      {/* Botão Adicionar à Lista */}
-      <TouchableOpacity 
-          style={[
-            estilos.botaoAdicionar, 
-            ehGrade && { width: 25, height: 25, borderRadius: 20, bottom: 8 }
-      ]} 
-      onPress={() => aoAdicionarNaLista(produto)}
-      >
-        <MaterialCommunityIcons 
-          name="playlist-plus" 
-          size={ehGrade ? 18 : 24} 
-          color="#28a8b5" 
-      />
-      </TouchableOpacity>
-
-    </View>
-
-    <View style={estilos.containerInformacoes}>
-
-      {/* Nome do Produto */}
-      <Text 
-        style={[estilos.nomeProduto, ehGrade && { fontSize: 14, lineHeight: 18 }]} 
-        numberOfLines={2}
-      >
-        {produto.nome_produto}
-      </Text>
-
-      {/* Marca (Coca - Cola) */}
-      <Text style={estilos.estiloMarca} numberOfLines={1}>
-        {produto.marca}
-      </Text>
-
-      {/* 3. Rodapé da descrição: Peso + Mercado */}
-      <View style={estilos.linhaRodape}>
-        {/* Só renderiza a etiqueta se a medida existir */}
-        {produto.unidade_medida && (
-        <View style={estilos.etiquetaPeso}>
-         <Text style={estilos.textoPeso}>
-            {produto.unidade_medida}
+        <View style={[
+            estilos.rotuloPreco, 
+            ehGrade && { minWidth: undefined, height: 23, paddingHorizontal: 6, top: 10, right: 6 }
+        ]}>
+          <Text style={[estilos.textoPreco, ehGrade && { fontSize: 11 }]}>
+            R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
           </Text>
         </View>
-      )}
 
-        <Text style={estilos.nomeMercado} numberOfLines={1}>
-          {produto.nome_mercado}
-        </Text>
+        {/* Retornando o botão para o centro/posição original conforme solicitado */}
+        <TouchableOpacity 
+            style={[
+              estilos.botaoAdicionar, 
+              ehGrade && { width: 30, height: 30, borderRadius: 15, bottom: 8 }
+            ]} 
+            onPress={() => aoAdicionarNaLista(produto)}
+        >
+          <MaterialCommunityIcons 
+            name="playlist-plus" 
+            size={ehGrade ? 20 : 24} 
+            color="#28a8b5" 
+          />
+        </TouchableOpacity>
       </View>
 
-     {distanciaFormatada && (
-        <View style={estilos.containerDistancia}>
-          <MaterialCommunityIcons name="map-marker-distance" size={12} color="#666" />
-          <Text style={estilos.textoDistancia}>
-            {distanciaFormatada}
+      <View style={estilos.containerInformacoes}>
+        <View style={ehGrade ? { height: 44, justifyContent: 'center' } : null}>
+          <Text 
+            style={[estilos.nomeProduto, ehGrade && { fontSize: 13, lineHeight: 16 }]} 
+            numberOfLines={2}
+          >
+            {produto.nome_produto}
           </Text>
         </View>
-      )}
 
-    </View>
+        <View style={ehGrade ? { height: 20, justifyContent: 'center', marginTop: 2 } : null}>
+          <Text style={estilos.estiloMarca} numberOfLines={1}>
+            {produto.marca}
+          </Text>
+        </View>
 
-  </TouchableOpacity>
-);
+        <View style={[estilos.linhaRodape, ehGrade && { marginTop: 5 }]}>
+          {produto.unidade_medida && (
+            <View style={estilos.etiquetaPeso}>
+              <Text style={estilos.textoPeso}>{produto.unidade_medida}</Text>
+            </View>
+          )}
+
+          <Text style={estilos.nomeMercado} numberOfLines={1}>
+            {produto.nome_mercado}
+          </Text>
+        </View>
+
+        {distanciaFormatada && (
+          <View style={estilos.containerDistancia}>
+            <MaterialCommunityIcons name="map-marker-distance" size={12} color="#666" />
+            <Text style={estilos.textoDistancia}>{distanciaFormatada}</Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
 };
 
 const estilos = StyleSheet.create({
   cartao: {
-    flex: 1,
-    width: '100%', // Ocupa quase toda a largura, deixando um espaço nas laterais
-    maxWidth: 400, // Não deixa o card ficar gigante em tablets
     backgroundColor: '#fff',
     borderRadius: 18,
-    marginVertical: 16,
-    alignSelf: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4.3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4.3,
     padding: 10,
+    elevation: 4,
+    // Removendo as sombras web que causaram confusão visual
   },
+
+  estiloLista: {
+    width: '100%', 
+    maxWidth: 450,
+    alignSelf: 'center',
+    marginVertical: 12,
+  },
+
+  estiloGrade: {
+    flex: 1,
+    margin: 8,
+    padding: 8,
+    minHeight: 280,
+  },
+
   containerImagem: {
     width: '100%',
-    aspectRatio: 1, // Altura usada na imagem
-    position: 'relative', // Importante para o preço flutuar aqui dentro
+    aspectRatio: 1, 
+    position: 'relative', 
     overflow: 'hidden',
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 5,
-    backgroundColor: '#f5f5f5', // Fundo leve para destacar produtos brancos
-    padding: 15, // Cria espaço entre o fundo cinza e a imagem (faça o teste com 15, 20 ou 25)
+    backgroundColor: '#f9f9f9', 
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+
   imagemProduto: {
-    width: '100%',
-    height: '100%',
+    width: '85%',
+    height: '85%',
   },
+
   nomeProduto: {
-    fontFamily: 'Inter-Bold', // Usando a fonte Inter, negrito para destacar o nome
+    fontWeight: '700',
     fontSize: 14,
     color: '#333',
-    lineHeight: 18,
-    flexShrink: 1, // Permite que o nome encolha se for muito longo, evitando overflow
   },
+
   seloRanking: {
-  // 1. Posicionamento absoluto dentro do containerImagem
-  position: 'absolute',
-  top: 10,  // Distância do topo
-  left: 10, // Distância da esquerda (oposto ao preço)
-
-  // 2. Visual do selo
-  backgroundColor: 'rgba(241, 241, 241, 0.9)', // Um cinza claro levemente transparente
-  paddingHorizontal: 8,
-  paddingVertical: 4,
-  borderRadius: 6,
-
-  // Sombra leve para garantir leitura sobre fotos claras
-  elevation: 2,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.1,
-  shadowRadius: 2,
-  },
-  estiloMarca: {
-  fontFamily: 'Inter-Regular',
-  fontSize: 12,
-  color: '#2e2d2d', // Um cinza escuro para diferenciar do nome preto
-  marginBottom: 6,
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#eee',
+    elevation: 2,
   },
 
   textoRanking: {
-  fontSize: 12,
-  color: '#666',
-  fontFamily: 'Inter-Bold', // Usando a fonte Inter que configuramos
+    fontSize: 10,
+    color: '#888',
+    fontWeight: 'bold',
   },
 
   rotuloPreco: {
-
-  minWidth: 70,
-  height: 35,
-  backgroundColor: '#28a8b5',
-  borderRadius: 10.8,
-  padding: 5,
-
-  // Posicionamento absoluto (o "pulo do gato")
-  position: 'absolute',
-  top: 10,
-  right: 10,
-
-  // Alinhamento do texto
-  justifyContent: 'center',
-  alignItems: 'center',
+    minWidth: 65,
+    paddingVertical: 4,
+    backgroundColor: '#28a8b5',
+    borderRadius: 6,
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   textoPreco: {
-  color: '#ffffff',
-  fontWeight: 'bold',
-  fontSize: 15,
-  textAlign: 'center',
+    color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 12,
   },
 
   botaoAdicionar: {
-  position: 'absolute',
-  bottom: 16,
-  alignSelf: 'center',
-
-  // Dimensões circulares
-  width: 42,
-  height: 42,
-  borderRadius: 21, // Metade para ser círculo perfeito
-
-  backgroundColor: '#FFFFFF',
-
-  // Centraliza o ícone de adicionar perfeitamente
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  // Sombra para dar profundidade sobre o fundo cinza
-  elevation: 4,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.15,
-  shadowRadius: 3,
+    position: 'absolute',
+    bottom: 16,
+    alignSelf: 'center',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
   },
 
   containerInformacoes: {
-    padding: 5,
-    width: '100%',
-     // Garante que o card tenha uma altura mínima mesmo com pouco texto
-    justifyContent: 'flex-start',
+    paddingVertical: 4,
+    flex: 1,
   },
 
-  marca: {
-    fontFamily: 'Inter-Regular', // Marca em fonte regular ou semi-bold
-    fontSize: 15,
-    color: '#555', // Um cinza intermediário
-    marginBottom: 4,
+  estiloMarca: {
+    fontSize: 11,
+    color: '#888',
+    textTransform: 'uppercase',
   },
 
   linhaRodape: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginTop: 'auto',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
   },
 
   etiquetaPeso: {
-    backgroundColor: '#F0F0F0',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
     borderRadius: 4,
-    marginRight: 8,
+    marginRight: 6,
   },
-  textoPeso: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 12,
-    color: '#333',
-  },
-  nomeMercado: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 13,
-    color: '#28a8b5',
-    flex: 1, // Faz o nome do mercado ocupar o resto da linha e usar reticências se for longo
-},
 
-containerDistancia: {
+  textoPeso: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#666',
+  },
+
+  nomeMercado: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#28a8b5',
+    flex: 1,
+  },
+
+  containerDistancia: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-end',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginLeft: 8, // Espaço entre o nome do mercado e a distância
+    marginTop: 4,
   },
 
   textoDistancia: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 12,
-    color: '#666',
-    marginLeft: 3, // Espaço entre o ícone e o número
+    fontSize: 11,
+    color: '#999',
+    marginLeft: 3,
+    fontWeight: '600',
   },
-
 });
 
-export default memo(CardProduto); // Exporta o componente memoizado para evitar re-renderizações desnecessárias
+export default memo(CardProduto);

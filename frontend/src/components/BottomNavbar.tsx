@@ -9,13 +9,15 @@ import { SuperMarketsScreen } from '../screens/SupermarketsScreen';
 import { MyListScreen } from '../screens/MyListScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SearchResults } from '../screens/SearchResults'; 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StoreProductsScreen } from '../screens/StoreProductsScreen';
 
 const routeSettings: any = {
   Home: {
     label: 'INÍCIO',
     icon: 'home',
     bg: 'rgba(16, 185, 129, 0.25)',
-    color: 'rgb(16, 185, 129)'
+    color: 'rgb(46, 177, 185)'
   },
   Supermarkets: {
     label: 'MERCADOS',
@@ -26,8 +28,8 @@ const routeSettings: any = {
   MyList: {
     label: 'MINHA LISTA',
     icon: 'list',
-    bg: 'rgba(109, 45, 255, 0.25)',
-    color: 'rgb(109, 45, 255)'
+    bg: 'rgba(46, 177, 185, 0.25)',
+    color: 'rgb(46, 177, 185)'
   },
 };
 
@@ -54,13 +56,28 @@ function HomeStackScreen() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
       <HomeStack.Screen name="SearchResults" component={SearchResults} />
+      <HomeStack.Screen name="StoreProducts" component={StoreProductsScreen} />
     </HomeStack.Navigator>
   );
 }
 
-export function BottomNavbar() {
+const SupermarketStack = createNativeStackNavigator();
+
+function SupermarketStackScreen() {
   return (
-    // O NavigationContainer saiu daqui para não conflitar com o do App.tsx
+    <SupermarketStack.Navigator screenOptions={{ headerShown: false }}>
+      <SupermarketStack.Screen name="SupermarketsList" component={SuperMarketsScreen} />
+      <SupermarketStack.Screen name="StoreProducts" component={StoreProductsScreen} />
+    </SupermarketStack.Navigator>
+  );
+}
+
+export function BottomNavbar() {
+
+  const insets = useSafeAreaInsets();
+
+  return (
+
     <Tab.Navigator
       id="bottom_tabs"
       screenOptions={({ route, navigation }) => {
@@ -71,7 +88,13 @@ export function BottomNavbar() {
           headerShown: false,
           tabBarInactiveTintColor: INACTIVE_COLOR,
           tabBarActiveTintColor: routeSettings[route.name]?.color,
-          tabBarStyle: styles.tabBar,
+          
+          tabBarStyle: {
+            ...styles.tabBar,
+            height: 65 + insets.bottom,
+            paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+          },
+
           tabBarButton: (props) => (
             <CustomTabButton {...props} route={route} isFocused={isFocused} />
           ),
@@ -93,7 +116,7 @@ export function BottomNavbar() {
 
       <Tab.Screen
         name="Supermarkets"
-        component={SuperMarketsScreen}
+        component={SupermarketStackScreen}
         options={{
           tabBarLabel: "MERCADOS",
           tabBarIcon: ({ color }) => <MaterialCommunityIcons name="storefront-outline" size={25} color={color} />
@@ -114,26 +137,28 @@ export function BottomNavbar() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: 80,
     borderTopWidth: 0,
     backgroundColor: '#FFF',
     shadowOffset: { width: 0, height: -8 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 20,
+  
   },
   tabButtonContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 4,
   },
   pill: {
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     borderRadius: 20,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 90,
-    height: 60,
+    minWidth: 85,
+    height: 50,
   }
 });

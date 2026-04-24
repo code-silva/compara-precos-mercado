@@ -55,7 +55,8 @@ class BuscaHibridaView(APIView):
 
         return Response(
             {
-                "ofertas": OfertaProdutoSerializer(ofertas, many=True).data,
+                "termo_buscado": query,
+                "ofertas": ProdutoOfertaSerializer(ofertas, many=True).data,
                 "mercados": MercadoFilialSerializer(mercados, many=True).data,
             }
         )
