@@ -1,93 +1,101 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, FlatList, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import ProductCard from "../components/ProductCard";
+import { SearchBar } from "../components/SearchBar";
+import { InfoBanner } from "../components/InfoBanner";
 import { fetchProducts } from "../api/products";
 import { Product } from "../types/product";
+import { EmptyProductState } from "../components/EmptyProductState";
 import { LoadingFooter } from "../components/LoadingFooter";
-import { SearchBar } from "../components/SearchBar";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ProductCard from "../components/ProductCard";
 
-export function StoreProductsScreen({ route }: any) {
-  const insets = useSafeAreaInsets();
-  const { selectedMarket, latitude, longitude } = route.params || {};
+export function SearchResults({ route }: any) {
+  const { query, selectedMarket, latitude, longitude } = route.params || {};
 
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
 
-  const fetchData = useCallback(async () => {
+  // --- SEARCH HEADER COMPONENT ---
+  const SearchHeader = useCallback(
+    () => (
+      <View style={styles.headerContainer}>
+        <SearchBar initialValue={query} />
+
+        {selectedMarket && (
+          <View style={styles.marketBanner}>
+            <View style={styles.marketLogo}>
+              <Text style={styles.marketInitials}>
+                {selectedMarket.name[0]}
+              </Text>
+            </View>
+            <View>
+              <Text style={styles.marketName}>
+                {selectedMarket.name.toUpperCase()}
+              </Text>
+              <Text style={styles.marketStatus}>OFERTAS DA REDE</Text>
+            </View>
+          </View>
+        )}
+
+        <InfoBanner />
+
+        <Text style={styles.resultsText}>
+          {selectedMarket
+            ? `Produtos em ${selectedMarket.name}`
+            : `Resultados para "${query}"`}
+        </Text>
+      </View>
+    ),
+    [query, selectedMarket],
+  );
+
+  const fetchData = async () => {
     if (isLoading || !hasMoreData) return;
+
     setIsLoading(true);
 
     try {
-      const response = await fetchProducts(
+      const newProducts = await fetchProducts(
         latitude || 0,
         longitude || 0,
         page,
-        undefined,
-        selectedMarket.id,
+        query,
+        selectedMarket?.id,
       );
-
-      const newProducts = response.results || [];
-      if (newProducts.length > 0) {
+      if (newProducts && newProducts.length > 0) {
         setProducts((prev) => [...prev, ...newProducts]);
         setPage((p) => p + 1);
-        if (!response.next) setHasMoreData(false);
       } else {
         setHasMoreData(false);
       }
     } catch (error) {
-      console.error("Error fetching market products:", error);
+      console.error("Error fetching products:", error);
       setHasMoreData(false);
     } finally {
       setIsLoading(false);
     }
-  }, [page, isLoading, hasMoreData, selectedMarket.id, latitude, longitude]);
+  };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const Header = () => {
-    const actualName = selectedMarket?.name || selectedMarket?.marketName || "";
-    const firstLetter = actualName ? actualName[0].toUpperCase() : "?";
-    const displayName = actualName ? actualName.toUpperCase() : "LOADING...";
+  const renderFooter = () => {
+    if (isLoading) {
+      return <LoadingFooter isLoading={isLoading} />;
+    }
 
-    return (
-      <View style={styles.headerContainer}>
-        <View style={styles.marketBanner}>
-          <View style={styles.marketLogo}>
-            <Text style={styles.marketInitials}>{firstLetter}</Text>
-          </View>
-          <View>
-            <Text style={styles.marketName}>{displayName}</Text>
-            <Text style={styles.marketStatus}>OFERTAS DESTA UNIDADE</Text>
-          </View>
-        </View>
-      </View>
-    );
+    if (!hasMoreData && products.length > 0) {
+      return <EmptyProductState />;
+    }
+
+    return null;
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#FFF",
-        paddingTop: insets.top,
-      }}
-    >
-      <View
-        style={{
-          zIndex: 10,
-          backgroundColor: "#FFF",
-          paddingHorizontal: 20,
-          paddingBottom: 15,
-        }}
-      >
-        <SearchBar />
-      </View>
-
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F8F9FA" }}>
       <FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}
@@ -96,20 +104,21 @@ export function StoreProductsScreen({ route }: any) {
             <ProductCard
               product={{ ...item, ranking: index + 1 }}
               isGrid={true}
-              handlePress={() => console.log("Details")}
-              handleAddToList={() => console.log("Add to List")}
+              handlePress={() => console.log("Clicked on product")}
+              handleAddToList={() => console.log("Added to list")}
             />
           </View>
         )}
         numColumns={2}
-        columnWrapperStyle={styles.gridRow}
-        ListHeaderComponent={Header}
-        ListFooterComponent={() => <LoadingFooter isLoading={isLoading} />}
         onEndReached={fetchData}
         onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        columnWrapperStyle={styles.gridRow}
+        ListHeaderComponent={SearchHeader}
         contentContainerStyle={styles.gridContainer}
+        showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -122,13 +131,19 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   gridRow: {
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
   },
   cardWrapper: {
     flex: 1,
-    maxWidth: "50%",
     marginHorizontal: 5,
     marginBottom: 10,
+  },
+  resultsText: {
+    fontSize: 16,
+    fontFamily: "Inter-Bold",
+    color: "#333",
+    marginVertical: 15,
+    marginLeft: 10,
   },
   marketBanner: {
     flexDirection: "row",

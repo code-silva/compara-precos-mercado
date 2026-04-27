@@ -1,19 +1,20 @@
-export interface Produto {
+export interface Product {
   id: number;
-  nome_produto: string;
-  preco: string; // O Django envia Decimal como string no JSON para precisão
-  nome_mercado: string;
-  marca: string;
-  imagem: string;
-  unidade_medida: string;
-  medida: string;
-  nome_categoria: string;
-  distancia_km?: number; // Ajustado para bater com o Serializer do backend
+  productName: string;
+  price: string;
+  marketName: string;
+  brand: string;
+  image: string;
+  measurementUnit: string;
+  measurement: string;
+  categoryName: string;
+  distanceInKilometers?: number;
   ranking?: number;
 }
-export interface CardProdutoProps {
-  produto: Produto;
-  aoPressionar: (produto: Produto) => void;
-  aoAdicionarNaLista: (produto: Produto) => void;
-  ehGrade?: boolean;
+
+export interface ProductCardProps {
+  product: Product;
+  handlePress: (product: Product) => void;
+  handleAddToList: (product: Product) => void;
+  isGrid?: boolean;
 }

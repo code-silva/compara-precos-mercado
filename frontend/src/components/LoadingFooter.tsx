@@ -1,21 +1,21 @@
-import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 
 interface LoadingFooterProps {
   isLoading: boolean;
-  mensagem?: string;
+  message?: string;
 }
 
-export const LoadingFooter: React.FC<LoadingFooterProps> = ({ 
-  isLoading, 
-  mensagem = "Carregando mais ofertas..." 
+export const LoadingFooter: React.FC<LoadingFooterProps> = ({
+  isLoading,
+  message = "Carregando mais ofertas...",
 }) => {
   if (!isLoading) return null;
 
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#28a8b5" />
-      <Text style={styles.texto}>{mensagem}</Text>
+      <Text style={styles.text}>{message}</Text>
     </View>
   );
 };
@@ -23,13 +23,13 @@ export const LoadingFooter: React.FC<LoadingFooterProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 30,
-    alignItems: 'center',
-    width: '100%', // Importante para FlatList em grade
+    alignItems: "center",
+    width: "100%",
   },
-  texto: {
+  text: {
     marginTop: 10,
-    color: '#28a8b5',
+    color: "#28a8b5",
     fontSize: 14,
-    fontFamily: 'Inter-Medium', // Usando a fonte que você já carregou
+    fontFamily: "Inter-Medium",
   },
 });

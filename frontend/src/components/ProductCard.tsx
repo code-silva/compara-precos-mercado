@@ -1,105 +1,129 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import { Produto } from '../types/product';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { memo } from 'react';
+import React from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Product } from "../types/product";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { memo } from "react";
 
-interface Propriedades {
-  produto: Produto;
-  aoPressionar: (produto: Produto) => void;      
-  aoAdicionarNaLista: (produto: Produto) => void; 
-  ehGrade?: boolean;
+interface ProductCardProps {
+  product: Product;
+  handlePress: (product: Product) => void;
+  handleAddToList: (product: Product) => void;
+  isGrid?: boolean;
 }
 
-const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdicionarNaLista, ehGrade }) => {
-  
-  const distanciaFormatada = React.useMemo(() => {
-    if (produto.distancia_km === undefined || produto.distancia_km === null) return null;
-    
-    const valor = Number(produto.distancia_km);
-    if (valor < 1) {
-      return `${Math.ceil(valor * 1000)} m`;
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  handlePress,
+  handleAddToList,
+  isGrid,
+}) => {
+  const formattedDistance = React.useMemo(() => {
+    if (product.distanceInKilometers === undefined) return null;
+    if (product.distanceInKilometers === null) return null;
+
+    const value = Number(product.distanceInKilometers);
+    if (value < 1) {
+      return `${Math.ceil(value * 1000)} m`;
     }
-    return `${valor.toFixed(1)} km`;
-  }, [produto.distancia_km]);
+    return `${value.toFixed(1)} km`;
+  }, [product.distanceInKilometers]);
 
   return (
-    <TouchableOpacity 
-      style={[
-        estilos.cartao, 
-        ehGrade ? estilos.estiloGrade : estilos.estiloLista
-      ]} 
-      onPress={() => aoPressionar(produto)} 
+    <TouchableOpacity
+      style={[styles.card, isGrid ? styles.gridStyle : styles.listStyle]}
+      onPress={() => handlePress(product)}
       activeOpacity={0.9}
     >
-      <View style={estilos.containerImagem}>
+      <View style={styles.imageContainer}>
         <Image
-          source={{ uri: produto.imagem || 'https://via.placeholder.com/150' }}
-          style={estilos.imagemProduto}
+          source={{ uri: product.image || "https://via.placeholder.com/150" }}
+          style={styles.productImage}
           resizeMode="contain"
         />
 
-        <View style={estilos.seloRanking}>
-          <Text style={estilos.textoRanking}>#{produto.ranking || produto.id}</Text>
-        </View>
-
-        <View style={[
-            estilos.rotuloPreco, 
-            ehGrade && { minWidth: undefined, height: 23, paddingHorizontal: 6, top: 10, right: 6 }
-        ]}>
-          <Text style={[estilos.textoPreco, ehGrade && { fontSize: 11 }]}>
-            R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
+        <View style={styles.rankingBadge}>
+          <Text style={styles.rankingText}>
+            #{product.ranking || product.id}
           </Text>
         </View>
 
-        {/* Retornando o botão para o centro/posição original conforme solicitado */}
-        <TouchableOpacity 
-            style={[
-              estilos.botaoAdicionar, 
-              ehGrade && { width: 30, height: 30, borderRadius: 15, bottom: 8 }
-            ]} 
-            onPress={() => aoAdicionarNaLista(produto)}
+        <View
+          style={[
+            styles.priceLabel,
+            isGrid && {
+              minWidth: undefined,
+              height: 23,
+              paddingHorizontal: 6,
+              top: 10,
+              right: 6,
+            },
+          ]}
         >
-          <MaterialCommunityIcons 
-            name="playlist-plus" 
-            size={ehGrade ? 20 : 24} 
-            color="#28a8b5" 
+          <Text style={[styles.priceText, isGrid && { fontSize: 11 }]}>
+            R$ {Number(product.price).toFixed(2).replace(".", ",")}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={[
+            styles.addButton,
+            isGrid && { width: 30, height: 30, borderRadius: 15, bottom: 8 },
+          ]}
+          onPress={() => handleAddToList(product)}
+        >
+          <MaterialCommunityIcons
+            name="playlist-plus"
+            size={isGrid ? 20 : 24}
+            color="#28a8b5"
           />
         </TouchableOpacity>
       </View>
 
-      <View style={estilos.containerInformacoes}>
-        <View style={ehGrade ? { height: 44, justifyContent: 'center' } : null}>
-          <Text 
-            style={[estilos.nomeProduto, ehGrade && { fontSize: 13, lineHeight: 16 }]} 
+      <View style={styles.infoContainer}>
+        <View style={isGrid ? { height: 44, justifyContent: "center" } : null}>
+          <Text
+            style={[
+              styles.productName,
+              isGrid && { fontSize: 13, lineHeight: 16 },
+            ]}
             numberOfLines={2}
           >
-            {produto.nome_produto}
+            {product.productName}
           </Text>
         </View>
 
-        <View style={ehGrade ? { height: 20, justifyContent: 'center', marginTop: 2 } : null}>
-          <Text style={estilos.estiloMarca} numberOfLines={1}>
-            {produto.marca}
+        <View
+          style={
+            isGrid
+              ? { height: 20, justifyContent: "center", marginTop: 2 }
+              : null
+          }
+        >
+          <Text style={styles.brandStyle} numberOfLines={1}>
+            {product.brand}
           </Text>
         </View>
 
-        <View style={[estilos.linhaRodape, ehGrade && { marginTop: 5 }]}>
-          {produto.unidade_medida && (
-            <View style={estilos.etiquetaPeso}>
-              <Text style={estilos.textoPeso}>{produto.unidade_medida}</Text>
+        <View style={[styles.footerLine, isGrid && { marginTop: 5 }]}>
+          {product.measurementUnit && (
+            <View style={styles.weightLabel}>
+              <Text style={styles.weightText}>{product.measurementUnit}</Text>
             </View>
           )}
 
-          <Text style={estilos.nomeMercado} numberOfLines={1}>
-            {produto.nome_mercado}
+          <Text style={styles.marketName} numberOfLines={1}>
+            {product.marketName}
           </Text>
         </View>
 
-        {distanciaFormatada && (
-          <View style={estilos.containerDistancia}>
-            <MaterialCommunityIcons name="map-marker-distance" size={12} color="#666" />
-            <Text style={estilos.textoDistancia}>{distanciaFormatada}</Text>
+        {formattedDistance && (
+          <View style={styles.distanceContainer}>
+            <MaterialCommunityIcons
+              name="map-marker-distance"
+              size={12}
+              color="#666"
+            />
+            <Text style={styles.distanceText}>{formattedDistance}</Text>
           </View>
         )}
       </View>
@@ -107,152 +131,133 @@ const CardProduto: React.FC<Propriedades> = ({ produto, aoPressionar, aoAdiciona
   );
 };
 
-const estilos = StyleSheet.create({
-  cartao: {
-    backgroundColor: '#fff',
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "#fff",
     borderRadius: 18,
     padding: 10,
     elevation: 4,
-    // Removendo as sombras web que causaram confusão visual
   },
-
-  estiloLista: {
-    width: '100%', 
+  listStyle: {
+    width: "100%",
     maxWidth: 450,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginVertical: 12,
   },
-
-  estiloGrade: {
+  gridStyle: {
     flex: 1,
     margin: 8,
     padding: 8,
     minHeight: 280,
   },
-
-  containerImagem: {
-    width: '100%',
-    aspectRatio: 1, 
-    position: 'relative', 
-    overflow: 'hidden',
+  imageContainer: {
+    width: "100%",
+    aspectRatio: 1,
+    position: "relative",
+    overflow: "hidden",
     borderRadius: 12,
     marginBottom: 5,
-    backgroundColor: '#f9f9f9', 
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#f9f9f9",
+    justifyContent: "center",
+    alignItems: "center",
   },
-
-  imagemProduto: {
-    width: '85%',
-    height: '85%',
+  productImage: {
+    width: "85%",
+    height: "85%",
   },
-
-  nomeProduto: {
-    fontWeight: '700',
+  productName: {
+    fontWeight: "700",
     fontSize: 14,
-    color: '#333',
+    color: "#333",
   },
-
-  seloRanking: {
-    position: 'absolute',
+  rankingBadge: {
+    position: "absolute",
     top: 8,
     left: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: "#eee",
     elevation: 2,
   },
-
-  textoRanking: {
+  rankingText: {
     fontSize: 10,
-    color: '#888',
-    fontWeight: 'bold',
+    color: "#888",
+    fontWeight: "bold",
   },
-
-  rotuloPreco: {
+  priceLabel: {
     minWidth: 65,
     paddingVertical: 4,
-    backgroundColor: '#28a8b5',
+    backgroundColor: "#28a8b5",
     borderRadius: 6,
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     right: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
-
-  textoPreco: {
-    color: '#ffffff',
-    fontWeight: '800',
+  priceText: {
+    color: "#ffffff",
+    fontWeight: "800",
     fontSize: 12,
   },
-
-  botaoAdicionar: {
-    position: 'absolute',
+  addButton: {
+    position: "absolute",
     bottom: 16,
-    alignSelf: 'center',
+    alignSelf: "center",
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 4,
   },
-
-  containerInformacoes: {
+  infoContainer: {
     paddingVertical: 4,
     flex: 1,
   },
-
-  estiloMarca: {
+  brandStyle: {
     fontSize: 11,
-    color: '#888',
-    textTransform: 'uppercase',
+    color: "#888",
+    textTransform: "uppercase",
   },
-
-  linhaRodape: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  footerLine: {
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 4,
   },
-
-  etiquetaPeso: {
-    backgroundColor: '#f0f0f0',
+  weightLabel: {
+    backgroundColor: "#f0f0f0",
     paddingHorizontal: 5,
     paddingVertical: 1,
     borderRadius: 4,
     marginRight: 6,
   },
-
-  textoPeso: {
+  weightText: {
     fontSize: 10,
-    fontWeight: '600',
-    color: '#666',
+    fontWeight: "600",
+    color: "#666",
   },
-
-  nomeMercado: {
+  marketName: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#28a8b5',
+    fontWeight: "700",
+    color: "#28a8b5",
     flex: 1,
   },
-
-  containerDistancia: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  distanceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 4,
   },
-
-  textoDistancia: {
+  distanceText: {
     fontSize: 11,
-    color: '#999',
+    color: "#999",
     marginLeft: 3,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 
-export default memo(CardProduto);
+export default memo(ProductCard);
