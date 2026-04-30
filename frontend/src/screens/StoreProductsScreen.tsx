@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, FlatList, StyleSheet, Text } from "react-native";
-import { fetchProducts } from "../api/products";
-import { Product } from "../types/product";
-import { LoadingFooter } from "../components/LoadingFooter";
-import { SearchBar } from "../components/SearchBar";
+import { useCallback, useEffect, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { fetchProducts } from "../api/products";
+import { LoadingFooter } from "../components/LoadingFooter";
 import ProductCard from "../components/ProductCard";
+import { SearchBar } from "../components/SearchBar";
+import type { Product } from "../types/product";
 
 export function StoreProductsScreen({ route }: any) {
   const insets = useSafeAreaInsets();

@@ -1,8 +1,8 @@
 import {
-  useFonts,
   Inter_400Regular,
   Inter_700Bold,
   Inter_900Black,
+  useFonts,
 } from "@expo-google-fonts/inter";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";

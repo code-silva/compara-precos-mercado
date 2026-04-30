@@ -1,31 +1,37 @@
-import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { HomeScreen } from "../screens/HomeScreen";
-import { SupermarketsScreen } from "../screens/SupermarketsScreen";
-import { MyListScreen } from "../screens/MyListScreen";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { SearchResults } from "../screens/SearchResultsScreen";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { HomeScreen } from "../screens/HomeScreen";
+import { MyListScreen } from "../screens/MyListScreen";
+import { SearchResults } from "../screens/SearchResultsScreen";
 import { StoreProductsScreen } from "../screens/StoreProductsScreen";
+import { SupermarketsScreen } from "../screens/SupermarketsScreen";
 
-const routeSettings: any = {
-  Home: {
+type RouteSettings = {
+  label: string;
+  icon: string;
+  background: string;
+  color: string;
+};
+
+const routeSettings: Record<string, RouteSettings> = {
+  home: {
     label: "INÍCIO",
     icon: "home",
     background: "rgba(16, 185, 129, 0.25)",
     color: "rgb(46, 177, 185)",
   },
-  Supermarkets: {
+  supermarkets: {
     label: "MERCADOS",
     icon: "shopping-bag",
     background: "rgba(46, 177, 185, 0.25)",
     color: "rgb(46, 177, 185)",
   },
-  MyList: {
+  myList: {
     label: "MINHA LISTA",
     icon: "list",
     background: "rgba(46, 177, 185, 0.25)",
@@ -36,7 +42,12 @@ const routeSettings: any = {
 const inactiveColor = "#44475C";
 const Tab = createBottomTabNavigator();
 
-function CustomTabButton(props: any) {
+function CustomTabButton(props: {
+  route: { name: string };
+  children: React.ReactNode;
+  onPress: () => void;
+  isFocused: boolean;
+}) {
   const { route, children, onPress, isFocused } = props;
   const settings = routeSettings[route.name];
 
@@ -49,7 +60,7 @@ function CustomTabButton(props: any) {
       <View
         style={[
           styles.pill,
-          isFocused && { backgroundColor: settings?.background },
+          isFocused && { backgroundColor: settings.background },
         ]}
       >
         {children}
@@ -119,7 +130,7 @@ export function BottomNavbar() {
       }}
     >
       <Tab.Screen
-        name="Home"
+        name="home"
         component={HomeStackScreen}
         options={{
           tabBarLabel: "INÍCIO",
@@ -130,7 +141,7 @@ export function BottomNavbar() {
       />
 
       <Tab.Screen
-        name="Supermarkets"
+        name="supermarkets"
         component={SupermarketStackScreen}
         options={{
           tabBarLabel: "MERCADOS",
@@ -145,7 +156,7 @@ export function BottomNavbar() {
       />
 
       <Tab.Screen
-        name="MyList"
+        name="myList"
         component={MyListScreen}
         options={{
           tabBarLabel: "MINHA LISTA",

@@ -1,9 +1,8 @@
-import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { BottomNavbar } from "./src/components/BottomNavbar";
 import * as SplashScreen from "expo-splash-screen";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { BottomNavbar } from "./src/components/BottomNavbar";
 
 // Hooks and Screens
 import { useLoadFonts } from "./src/hooks/useLoadFonts";

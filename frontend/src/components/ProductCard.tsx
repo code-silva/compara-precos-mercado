@@ -1,8 +1,7 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { Product } from "../types/product";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { memo } from "react";
+import React, { memo } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import type { Product } from "../types/product";
 
 interface ProductCardProps {
   product: Product;

@@ -15,5 +15,10 @@
   "devDependencies": {
     "@types/react": "~19.2.10",
     "typescript": "~5.9.2"
-  }
+  },
+  "scripts": {
+  "lint": "biome check .",
+  "lint:fix": "biome check . --write",
+  "format": "biome format . --write"
+}
 }

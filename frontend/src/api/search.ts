@@ -5,7 +5,7 @@ export async function fetchHybridSearch(query: string) {
 
   if (!query) return { offers: [], markets: [], searchTerm: "" };
 
-  let url = new URL(`${BASE_URL}/search/`);
+  const url = new URL(`${BASE_URL}/search/`);
   url.searchParams.append("query", query);
 
   const response = await fetch(url);

@@ -12,7 +12,7 @@ export async function fetchProducts(
    * Maintains the log pattern for connection analysis.
    */
 
-  let url = new URL(`${BASE_URL}/products/offers/`);
+  const url = new URL(`${BASE_URL}/products/offers/`);
   url.searchParams.append("page", String(page));
   url.searchParams.append("latitude", String(latitude));
   url.searchParams.append("longitude", String(longitude));

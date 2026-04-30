@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { Feather } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 import {
-  View,
-  TextInput,
-  StyleSheet,
   ActivityIndicator,
   Dimensions,
+  StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { colors } from "../theme/colors";
 import { fetchHybridSearch } from "../api/search";
+import { colors } from "../theme/colors";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -102,9 +102,9 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
 
       {term.length >= 2 && suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
-          {suggestions.map((item, index) => (
+          {suggestions.map((item) => (
             <TouchableOpacity
-              key={index}
+              key={item}
               style={styles.suggestionItem}
               onPress={() => {
                 setTerm(item);

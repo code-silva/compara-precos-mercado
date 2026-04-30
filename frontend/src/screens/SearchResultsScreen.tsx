@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, FlatList, StyleSheet, Text } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { fetchProducts } from "../api/products";
+import { EmptyProductState } from "../components/EmptyProductState";
+import { InfoBanner } from "../components/InfoBanner";
+import { LoadingFooter } from "../components/LoadingFooter";
 import ProductCard from "../components/ProductCard";
 import { SearchBar } from "../components/SearchBar";
-import { InfoBanner } from "../components/InfoBanner";
-import { fetchProducts } from "../api/products";
-import { Product } from "../types/product";
-import { EmptyProductState } from "../components/EmptyProductState";
-import { LoadingFooter } from "../components/LoadingFooter";
+import type { Product } from "../types/product";
 
 export function SearchResults({ route }: any) {
   const { query, selectedMarket, latitude, longitude } = route.params || {};

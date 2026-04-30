@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { FlatList, View, StyleSheet, Text } from "react-native";
-import { Product } from "../types/product";
-import * as Location from "expo-location";
-import { ErrorState } from "../components/ErrorState";
-import { EmptyProductState } from "../components/EmptyProductState";
-import { fetchProducts } from "../api/products";
-import { SearchBar } from "../components/SearchBar";
-import { InfoBanner } from "../components/InfoBanner";
-import { MarketCarousel } from "../components/MarketCarousel";
 import { useNavigation } from "@react-navigation/native";
-import { LoadingFooter } from "../components/LoadingFooter";
-import ProductCard from "../components/ProductCard";
+import * as Location from "expo-location";
+import React, { useCallback, useEffect, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { fetchProducts } from "../api/products";
+import { EmptyProductState } from "../components/EmptyProductState";
+import { ErrorState } from "../components/ErrorState";
+import { InfoBanner } from "../components/InfoBanner";
+import { LoadingFooter } from "../components/LoadingFooter";
+import { MarketCarousel } from "../components/MarketCarousel";
+import ProductCard from "../components/ProductCard";
+import { SearchBar } from "../components/SearchBar";
+import type { Product } from "../types/product";
 
 // SUPPORT FUNCTIONS
 const renderSeparator = () => <View style={styles.separator} />;
@@ -89,7 +89,7 @@ export function HomeScreen() {
       });
       setLocation(currentLocation);
       setLocationError(null);
-    } catch (error) {
+    } catch (_error) {
       setLocationError("Não foi possível obter sua localização atual.");
     } finally {
       setIsLoading(false);

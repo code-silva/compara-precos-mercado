@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
+  Dimensions,
   FlatList,
   StyleSheet,
-  Dimensions,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { fetchMarkets } from "../api/markets";
-import { Market } from "../types/market";
-import { CarouselProps } from "../types/market";
+import type { CarouselProps, Market } from "../types/market";
 
 const cardMinWidth = 160;
 const minCardsVisible = 1;
@@ -31,7 +30,7 @@ export const MarketCarousel = ({
   useEffect(() => {
     async function loadSupermarkets() {
       if (!coordinates) return;
-      let data = await fetchMarkets(
+      const data = await fetchMarkets(
         coordinates.latitude,
         coordinates.longitude,
       );

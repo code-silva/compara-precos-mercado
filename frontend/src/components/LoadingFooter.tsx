@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import type React from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 interface LoadingFooterProps {
   isLoading: boolean;
