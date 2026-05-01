@@ -9,31 +9,39 @@ veio para retornar o valor que passamos e entrega no final um json
 
 
 class OfertaProdutoSerializer(serializers.ModelSerializer):
-    produto_nome = serializers.ReadOnlyField(source="produto.nome")
-    produto_marca = serializers.ReadOnlyField(source="produto.marca")
-    produto_imagem = serializers.ImageField(source="produto.imagem", read_only=True)
-    mercado_nome = serializers.ReadOnlyField(source="mercado_filial.mercado_matriz.nome")
-    cidade = serializers.ReadOnlyField(source="mercado_filial.localidade.cidade")
+    productName = serializers.ReadOnlyField(source="produto.nome")
+    brand = serializers.ReadOnlyField(source="produto.marca")
+    image = serializers.ImageField(source="produto.imagem", read_only=True)
+    marketName = serializers.ReadOnlyField(source="mercado_filial.mercado_matriz.nome")
+    city = serializers.ReadOnlyField(source="mercado_filial.localidade.city")
 
     class Meta:
         model = Produto_Oferta_Filial
         fields = [
             "id",
             "preco",
-            "produto_nome",
-            "produto_marca",
-            "produto_imagem",
-            "mercado_nome",
-            "cidade",
+            "productName",
+            "brand",
+            "image",
+            "marketName",
+            "city",
         ]
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
-    categoria_nome = serializers.ReadOnlyField(source="categoria.nome")
+    categoryName = serializers.ReadOnlyField(source="categoria.nome")
 
     class Meta:
         model = Produto
-        fields = ["id", "nome", "marca", "medida", "unidade_medida", "categoria_nome", "imagem"]
+        fields = [
+            "id",
+            "nome",
+            "marca",
+            "medida",
+            "unidade_medida",
+            "categoria_nome",
+            "imagem"
+        ]
 
 
 class MercadoFilialSerializer(serializers.ModelSerializer):
@@ -54,19 +62,23 @@ class MercadoFilialSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        # Campos que serão serializados (enviados para o frontend)
-        fields = ["id", "name", "uf", "city", "distance_km"]
         model = MercadoFilial
+        fields = [
+            "id",
+            "name",
+            "state",
+            "city",
+            "distanceInKilometers"
+        ]
 
     name = serializers.CharField(source="mercado_matriz.nome", read_only=True)
-    uf = serializers.CharField(source="localidade.uf", read_only=True)
+    state = serializers.CharField(source="localidade.uf", read_only=True)
     city = serializers.CharField(source="localidade.cidade", read_only=True)
 
-    # Esse atributo será calculado e deteminado pelo método 'get_<atributo>'
-    distance_km = serializers.SerializerMethodField()
+    distanceInKilometers = serializers.SerializerMethodField()
 
-    # Método que define o valor do atributo 'distancia_km'
-    def get_distance_km(self, obj):
+    # Método que define o valor do atributo 'distanceInKilometers'
+    def get_distanceInKilometers(self, obj):
         # 'distancia' é o campo virtual definido pelo 'annotate'
         if hasattr(obj, "distancia") and obj.distancia is not None:
             return round(obj.distancia.km, 2)
@@ -96,42 +108,42 @@ class ProdutoOfertaSerializer(serializers.ModelSerializer):
     }
     """
 
-    nome_produto = serializers.CharField(source="produto.nome", read_only=True)
-    marca = serializers.CharField(source="produto.marca", read_only=True)
-    imagem = serializers.ImageField(source="produto.imagem", read_only=True)
+    productName = serializers.CharField(source="produto.nome", read_only=True)
+    brand = serializers.CharField(source="produto.marca", read_only=True)
+    image = serializers.ImageField(source="produto.imagem", read_only=True)
 
-    unidade_medida = serializers.CharField(
+    measurementUnit = serializers.CharField(
         source="produto.get_unidade_medida_display", read_only=True
     )
 
-    medida = serializers.DecimalField(
+    measurement = serializers.DecimalField(
         source="produto.medida", max_digits=10, decimal_places=2, read_only=True
     )
 
-    nome_mercado = serializers.CharField(
+    marketName = serializers.CharField(
         source="mercado_filial.mercado_matriz.nome", read_only=True
     )
 
-    nome_categoria = serializers.CharField(source="produto.categoria.nome", read_only=True)
+    categoryName = serializers.CharField(source="produto.categoria.nome", read_only=True)
 
-    distancia_km = serializers.SerializerMethodField()
+    distanceInKilometers = serializers.SerializerMethodField()
 
     class Meta:
         model = Produto_Oferta_Filial
         fields = [
             "id",
-            "nome_produto",
-            "marca",
+            "productName",
+            "brand",
             "preco",
-            "imagem",
-            "unidade_medida",
-            "medida",
-            "nome_mercado",
-            "nome_categoria",
-            "distancia_km",
+            "image",
+            "measurementUnit",
+            "measurement",
+            "marketName",
+            "categoryName",
+            "distanceInKilometers",
         ]
 
-    def get_distancia_km(self, obj):
+    def get_distanceInKilometers(self, obj):
         if hasattr(obj, "distancia"):
             return round(obj.distancia.km, 2)
         return None
