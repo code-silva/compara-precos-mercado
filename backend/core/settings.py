@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "silk",
     "rest_framework",
-    "app_mercados",
+    "app",
 ]
 
 MIDDLEWARE = [
