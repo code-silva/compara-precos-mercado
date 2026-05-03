@@ -77,6 +77,7 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
           autoCapitalize="none"
           underlineColorAndroid="transparent"
         />
+        
 
         <View style={styles.iconContainer}>
           <View style={styles.shapeLight} />
@@ -165,13 +166,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    justifyContent: "space-between",
   },
   input: {
-    flexShrink: 1,
-    minWidth: 200,
+    flex: 1,
     paddingLeft: 20,
+    paddingRight: isUltraNarrow ? 20 : 35, 
     color: colors.textPrimary,
+    outlineStyle: 'none',
   },
   iconContainer: {
     width: isUltraNarrow ? 55 : isSmall ? "20%" : 85,
