@@ -7,11 +7,7 @@ export interface Market {
   nameColor: null | string;
 }
 
-export interface CarouselProps {
-  coordinates?: {
-    latitude: number;
-    longitude: number;
-  } | null;
-
-  handleMarketPress: (market: Market) => void;
+export interface LocationCoordinates {
+  latitude: number;
+  longitude: number;
 }

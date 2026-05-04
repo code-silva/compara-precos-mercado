@@ -1,40 +1,20 @@
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
 import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { fetchMarkets } from "../api/markets";
 import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
 import { ErrorState } from "../components/ErrorState";
-import { InfoBanner } from "../components/InfoBanner";
+import { HomeHeader } from "../components/HomeScreenHeader";
 import { LoadingFooter } from "../components/LoadingFooter";
-import { MarketCarousel } from "../components/MarketCarousel";
 import ProductCard from "../components/ProductCard";
-import { SearchBar } from "../components/SearchBar";
+import type { Market } from "../types/market";
 import type { Product } from "../types/product";
 
 // SUPPORT FUNCTIONS
 const renderSeparator = () => <View style={styles.separator} />;
-
-const ListHeader = React.memo(
-  ({
-    location,
-    handleMarketPress,
-  }: {
-    location: any;
-    handleMarketPress: (market: any) => void;
-  }) => (
-    <View style={[styles.headerContainer, { alignSelf: "stretch" }]}>
-      <SearchBar />
-      <MarketCarousel
-        coordinates={location?.coords}
-        handleMarketPress={handleMarketPress}
-      />
-      <InfoBanner />
-      <Text style={styles.sectionTitle}>Ofertas do Dia</Text>
-    </View>
-  ),
-);
 
 export function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -45,6 +25,7 @@ export function HomeScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null,
   );
+  const [markets, setMarkets] = useState<Market[]>([]);
   const [locationError, setLocationError] = useState<string | null>(null);
 
   const navigation = useNavigation<any>();
@@ -85,7 +66,8 @@ export function HomeScreen() {
         return;
       }
       const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.Highest,
+        distanceInterval: 1,
       });
       setLocation(currentLocation);
       setLocationError(null);
@@ -145,6 +127,21 @@ export function HomeScreen() {
     }
   }, [location, products.length, isLoading, hasMoreData, fetchProductsData]);
 
+  useEffect(() => {
+    async function loadMarkets() {
+      if (!location) return;
+
+      const data = await fetchMarkets(
+        location.coords.latitude,
+        location.coords.longitude,
+      );
+
+      setMarkets(data.results);
+    }
+
+    loadMarkets();
+  }, [location]);
+
   const renderItem = useCallback(
     ({ item, index }: { item: Product; index: number }) => (
       <ProductCard
@@ -181,8 +178,8 @@ export function HomeScreen() {
           ]}
           ItemSeparatorComponent={renderSeparator}
           ListHeaderComponent={
-            <ListHeader
-              location={location}
+            <HomeHeader
+              markets={markets}
               handleMarketPress={handleMarketPress}
             />
           }
@@ -204,15 +201,5 @@ export const styles = StyleSheet.create({
   },
   separator: {
     height: 16,
-  },
-  headerContainer: {
-    width: "100%",
-    paddingBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontFamily: "Inter-Bold",
-    color: "#333333",
-    marginTop: 10,
   },
 });
