@@ -39,6 +39,9 @@ nav: # Estrutura de navegação principal (menu lateral)
     # 2. Página de Arquitetura (Inserir este bloco)
     - Arquitetura: 
         - Diagrama da Arquitetura: Arquitetura/arq.md
+    - Banco de Dados:
+        - Diagrama Entidade-Relacionamento (DER): database/der.md
+        - Diagrama Lógico de Dados (DLD): database/dld.md
     - Telas do Projeto:
         - Tela Inicial: telas/tela-inicial.md
         - Tela de Busca: telas/tela-de-busca.md
