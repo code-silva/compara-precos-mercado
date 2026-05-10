@@ -1,12 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
-import * as Location from "expo-location";
+import type * as Location from "expo-location";
 import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchMarkets } from "../api/markets";
 import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
-import { ErrorState } from "../components/ErrorState";
 import { HomeHeader } from "../components/HomeScreenHeader";
 import { LoadingFooter } from "../components/LoadingFooter";
 import ProductCard from "../components/ProductCard";
@@ -16,18 +15,13 @@ import type { Product } from "../types/product";
 // SUPPORT FUNCTIONS
 const renderSeparator = () => <View style={styles.separator} />;
 
-export function HomeScreen() {
+export function HomeScreen({location}: {location: Location.LocationObject}) {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null,
-  );
   const [markets, setMarkets] = useState<Market[]>([]);
-  const [locationError, setLocationError] = useState<string | null>(null);
-
   const navigation = useNavigation<any>();
 
   // ACTION WHEN CLICKING ON PRODUCT
@@ -41,7 +35,7 @@ export function HomeScreen() {
 
   // NAVIGATION TO SPECIFIC MARKET SCREEN
   const handleMarketPress = useCallback(
-    (market: any) => {
+    (market: Market) => {
       navigation.navigate("StoreProducts", {
         selectedMarket: {
           id: market.id,
@@ -54,39 +48,16 @@ export function HomeScreen() {
     [location, navigation],
   );
 
-  // OBTAINING LOCATION
-  const getLocation = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setLocationError(
-          "Precisamos da localização para mostrar as ofertas próximas.",
-        );
-        return;
-      }
-      const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Highest,
-        distanceInterval: 1,
-      });
-      setLocation(currentLocation);
-      setLocationError(null);
-    } catch (_error) {
-      setLocationError("Não foi possível obter sua localização atual.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   // FETCHING GENERAL PRODUCTS
   const fetchProductsData = useCallback(async () => {
-    if (isLoading || !hasMoreData || !location) return;
+    if (isLoading || !hasMoreData) return;
 
     setIsLoading(true);
     try {
-      const { latitude, longitude } = location.coords;
+      const { latitude, longitude } = location?.coords ?? {};
 
       const response = await fetchProducts(latitude, longitude, page);
+      console.log(response);
 
       const newProducts = response.results || [];
       const nextPage = response.next;
@@ -109,18 +80,7 @@ export function HomeScreen() {
     }
   }, [location, hasMoreData, isLoading, page]);
 
-  const toggleLocation = useCallback(() => {
-    setProducts([]);
-    setPage(1);
-    setHasMoreData(true);
-    getLocation();
-  }, [getLocation]);
-
   // EFFECTS
-  useEffect(() => {
-    getLocation();
-  }, [getLocation]);
-
   useEffect(() => {
     if (location && products.length === 0 && !isLoading && hasMoreData) {
       fetchProductsData();
@@ -162,33 +122,29 @@ export function HomeScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
-      {locationError && products.length === 0 ? (
-        <ErrorState message={locationError} handleRetry={toggleLocation} />
-      ) : (
-        <FlatList
-          data={products}
-          initialNumToRender={10}
-          windowSize={5}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
-          style={{ flex: 1 }}
-          contentContainerStyle={[
-            styles.listContent,
-            { paddingBottom: insets.bottom + 5 },
-          ]}
-          ItemSeparatorComponent={renderSeparator}
-          ListHeaderComponent={
-            <HomeHeader
-              markets={markets}
-              handleMarketPress={handleMarketPress}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-          onEndReached={fetchProductsData}
-          onEndReachedThreshold={0.7}
-          ListFooterComponent={renderFooter}
-        />
-      )}
+      <FlatList
+        data={products}
+        initialNumToRender={10}
+        windowSize={5}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
+        style={{ flex: 1 }}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: insets.bottom + 5 },
+        ]}
+        ItemSeparatorComponent={renderSeparator}
+        ListHeaderComponent={
+          <HomeHeader
+            markets={markets}
+            handleMarketPress={handleMarketPress}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+        onEndReached={fetchProductsData}
+        onEndReachedThreshold={0.7}
+        ListFooterComponent={renderFooter}
+      />
     </View>
   );
 }

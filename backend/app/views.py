@@ -15,6 +15,12 @@ from .serializers import (
 
 
 class HybridSearchView(APIView):
+    """
+    View responsible for performing a unified search across both product offers and
+    supermarkets. It uses trigram similarity and text filtering to find relevant
+    results based on names, brands, or categories.
+    """
+
     def get(self, request):
         query = request.GET.get("query", "").strip()
         SIMILARITY_THRESHOLD = 0.25
@@ -35,7 +41,10 @@ class HybridSearchView(APIView):
                 | Q(similarity_brand__gt=SIMILARITY_THRESHOLD)
             )
             .select_related(
-                "product", "branch_supermarket__parent_supermarket", "branch_supermarket__location"
+                "product",
+                "product__category",
+                "branch_supermarket__parent_supermarket",
+                "branch_supermarket__location"
             )
             .order_by("-similarity_name")
         )
