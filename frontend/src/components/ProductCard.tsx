@@ -5,6 +5,7 @@ import type { Product } from "../types/product";
 
 interface ProductCardProps {
   product: Product;
+  ranking?: number;
   handlePress: (product: Product) => void;
   handleAddToList: (product: Product) => void;
   isGrid?: boolean;
@@ -12,6 +13,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
+  ranking,
   handlePress,
   handleAddToList,
   isGrid,
@@ -42,7 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         <View style={styles.rankingBadge}>
           <Text style={styles.rankingText}>
-            #{product.ranking || product.id}
+            #{ranking || product.id}
           </Text>
         </View>
 

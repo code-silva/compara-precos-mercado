@@ -1,18 +1,32 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons"; 
 
-export const EmptyProductState = () => (
+interface EmptyProductStateProps {
+  isSearchEmpty?: boolean;
+}
+
+export const EmptyProductState = ({ isSearchEmpty = false }: EmptyProductStateProps) => (
   <View style={styles.container}>
     <View style={styles.iconRow}>
       <View style={styles.stickmanWrapper}>
-        <Feather name="check" size={18} color="#A0AAB2" style={styles.topIcon} />
+
+        <Feather 
+          name={isSearchEmpty ? "search" : "check"} 
+          size={18} 
+          color="#A0AAB2" 
+          style={styles.topIcon} 
+        />
         <Feather name="user" size={32} color="#A0AAB2" />
       </View>
     </View>
 
-    <Text style={styles.title}>Você chegou ao fim das ofertas.</Text>
+    <Text style={styles.title}>
+      {isSearchEmpty ? "Nenhum produto encontrado" : "Você chegou ao fim das ofertas."}
+    </Text>
     <Text style={styles.subtitle}>
-      Ufa! Você percorreu todas as nossas ofertas atuais.
+      {isSearchEmpty 
+        ? "Ops! Não conseguimos localizar as ofertas. Verifique se o seu Wi-Fi está ativo ou tente atualizar a página em alguns instantes." 
+        : "Ufa! Você percorreu todas as nossas ofertas atuais."}
     </Text> 
   </View>
 );
@@ -29,12 +43,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end', 
     marginBottom: 15,
   },
+
   icon: {
     fontSize: 30,
     marginRight: 10, 
   },
   stickmanWrapper: {
     alignItems: 'center',
+  },
+
+  topIcon: {
+    marginBottom: -4, 
   },
   questionMark: {
     fontSize: 16,

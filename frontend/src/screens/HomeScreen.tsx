@@ -146,22 +146,35 @@ export function HomeScreen() {
   }, [location, products.length, isLoading, hasMoreData, fetchProductsData]);
 
   const renderItem = useCallback(
-    ({ item, index }: { item: Product; index: number }) => (
-      <ProductCard
-        product={{ ...item, ranking: index + 1 }}
-        handlePress={() => handlePress(item)}
-        handleAddToList={() => handleAdd(item)}
-      />
-    ),
-    [handlePress, handleAdd],
-  );
+  ({ item, index }: { item: Product; index: number }) => (
+    <ProductCard
+      product={item} 
+      ranking={index + 1} 
+      handlePress={handlePress}
+      handleAddToList={handleAdd}
+    />
+  ),
+  [handlePress, handleAdd]
+);
 
-  const renderFooter = () => {
-    if (isLoading && products.length === 0) return null;
-    if (isLoading) return <LoadingFooter isLoading={isLoading} />;
-    if (!hasMoreData && products.length > 0) return <EmptyProductState />;
-    return null;
-  };
+ const renderFooter = () => {
+
+  if (isLoading && products.length > 0) {
+    return <LoadingFooter isLoading={isLoading} />;
+  }
+  
+  if (!isLoading && products.length === 0 && !hasMoreData) {
+    return <EmptyProductState isSearchEmpty={true} />;
+  }
+
+  if (!isLoading && !hasMoreData && products.length > 0) {
+    return <EmptyProductState isSearchEmpty={false} />;
+  }
+  
+  return null;
+};
+ 
+const dynamicPadding = hasMoreData ? insets.bottom + 60 : insets.bottom + 5;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
@@ -170,14 +183,14 @@ export function HomeScreen() {
       ) : (
         <FlatList
           data={products}
-          initialNumToRender={10}
-          windowSize={5}
+          initialNumToRender={6}
+          windowSize={3}
           renderItem={renderItem}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
+          keyExtractor={(item) => item.id.toString()}
           style={{ flex: 1 }}
           contentContainerStyle={[
             styles.listContent,
-            { paddingBottom: insets.bottom + 5 },
+            { paddingBottom: dynamicPadding },
           ]}
           ItemSeparatorComponent={renderSeparator}
           ListHeaderComponent={
@@ -187,9 +200,12 @@ export function HomeScreen() {
             />
           }
           showsVerticalScrollIndicator={false}
+          updateCellsBatchingPeriod={100}
           onEndReached={fetchProductsData}
-          onEndReachedThreshold={0.7}
+          onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={3}
         />
       )}
     </View>
@@ -199,7 +215,6 @@ export function HomeScreen() {
 export const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
-    paddingBottom: 100,
     flexGrow: 1,
   },
   separator: {
