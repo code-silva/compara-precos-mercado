@@ -140,19 +140,16 @@ export function HomeScreen({
   return null;
 };
  
-const dynamicPadding = hasMoreData ? insets.bottom + 60 : insets.bottom + 5;
+const dynamicPadding = hasMoreData ? insets.bottom + 20: insets.bottom + 10;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
-      {locationError && products.length === 0 ? (
-        <ErrorState message={locationError} handleRetry={toggleLocation} />
-      ) : (
         <FlatList
           data={products}
-          initialNumToRender={6}
-          windowSize={3}
+          initialNumToRender={7}
+          windowSize={7}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
           style={{ flex: 1 }}
           contentContainerStyle={[
             styles.listContent,
@@ -166,25 +163,23 @@ const dynamicPadding = hasMoreData ? insets.bottom + 60 : insets.bottom + 5;
             />
           }
           showsVerticalScrollIndicator={false}
-          updateCellsBatchingPeriod={100}
           onEndReached={fetchProductsData}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={0.01}
           ListFooterComponent={renderFooter}
           removeClippedSubviews={true}
-          maxToRenderPerBatch={3}
+          maxToRenderPerBatch={7}
         />
-      )}
     </View>
   );
 }
 
 export const styles = StyleSheet.create({
   listContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     flexGrow: 1,
   },
   separator: {
-    height: 16,
+    height: 12,
   },
   headerContainer: {
     width: "100%",

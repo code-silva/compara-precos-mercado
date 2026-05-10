@@ -14,7 +14,7 @@ export const LoadingFooter: React.FC<LoadingFooterProps> = ({
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#28a8b5" />
+      <ActivityIndicator size="small" color="#28a8b5" />
       <Text style={styles.text}>{message}</Text>
     </View>
   );
@@ -22,12 +22,12 @@ export const LoadingFooter: React.FC<LoadingFooterProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 30,
+    paddingVertical: 15,
     alignItems: "center",
     width: "100%",
   },
   text: {
-    marginTop: 10,
+    marginTop: 5,
     color: "#28a8b5",
     fontSize: 14,
     fontFamily: "Inter-Medium",
