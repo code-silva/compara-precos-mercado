@@ -1,8 +1,10 @@
 import { Feather } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import type * as Location from "expo-location";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HomeScreen } from "../screens/HomeScreen";
@@ -11,14 +13,7 @@ import { SearchResults } from "../screens/SearchResultsScreen";
 import { StoreProductsScreen } from "../screens/StoreProductsScreen";
 import { SupermarketsScreen } from "../screens/SupermarketsScreen";
 
-type RouteSettings = {
-  label: string;
-  icon: string;
-  background: string;
-  color: string;
-};
-
-const routeSettings: Record<string, RouteSettings> = {
+const routeSettings = {
   home: {
     label: "INÍCIO",
     icon: "home",
@@ -42,12 +37,12 @@ const routeSettings: Record<string, RouteSettings> = {
 const inactiveColor = "#44475C";
 const Tab = createBottomTabNavigator();
 
-function CustomTabButton(props: {
-  route: { name: string };
-  children: React.ReactNode;
-  onPress: () => void;
-  isFocused: boolean;
-}) {
+function CustomTabButton(
+  props: BottomTabBarButtonProps & {
+    route: { name: string };
+    isFocused: boolean;
+  },
+) {
   const { route, children, onPress, isFocused } = props;
   const settings = routeSettings[route.name];
 
@@ -71,11 +66,19 @@ function CustomTabButton(props: {
 
 const HomeStack = createNativeStackNavigator();
 
-function HomeStackScreen() {
+function HomeStackScreen({
+  location,
+}: {
+  location: Location.LocationObject | null;
+}) {
   return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
+    <HomeStack.Navigator id="homeStack" screenOptions={{ headerShown: false }}>
+      <HomeStack.Screen name="HomeScreen">
+        {() => <HomeScreen location={location} />}
+      </HomeStack.Screen>
+
       <HomeStack.Screen name="SearchResults" component={SearchResults} />
+
       <HomeStack.Screen name="StoreProducts" component={StoreProductsScreen} />
     </HomeStack.Navigator>
   );
@@ -85,7 +88,10 @@ const SupermarketStack = createNativeStackNavigator();
 
 function SupermarketStackScreen() {
   return (
-    <SupermarketStack.Navigator screenOptions={{ headerShown: false }}>
+    <SupermarketStack.Navigator
+      id="supermarketStack"
+      screenOptions={{ headerShown: false }}
+    >
       <SupermarketStack.Screen
         name="SupermarketsList"
         component={SupermarketsScreen}
@@ -98,7 +104,11 @@ function SupermarketStackScreen() {
   );
 }
 
-export function BottomNavbar() {
+export function BottomNavbar({
+  location,
+}: {
+  location: Location.LocationObject | null;
+}) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -131,14 +141,15 @@ export function BottomNavbar() {
     >
       <Tab.Screen
         name="home"
-        component={HomeStackScreen}
         options={{
           tabBarLabel: "INÍCIO",
           tabBarIcon: ({ color }) => (
             <Feather name="home" size={25} color={color} />
           ),
         }}
-      />
+      >
+        {() => <HomeStackScreen location={location} />}
+      </Tab.Screen>
 
       <Tab.Screen
         name="supermarkets"

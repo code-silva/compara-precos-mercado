@@ -1,16 +1,16 @@
 import { useNavigation } from "@react-navigation/native";
-import * as Location from "expo-location";
+import type * as Location from "expo-location";
 import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
-import { ErrorState } from "../components/ErrorState";
 import { InfoBanner } from "../components/InfoBanner";
 import { LoadingFooter } from "../components/LoadingFooter";
 import { MarketCarousel } from "../components/MarketCarousel";
 import ProductCard from "../components/ProductCard";
 import { SearchBar } from "../components/SearchBar";
+import type { Market } from "../types/market";
 import type { Product } from "../types/product";
 
 // SUPPORT FUNCTIONS
@@ -21,8 +21,8 @@ const ListHeader = React.memo(
     location,
     handleMarketPress,
   }: {
-    location: any;
-    handleMarketPress: (market: any) => void;
+    location: Location.LocationObject;
+    handleMarketPress: (market: Market) => void;
   }) => (
     <View style={[styles.headerContainer, { alignSelf: "stretch" }]}>
       <SearchBar />
@@ -36,17 +36,16 @@ const ListHeader = React.memo(
   ),
 );
 
-export function HomeScreen() {
+export function HomeScreen({
+  location,
+}: {
+  location: Location.LocationObject;
+}) {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null,
-  );
-  const [locationError, setLocationError] = useState<string | null>(null);
-
   const navigation = useNavigation<any>();
 
   // ACTION WHEN CLICKING ON PRODUCT
@@ -60,7 +59,7 @@ export function HomeScreen() {
 
   // NAVIGATION TO SPECIFIC MARKET SCREEN
   const handleMarketPress = useCallback(
-    (market: any) => {
+    (market: Market) => {
       navigation.navigate("StoreProducts", {
         selectedMarket: {
           id: market.id,
@@ -73,38 +72,16 @@ export function HomeScreen() {
     [location, navigation],
   );
 
-  // OBTAINING LOCATION
-  const getLocation = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setLocationError(
-          "Precisamos da localização para mostrar as ofertas próximas.",
-        );
-        return;
-      }
-      const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
-      setLocation(currentLocation);
-      setLocationError(null);
-    } catch (_error) {
-      setLocationError("Não foi possível obter sua localização atual.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   // FETCHING GENERAL PRODUCTS
   const fetchProductsData = useCallback(async () => {
-    if (isLoading || !hasMoreData || !location) return;
+    if (isLoading || !hasMoreData) return;
 
     setIsLoading(true);
     try {
-      const { latitude, longitude } = location.coords;
+      const { latitude, longitude } = location?.coords ?? {};
 
       const response = await fetchProducts(latitude, longitude, page);
+      console.log(response);
 
       const newProducts = response.results || [];
       const nextPage = response.next;
@@ -127,18 +104,7 @@ export function HomeScreen() {
     }
   }, [location, hasMoreData, isLoading, page]);
 
-  const toggleLocation = useCallback(() => {
-    setProducts([]);
-    setPage(1);
-    setHasMoreData(true);
-    getLocation();
-  }, [getLocation]);
-
   // EFFECTS
-  useEffect(() => {
-    getLocation();
-  }, [getLocation]);
-
   useEffect(() => {
     if (location && products.length === 0 && !isLoading && hasMoreData) {
       fetchProductsData();

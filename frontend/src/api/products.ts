@@ -1,8 +1,8 @@
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export async function fetchProducts(
-  latitude: number,
-  longitude: number,
+  latitude: number | undefined,
+  longitude: number | undefined,
   page: number = 1,
   query?: string,
   marketId?: number,
