@@ -103,22 +103,35 @@ export function HomeScreen({location}: {location: Location.LocationObject}) {
   }, [location]);
 
   const renderItem = useCallback(
-    ({ item, index }: { item: Product; index: number }) => (
-      <ProductCard
-        product={{ ...item, ranking: index + 1 }}
-        handlePress={() => handlePress(item)}
-        handleAddToList={() => handleAdd(item)}
-      />
-    ),
-    [handlePress, handleAdd],
-  );
+  ({ item, index }: { item: Product; index: number }) => (
+    <ProductCard
+      product={item}
+      ranking={index + 1}
+      handlePress={handlePress}
+      handleAddToList={handleAdd}
+    />
+  ),
+  [handlePress, handleAdd]
+);
 
-  const renderFooter = () => {
-    if (isLoading && products.length === 0) return null;
-    if (isLoading) return <LoadingFooter isLoading={isLoading} />;
-    if (!hasMoreData && products.length > 0) return <EmptyProductState />;
-    return null;
-  };
+ const renderFooter = () => {
+
+  if (isLoading && products.length > 0) {
+    return <LoadingFooter isLoading={isLoading} />;
+  }
+
+  if (!isLoading && products.length === 0 && !hasMoreData) {
+    return <EmptyProductState isSearchEmpty={true} />;
+  }
+
+  if (!isLoading && !hasMoreData && products.length > 0) {
+    return <EmptyProductState isSearchEmpty={false} />;
+  }
+
+  return null;
+};
+
+const dynamicPadding = hasMoreData ? insets.bottom + 20: insets.bottom + 10;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
@@ -151,11 +164,10 @@ export function HomeScreen({location}: {location: Location.LocationObject}) {
 
 export const styles = StyleSheet.create({
   listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 100,
+    paddingHorizontal: 15,
     flexGrow: 1,
   },
   separator: {
-    height: 16,
+    height: 12,
   },
 });
