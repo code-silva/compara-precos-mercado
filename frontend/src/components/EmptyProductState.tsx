@@ -1,13 +1,33 @@
 import { StyleSheet, Text, View } from "react-native";
+import { Feather } from "@expo/vector-icons"; 
 
-export const EmptyProductState = () => (
+interface EmptyProductStateProps {
+  isSearchEmpty?: boolean;
+}
+
+export const EmptyProductState = ({ isSearchEmpty = false }: EmptyProductStateProps) => (
   <View style={styles.container}>
-    <Text style={styles.icon}>🔍</Text>
-    <Text style={styles.title}>Nenhum produto encontrado</Text>
-    <Text style={styles.subtitle}>
-      Não encontrámos ofertas nesta localização. Tente mudar a sua posição ou
-      atualizar a lista.
+    <View style={styles.iconRow}>
+      <View style={styles.stickmanWrapper}>
+
+        <Feather 
+          name={isSearchEmpty ? "search" : "check"} 
+          size={18} 
+          color="#A0AAB2" 
+          style={styles.topIcon} 
+        />
+        <Feather name="user" size={32} color="#A0AAB2" />
+      </View>
+    </View>
+
+    <Text style={styles.title}>
+      {isSearchEmpty ? "Nenhum produto encontrado" : "Você chegou ao fim das ofertas."}
     </Text>
+    <Text style={styles.subtitle}>
+      {isSearchEmpty 
+        ? "Ops! Não conseguimos localizar as ofertas. Verifique se o seu Wi-Fi está ativo ou tente atualizar a página em alguns instantes." 
+        : "Ufa! Você percorreu todas as nossas ofertas atuais."}
+    </Text> 
   </View>
 );
 
@@ -16,10 +36,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    marginTop: 20,
   },
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end', 
+    marginBottom: 15,
+  },
+
   icon: {
     fontSize: 30,
-    marginBottom: 15,
+    marginRight: 10, 
+  },
+  stickmanWrapper: {
+    alignItems: 'center',
+  },
+
+  topIcon: {
+    marginBottom: -4, 
+  },
+  questionMark: {
+    fontSize: 16,
+    color: "#A0AAB2",
+    fontWeight: "bold",
+    marginBottom: -6, 
+    marginLeft: 15,   
   },
   title: {
     fontSize: 18,

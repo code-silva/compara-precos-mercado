@@ -112,60 +112,74 @@ export function HomeScreen({
   }, [location, products.length, isLoading, hasMoreData, fetchProductsData]);
 
   const renderItem = useCallback(
-    ({ item, index }: { item: Product; index: number }) => (
-      <ProductCard
-        product={{ ...item, ranking: index + 1 }}
-        handlePress={() => handlePress(item)}
-        handleAddToList={() => handleAdd(item)}
-      />
-    ),
-    [handlePress, handleAdd],
-  );
+  ({ item, index }: { item: Product; index: number }) => (
+    <ProductCard
+      product={item} 
+      ranking={index + 1} 
+      handlePress={handlePress}
+      handleAddToList={handleAdd}
+    />
+  ),
+  [handlePress, handleAdd]
+);
 
-  const renderFooter = () => {
-    if (isLoading && products.length === 0) return null;
-    if (isLoading) return <LoadingFooter isLoading={isLoading} />;
-    if (!hasMoreData && products.length > 0) return <EmptyProductState />;
-    return null;
-  };
+ const renderFooter = () => {
+
+  if (isLoading && products.length > 0) {
+    return <LoadingFooter isLoading={isLoading} />;
+  }
+  
+  if (!isLoading && products.length === 0 && !hasMoreData) {
+    return <EmptyProductState isSearchEmpty={true} />;
+  }
+
+  if (!isLoading && !hasMoreData && products.length > 0) {
+    return <EmptyProductState isSearchEmpty={false} />;
+  }
+  
+  return null;
+};
+ 
+const dynamicPadding = hasMoreData ? insets.bottom + 20: insets.bottom + 10;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
-      <FlatList
-        data={products}
-        initialNumToRender={10}
-        windowSize={5}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        style={{ flex: 1 }}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: insets.bottom + 5 },
-        ]}
-        ItemSeparatorComponent={renderSeparator}
-        ListHeaderComponent={
-          <ListHeader
-            location={location}
-            handleMarketPress={handleMarketPress}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-        onEndReached={fetchProductsData}
-        onEndReachedThreshold={0.7}
-        ListFooterComponent={renderFooter}
-      />
+        <FlatList
+          data={products}
+          initialNumToRender={7}
+          windowSize={7}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          style={{ flex: 1 }}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingBottom: dynamicPadding },
+          ]}
+          ItemSeparatorComponent={renderSeparator}
+          ListHeaderComponent={
+            <ListHeader
+              location={location}
+              handleMarketPress={handleMarketPress}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+          onEndReached={fetchProductsData}
+          onEndReachedThreshold={0.01}
+          ListFooterComponent={renderFooter}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={7}
+        />
     </View>
   );
 }
 
 export const styles = StyleSheet.create({
   listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 100,
+    paddingHorizontal: 15,
     flexGrow: 1,
   },
   separator: {
-    height: 16,
+    height: 12,
   },
   headerContainer: {
     width: "100%",
