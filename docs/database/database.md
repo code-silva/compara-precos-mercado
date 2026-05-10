@@ -15,17 +15,14 @@ Esta secção tem por objetivo explicar a base de dados que será utilizada nest
 
 ### 2.2 Atributos
 
+<i>Obs: Atributos <u>sublinhados</u> representam a chave primária, enquanto atributos com cerquilha(#) representam chaves estrangeiras.</i>
+
+- **Product**(<u>id</u>, #category, name, brand, measurement, measurement_unit, european_article_number, image)
 - **Category**(<u>id</u>, name, priority)
-
-- **Product**(<u>id</u>, name, brand, measurement, measurement_unit, european_article_number, image)
-
 - **ParentSupermarket**(<u>id</u>, name)
-
-- **BranchSupermarket**(<u>id</u>, coordinates, state, city)
-
+- **BranchSupermarket**(<u>id</u>, #parent_supermarket, coordinates, state, city)
 - **Offer**(<u>id</u>, url, expiration_date)
-
-- **Report**(<u>id</u>, reason, description, status, device_id, creation_date)
+- **Report**(<u>id</u>, #offer, reason, description, status, device_id, creation_date)
 
 ### 2.3 Relacionamentos
 
@@ -36,13 +33,13 @@ Um **Product** pertence a obrigatoriamente uma única **Category**, enquanto uma
 <br><br>
 
 2. ParentSupermarket- **possui** - BranchSupermarket <br>
-Um **ParentSupermarket** possui ao menos um ou vários **BranchSupermarket**, enquanto um **BranchSupermarket** faz parte de obrigatoriamente de apenas um **ParentSupermarket**. 
+Um **ParentSupermarket** possui ao menos um ou vários **BranchSupermarket**, enquanto um **BranchSupermarket** faz parte de obrigatoriamente de apenas um **ParentSupermarket**.
 <br>
 **Cardinalidade: (1,1) : (1,n)**
 <br><br>
 
 3. Offer - **possui** - Report <br>
-Uma **Offer** possui zero ou vários **Report**, enquanto um **Report** faz parte de obrigatoriamente de apenas uma **Offer**. 
+Uma **Offer** possui zero ou vários **Report**, enquanto um **Report** faz parte de obrigatoriamente de apenas uma **Offer**.
 <br>
 **Cardinalidade: (1,1) : (0:n)**
 <br><br>
@@ -51,24 +48,29 @@ Uma **Offer** possui zero ou vários **Report**, enquanto um **Report** faz part
 Um **Product** e uma **Offer** são oferecidas obrigatoriamente por um único **BranchSupermarket**. Um **Product** e um **BranchSupermarket** são oferecidas obrigatoriamente por uma única **Offer**. E em uma **Offer** e um **BranchSupermarket**  podem ser oferecidas ao menos um ou vários **Product**.
 <br>
 **Cardinalidade: (1,1) : (1,n) : (1:1)**
-<br><br>
 
 ### 2.4 Diagramas
 
-![Diagrama Entidade-Relacionamento]('https://raw.githubusercontent.com/code-silva/compara-precos-mercado/refs/heads/main/docs/img/database/der.png')
-![Diagrama Lógico de Dados]('https://raw.githubusercontent.com/code-silva/compara-precos-mercado/refs/heads/main/docs/img/database/dld.png')
---- 
+`Diagrama Entidade-Relacionamento`
+<div align="center">
+  <img src="../../img/database/der.png" alt="Diagrama Entidade-Relacionamento" style="border: 1px solid black;">
+</div>
+
+`Diagrama Lógico de Dados`
+<div align="center">
+  <img src="../../img/database/dld.png" alt="Diagrama Lógico de Dados" style="border: 1px solid black;">
+</div>
 
 ## 3. Dicionário de Dados
 
-## 3.1 Category
+### 3.1 Category
 | Atributo | Tipo | Propriedades | Descrição |
 | :--- | :--- | :--- | :--- |
 | id | INT | PK, Auto-increment, Obrigatório | Identificador único da tupla, automaticamente atribuído pelo SGBD. |
 | name | VARCHAR(50) | Obrigatório, Único | Nome da categoria. |
 | priority | INT | Obrigatório, Único | Prioridade da categoria. Quanto menor, mais prioritário será. |
 
-## 3.2 Product
+### 3.2 Product
 | Atributo | Tipo | Propriedades | Descrição |
 | :--- | :--- | :--- | :--- |
 | id | INT | PK, Auto-increment, Obrigatório | Identificador único da tupla, automaticamente atribuído pelo SGBD. |
@@ -80,7 +82,7 @@ Um **Product** e uma **Offer** são oferecidas obrigatoriamente por um único **
 | measurement_unit | ENUM(‘KG’, ‘G’, ‘L’, ‘ML’, ‘UN’) | Obrigatório | Unidade de medida do produto, podendo ser: KG (Quilo), G (Grama), L (Litro), ML (Mililitro), UN (Unidade). |
 | image | - | Opcional | Imagem/Foto do Produto |
 
-## 3.3 BranchSupermarket
+### 3.3 BranchSupermarket
 | Atributo | Tipo | Propriedades | Descrição |
 | :--- | :--- | :--- | :--- |
 | id | INT | PK, Auto-increment, Obrigatório | Identificador único da tupla, automaticamente atribuído pelo SGBD. |
@@ -89,20 +91,20 @@ Um **Product** e uma **Offer** são oferecidas obrigatoriamente por um único **
 | state | CHAR(2) | Obrigatório | Sigla do estado em que o mercado está localizado. |
 | city | VARCHAR(50) | Obrigatório | Nome da cidade em que o mercado está localizado. |
 
-## 3.4 ParentSupermarket
+### 3.4 ParentSupermarket
 | Atributo | Tipo | Propriedades | Descrição |
 | :--- | :--- | :--- | :--- |
 | id | INT | PK, Auto-increment, Obrigatório | Identificador único da tupla, automaticamente atribuído pelo SGBD. |
 | name | VARCHAR(100) | Obrigatório, Único | É o nome do mercado matriz. |
 
-## 3.5 Offer
+### 3.5 Offer
 | Atributo | Tipo | Propriedades | Descrição |
 | :--- | :--- | :--- | :--- |
 | id | INT | PK, Auto-increment, Obrigatório | Identificador único da tupla, automaticamente atribuído pelo SGBD. |
 | url | VARCHAR(2083) | Obrigatório, Único | É a URL de onde este panfleto de mercado foi extraído. |
 | expiration_date | DATE | Obrigatório | É a data em que esta oferta expirará. |
 
-## 3.6 Report
+### 3.6 Report
 | Atributo | Tipo | Propriedades | Descrição |
 | :--- | :--- | :--- | :--- |
 | id | INT | PK, Auto-increment, Obrigatório | Identificador único da tupla, automaticamente atribuído pelo SGBD. |
@@ -110,10 +112,10 @@ Um **Product** e uma **Offer** são oferecidas obrigatoriamente por um único **
 | device_id | VARCHAR(255) | Obrigatório | É o código do celular da pessoa que realizou a denúncia. |
 | reason | ENUM('WP', 'NP', 'EO', 'O') | Obrigatório | É o motivo da denúncia, podendo ser: Preço Errado (WP), Produto Inexistente (NP), Oferta Expirada (EO), Outros (O). |
 | description | VARCHAR(500) | Opcional | É a descrição da denúncia. |
-| status | ENUM('R', 'P', 'G') | Obrigatório | Status da denúncia, podenso ser: Resolvida (R), Pendente (P), Improcedente (G). |
+| status | ENUM('R', 'P', 'G') | Obrigatório | Status da denúncia, podendo ser: Resolvida (R), Pendente (P), Improcedente (G). |
 | creation_date | DATETIME | Obrigatório | É a data em que a denúncia foi realizada. |
 
-## 3.7 BranchProductOffer
+### 3.7 BranchProductOffer
 | Atributo | Tipo | Propriedades | Descrição |
 | :--- | :--- | :--- | :--- |
 | id | INT | PK, Auto-increment, Obrigatório | Identificador único da tupla, automaticamente atribuído pelo SGBD. |
