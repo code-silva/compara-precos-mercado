@@ -26,7 +26,7 @@ class HybridSearchView(APIView):
         SIMILARITY_THRESHOLD = 0.25
 
         if not query:
-            return Response({"offers": [], "supermarkets": []})
+            return Response({"offers": []})
 
         offers = (
             BranchProductOffer.objects.annotate(
@@ -49,25 +49,7 @@ class HybridSearchView(APIView):
             .order_by("-similarity_name")
         )
 
-        supermarkets = (
-            BranchSupermarket.objects.annotate(
-                similarity_name=TrigramSimilarity("parent_supermarket__name", query)
-            )
-            .filter(
-                Q(parent_supermarket__name__icontains=query)
-                | Q(location__city__icontains=query)
-                | Q(similarity_name__gt=SIMILARITY_THRESHOLD)
-            )
-            .select_related("parent_supermarket", "location")
-        )
-
-        return Response(
-            {
-                "search_term": query,
-                "offers": BranchProductOfferSerializer(offers, many=True).data,
-                "supermarkets": BranchSupermarketSerializer(supermarkets, many=True).data,
-            }
-        )
+        return Response({"offers": BranchProductOfferSerializer(offers, many=True).data})
 
 
 class BranchSupermarketListView(generics.ListAPIView):
@@ -83,23 +65,19 @@ class BranchSupermarketListView(generics.ListAPIView):
         user_latitude = self.request.query_params.get("latitude")
         user_longitude = self.request.query_params.get("longitude")
 
-        base_queryset = BranchSupermarket.objects.select_related(
+        queryset = BranchSupermarket.objects.select_related(
             "parent_supermarket",
             "location",
         ).all()
 
-        if not user_latitude or not user_longitude:
-            return base_queryset.order_by("parent_supermarket__name")
-
         try:
             user_location = Point(float(user_longitude), float(user_latitude), srid=4326)
-
         except (ValueError, TypeError):
-            return base_queryset.order_by("parent_supermarket__name")
+            return queryset.order_by("parent_supermarket__name")
 
         MAXIMUM_RADIUS_METERS = 5000
         results = (
-            base_queryset.filter(coordinates__dwithin=(user_location, MAXIMUM_RADIUS_METERS))
+            queryset.filter(coordinates__dwithin=(user_location, MAXIMUM_RADIUS_METERS))
             .annotate(distance=Distance("coordinates", user_location))
             .order_by("distance")
         )
@@ -112,36 +90,31 @@ class BranchProductOfferListView(generics.ListAPIView):
     pagination_class = OffersPagination
 
     def get_queryset(self):
-        queryset = BranchProductOffer.objects.select_related(
-            "product", "product__category", "branch_supermarket__parent_supermarket"
-        )
-
         user_latitude = self.request.query_params.get("latitude")
         user_longitude = self.request.query_params.get("longitude")
-        supermarket_identifier = self.request.query_params.get("supermarket_id")
+        supermarket_id = self.request.query_params.get("supermarket_id")
 
-        if supermarket_identifier:
-            queryset = queryset.filter(branch_supermarket__id=supermarket_identifier)
+        queryset = BranchProductOffer.objects.select_related(
+            "product",
+            "product__category",
+            "branch_supermarket__parent_supermarket"
+        )
+
+        if supermarket_id:
+            queryset = queryset.filter(branch_supermarket__id=supermarket_id)
 
         try:
-            if user_latitude and user_longitude:
-                user_location = Point(float(user_longitude), float(user_latitude), srid=4326)
-                search_radius_meters = 5000
-
-                queryset = (
-                    queryset.filter(
-                        branch_supermarket__coordinates__dwithin=(
-                            user_location,
-                            search_radius_meters,
-                        )
-                    )
-                    .annotate(distance=Distance("branch_supermarket__coordinates", user_location))
-                    .order_by("product__category__priority", "distance")
-                )
-            else:
-                queryset = queryset.order_by("product__category__priority")
-
+            user_location = Point(float(user_longitude), float(user_latitude), srid=4326)
         except (ValueError, TypeError):
-            queryset = queryset.order_by("product__category__priority")
+            return queryset.order_by("product__category__priority")
 
-        return queryset
+        MAXIMUM_RADIUS_METERS = 5000
+        results = (
+            queryset.filter(branch_supermarket__coordinates__dwithin=(
+                user_location,
+                MAXIMUM_RADIUS_METERS
+            ))
+            .annotate(distance=Distance("branch_supermarket__coordinates", user_location))
+            .order_by("product__category__priority", "distance"))
+
+        return results
