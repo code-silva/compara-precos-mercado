@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -7,9 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { fetchMarkets } from "../api/markets";
-import type { CarouselProps, Market } from "../types/market";
+import type { Market } from "../types/market";
 
+// CONSTANTS
 const cardMinWidth = 160;
 const minCardsVisible = 1;
 const nextCardPeek = 0.2;
@@ -21,28 +20,18 @@ const quantity = Math.max(minCardsVisible, fittingCards);
 const divisor = quantity + nextCardPeek;
 const cardWidth = width / divisor - cardMarginOffset;
 
-export const MarketCarousel = ({
-  coordinates,
-  handleMarketPress,
-}: CarouselProps & { handleMarketPress: (market: Market) => void }) => {
-  const [supermarkets, setSupermarkets] = useState<Market[]>([]);
+// INTERFACES
+export interface CarouselProps {
+  markets: Market[];
+  handleMarketPress: (market: Market) => void;
+}
 
-  useEffect(() => {
-    async function loadSupermarkets() {
-      if (!coordinates) return;
-      const data = await fetchMarkets(
-        coordinates.latitude,
-        coordinates.longitude,
-      );
-      setSupermarkets(data.results);
-    }
-    loadSupermarkets();
-  }, [coordinates]);
-
+// COMPONENT
+export const MarketCarousel = (props: CarouselProps) => {
   const renderItem = ({ item }: { item: Market }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => handleMarketPress(item)}
+      onPress={() => props.handleMarketPress(item)}
       activeOpacity={0.7}
     >
       <Text style={styles.name}>{item.name}</Text>
@@ -53,7 +42,7 @@ export const MarketCarousel = ({
     <View style={styles.container}>
       <Text style={styles.title}>Mercados Próximos</Text>
       <FlatList
-        data={supermarkets}
+        data={props.markets}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         horizontal
@@ -69,6 +58,7 @@ export const MarketCarousel = ({
   );
 };
 
+// STYLES
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 10,

@@ -104,9 +104,6 @@ class BranchSupermarketListView(generics.ListAPIView):
             .order_by("distance")
         )
 
-        if not results:
-            return base_queryset.order_by("parent_supermarket__name")
-
         return results
 
 

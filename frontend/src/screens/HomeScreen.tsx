@@ -1,51 +1,27 @@
 import { useNavigation } from "@react-navigation/native";
 import type * as Location from "expo-location";
 import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { fetchMarkets } from "../api/markets";
 import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
-import { InfoBanner } from "../components/InfoBanner";
+import { HomeHeader } from "../components/HomeScreenHeader";
 import { LoadingFooter } from "../components/LoadingFooter";
-import { MarketCarousel } from "../components/MarketCarousel";
 import ProductCard from "../components/ProductCard";
-import { SearchBar } from "../components/SearchBar";
 import type { Market } from "../types/market";
 import type { Product } from "../types/product";
 
 // SUPPORT FUNCTIONS
 const renderSeparator = () => <View style={styles.separator} />;
 
-const ListHeader = React.memo(
-  ({
-    location,
-    handleMarketPress,
-  }: {
-    location: Location.LocationObject;
-    handleMarketPress: (market: Market) => void;
-  }) => (
-    <View style={[styles.headerContainer, { alignSelf: "stretch" }]}>
-      <SearchBar />
-      <MarketCarousel
-        coordinates={location?.coords}
-        handleMarketPress={handleMarketPress}
-      />
-      <InfoBanner />
-      <Text style={styles.sectionTitle}>Ofertas do Dia</Text>
-    </View>
-  ),
-);
-
-export function HomeScreen({
-  location,
-}: {
-  location: Location.LocationObject;
-}) {
+export function HomeScreen({location}: {location: Location.LocationObject}) {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
+  const [markets, setMarkets] = useState<Market[]>([]);
   const navigation = useNavigation<any>();
 
   // ACTION WHEN CLICKING ON PRODUCT
@@ -111,11 +87,26 @@ export function HomeScreen({
     }
   }, [location, products.length, isLoading, hasMoreData, fetchProductsData]);
 
+  useEffect(() => {
+    async function loadMarkets() {
+      if (!location) return;
+
+      const data = await fetchMarkets(
+        location.coords.latitude,
+        location.coords.longitude,
+      );
+
+      setMarkets(data.results);
+    }
+
+    loadMarkets();
+  }, [location]);
+
   const renderItem = useCallback(
   ({ item, index }: { item: Product; index: number }) => (
     <ProductCard
-      product={item} 
-      ranking={index + 1} 
+      product={item}
+      ranking={index + 1}
       handlePress={handlePress}
       handleAddToList={handleAdd}
     />
@@ -128,7 +119,7 @@ export function HomeScreen({
   if (isLoading && products.length > 0) {
     return <LoadingFooter isLoading={isLoading} />;
   }
-  
+
   if (!isLoading && products.length === 0 && !hasMoreData) {
     return <EmptyProductState isSearchEmpty={true} />;
   }
@@ -136,39 +127,37 @@ export function HomeScreen({
   if (!isLoading && !hasMoreData && products.length > 0) {
     return <EmptyProductState isSearchEmpty={false} />;
   }
-  
+
   return null;
 };
- 
+
 const dynamicPadding = hasMoreData ? insets.bottom + 20: insets.bottom + 10;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
-        <FlatList
-          data={products}
-          initialNumToRender={7}
-          windowSize={7}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
-          style={{ flex: 1 }}
-          contentContainerStyle={[
-            styles.listContent,
-            { paddingBottom: dynamicPadding },
-          ]}
-          ItemSeparatorComponent={renderSeparator}
-          ListHeaderComponent={
-            <ListHeader
-              location={location}
-              handleMarketPress={handleMarketPress}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-          onEndReached={fetchProductsData}
-          onEndReachedThreshold={0.01}
-          ListFooterComponent={renderFooter}
-          removeClippedSubviews={true}
-          maxToRenderPerBatch={7}
-        />
+      <FlatList
+        data={products}
+        initialNumToRender={10}
+        windowSize={5}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
+        style={{ flex: 1 }}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: insets.bottom + 5 },
+        ]}
+        ItemSeparatorComponent={renderSeparator}
+        ListHeaderComponent={
+          <HomeHeader
+            markets={markets}
+            handleMarketPress={handleMarketPress}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+        onEndReached={fetchProductsData}
+        onEndReachedThreshold={0.7}
+        ListFooterComponent={renderFooter}
+      />
     </View>
   );
 }
@@ -180,15 +169,5 @@ export const styles = StyleSheet.create({
   },
   separator: {
     height: 12,
-  },
-  headerContainer: {
-    width: "100%",
-    paddingBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontFamily: "Inter-Bold",
-    color: "#333333",
-    marginTop: 10,
   },
 });

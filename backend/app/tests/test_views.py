@@ -51,16 +51,13 @@ class TestBranchSupermarketListView:
     def test_with_user_outside_radius(self, client, supermarkets_list):
         """
         Testing when the user is not within determined radius.
-        It should return an ordered supermarket list.
+        It should return an empty list.
         """
 
         response = client.get(self.URL, {"latitude": -15.7801, "longitude": -47.9292})
 
         results = response.data["results"]
-
-        for index in range(len(results)):
-            supermarket_name = results[index]["name"]
-            assert supermarket_name == supermarkets_list[index].parent_supermarket.name
+        assert not results
 
     def test_with_user_inside_radius(self, client, branch_supermarket):
         """
