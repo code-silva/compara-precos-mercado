@@ -3,6 +3,7 @@ target-version = "py312"
 line-length = 100
 indent-width = 4
 output-format = 'grouped'
+extend-exclude = ["*/migrations/*"]
 
 [tool.ruff.lint]
 # "E" e "W" são os erros e avisos da PEP 8
@@ -21,3 +22,4 @@ indent-style = "space"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "core.settings_test"
+addopts = "--no-migrations"

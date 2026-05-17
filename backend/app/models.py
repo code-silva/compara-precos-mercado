@@ -35,39 +35,39 @@ class Product(models.Model):
 
     european_article_number = models.CharField(max_length=20, unique=True, blank=True, null=True)
 
-    def __str__(self):
-        return f"{self.name} {self.brand} - {self.measurement}{self.measurement_unit}"
-
     class Meta:
         verbose_name = "Produto"
         verbose_name_plural = "Produtos"
+
+    def __str__(self):
+        return f"{self.name} {self.brand} - {self.measurement}{self.measurement_unit}"
 
 
 class ParentSupermarket(models.Model):
     """Class representing the 'ParentSupermarket' entity in the database."""
 
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.name}"
+    name = models.CharField(max_length=100, unique=True)
 
     class Meta:
         verbose_name = "Supermercado Matriz"
         verbose_name_plural = "Supermercados Matrizes"
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Offer(models.Model):
     """Class representing the 'Offer' entity in the database."""
 
-    url = models.URLField(max_length=2083, blank=False)
+    url = models.URLField(max_length=2083, blank=False, unique=True)
     expiration_date = models.DateField()
-
-    def __str__(self):
-        return f"Expires on {self.expiration_date}"
 
     class Meta:
         verbose_name = "Oferta"
         verbose_name_plural = "Ofertas"
+
+    def __str__(self):
+        return f"Expires on {self.expiration_date}"
 
 
 class Report(models.Model):
@@ -92,12 +92,12 @@ class Report(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Report {self.get_reason_display()} - {self.get_status_display()}"
-
     class Meta:
         verbose_name = "Denúncia"
         verbose_name_plural = "Denúncias"
+
+    def __str__(self):
+        return f"Report {self.get_reason_display()} - {self.get_status_display()}"
 
 
 class Location(models.Model):
@@ -135,12 +135,12 @@ class Location(models.Model):
     state = models.CharField(max_length=20, choices=State.choices)
     city = models.CharField(max_length=50, blank=False)
 
-    def __str__(self):
-        return f"State: {self.state}, City: {self.city}"
-
     class Meta:
         verbose_name = "Localização"
         verbose_name_plural = "Localizações"
+
+    def __str__(self):
+        return f"State: {self.state}, City: {self.city}"
 
 
 class BranchSupermarket(models.Model):
@@ -152,12 +152,18 @@ class BranchSupermarket(models.Model):
         ParentSupermarket, on_delete=models.CASCADE, related_name="branches"
     )
 
-    def __str__(self):
-        return f"{self.parent_supermarket.name} - {self.location.city}"
-
     class Meta:
         verbose_name = "Supemercado Filial"
         verbose_name_plural = "Supemercado Filiais"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["coordinates", "parent_supermarket"],
+                name="unique_coordinates_parent_supermarket",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.parent_supermarket.name} - {self.location.city}"
 
 
 class BranchProductOffer(models.Model):
@@ -172,9 +178,9 @@ class BranchProductOffer(models.Model):
     offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name="branch_product_links")
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
-    def __str__(self):
-        return f"{self.product.name} at {self.branch_supermarket}: $ {self.price}"
-
     class Meta:
         verbose_name = "Produto Ofertado"
         verbose_name_plural = "Produtos Ofertados"
+
+    def __str__(self):
+        return f"{self.product.name} at {self.branch_supermarket}: $ {self.price}"

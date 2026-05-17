@@ -44,7 +44,7 @@ class HybridSearchView(APIView):
                 "product",
                 "product__category",
                 "branch_supermarket__parent_supermarket",
-                "branch_supermarket__location"
+                "branch_supermarket__location",
             )
             .order_by("-similarity_name")
         )
@@ -95,9 +95,7 @@ class BranchProductOfferListView(generics.ListAPIView):
         supermarket_id = self.request.query_params.get("supermarket_id")
 
         queryset = BranchProductOffer.objects.select_related(
-            "product",
-            "product__category",
-            "branch_supermarket__parent_supermarket"
+            "product", "product__category", "branch_supermarket__parent_supermarket"
         )
 
         if supermarket_id:
@@ -110,11 +108,11 @@ class BranchProductOfferListView(generics.ListAPIView):
 
         MAXIMUM_RADIUS_METERS = 5000
         results = (
-            queryset.filter(branch_supermarket__coordinates__dwithin=(
-                user_location,
-                MAXIMUM_RADIUS_METERS
-            ))
+            queryset.filter(
+                branch_supermarket__coordinates__dwithin=(user_location, MAXIMUM_RADIUS_METERS)
+            )
             .annotate(distance=Distance("branch_supermarket__coordinates", user_location))
-            .order_by("product__category__priority", "distance"))
+            .order_by("product__category__priority", "distance")
+        )
 
         return results

@@ -1,6 +1,5 @@
-from django.urls import reverse
 import pytest
-from model_bakery import baker
+from django.urls import reverse
 
 
 @pytest.mark.django_db
@@ -11,8 +10,8 @@ class TestBranchSupermarketListView:
 
     URL = reverse("nearby_markets")
 
-    @pytest.mark.parametrize('value', [' ', '', 'invalidtype', 123131.13131313, True])
-    def test_with_invalid_longitude(self, value,  api_client, supermarkets_list):
+    @pytest.mark.parametrize("value", [" ", "", "invalidtype", 123131.13131313, True])
+    def test_with_invalid_longitude(self, value, api_client, supermarkets_list):
         """
         Testing when longitude is invalid.
         It should return an ordered supermarket list.
@@ -32,7 +31,7 @@ class TestBranchSupermarketListView:
             supermarket_name = results[index]["name"]
             assert supermarket_name == supermarkets_list[index].parent_supermarket.name
 
-    @pytest.mark.parametrize('value', [' ', '', 'invalidtype', 123131.13131313, True])
+    @pytest.mark.parametrize("value", [" ", "", "invalidtype", 123131.13131313, True])
     def test_with_invalid_latitude(self, value, api_client, supermarkets_list):
         """
         Testing when latitude is invalid.
@@ -84,44 +83,39 @@ class TestHybridSearchView:
     Class destined to the elaboration of tests of 'HybridSearchView' view.
     """
 
-    URL = reverse('search')
+    URL = reverse("search")
 
-    @pytest.mark.parametrize('value', ['', '    '])
+    @pytest.mark.parametrize("value", ["", "    "])
     def test_get_with_invalid_query(self, value, api_client):
         """
         Testing the GET method of the view with an invalid query (empty or '').
         It should return an empty offers array.
         """
 
-        response = api_client.get(
-            self.URL,
-            {'query': value}
-        )
+        response = api_client.get(self.URL, {"query": value})
 
-        results = response.data['offers']
+        results = response.data["offers"]
 
         assert response.status_code == 200
         assert not results
 
-    @pytest.mark.skip(reason='PostgreeSQL is needed to run this test.')
-    @pytest.mark.parametrize('value', ['arroz', 'feijão', 'danone'])
+    @pytest.mark.skip(reason="PostgreeSQL is needed to run this test.")
+    @pytest.mark.parametrize("value", ["arroz", "feijão", "danone"])
     def test_get_with_valid_query(self, value, api_client, offers_list):
         """
         Testing the GET method of the view with a valid query.
         It should return the fetched products.
         """
 
-        response = api_client.get(
-            self.URL,
-            {'query': value}
-        )
+        response = api_client.get(self.URL, {"query": value})
 
-        results = response.data['offers']
+        results = response.data["offers"]
 
         assert response.status_code == 200
         assert results == offers_list
 
 
+@pytest.mark.django_db
 class TestBranchProductOfferListView:
     """
     Class destined to the elaboration of tests of 'BranchProductOfferListView' view.
@@ -141,11 +135,7 @@ class TestBranchProductOfferListView:
 
         response = api_client.get(
             self.URL,
-            {
-                "latitude": -15.7801,
-                "longitude": -47.9292,
-                "supermarket_id": supermarket_id
-            }
+            {"latitude": -15.7801, "longitude": -47.9292, "supermarket_id": supermarket_id},
         )
 
         results = response.data["results"]
@@ -156,7 +146,7 @@ class TestBranchProductOfferListView:
         assert priorities == sorted(priorities)
 
         for result in results:
-            assert supermarket_name == result['marketName']
+            assert supermarket_name == result["marketName"]
 
     def test_with_supermarket_id_missing(self, api_client, offers_list):
         """
@@ -169,7 +159,7 @@ class TestBranchProductOfferListView:
             {
                 "latitude": -15.7801,
                 "longitude": -47.9292,
-            }
+            },
         )
 
         results = response.data["results"]
@@ -179,8 +169,8 @@ class TestBranchProductOfferListView:
         assert response.status_code == 200
         assert priorities == sorted(priorities)
 
-    @pytest.mark.parametrize('value', [' ', '', 'invalidtype', 123131.13131313, True])
-    def test_with_invalid_longitude(self, value,  api_client, offers_list):
+    @pytest.mark.parametrize("value", [" ", "", "invalidtype", 123131.13131313, True])
+    def test_with_invalid_longitude(self, value, api_client, offers_list):
         """
         Testing when longitude is invalid.
         It should return a list of offers ordered by the 'category' priority.
@@ -189,12 +179,7 @@ class TestBranchProductOfferListView:
         supermarket_id = offers_list[0].branch_supermarket.id
 
         response = api_client.get(
-            self.URL,
-            {
-                "latitude": -15.7801,
-                "longitude": value,
-                "supermarket_id": supermarket_id
-            }
+            self.URL, {"latitude": -15.7801, "longitude": value, "supermarket_id": supermarket_id}
         )
 
         results = response.data["results"]
@@ -204,7 +189,7 @@ class TestBranchProductOfferListView:
         assert response.status_code == 200
         assert priorities == sorted(priorities)
 
-    @pytest.mark.parametrize('value', [' ', '', 'invalidtype', 123131.13131313, True])
+    @pytest.mark.parametrize("value", [" ", "", "invalidtype", 123131.13131313, True])
     def test_with_invalid_latitude(self, value, api_client, offers_list):
         """
         Testing when latitude is invalid.
@@ -214,12 +199,7 @@ class TestBranchProductOfferListView:
         supermarket_id = offers_list[0].branch_supermarket.id
 
         response = api_client.get(
-            self.URL,
-            {
-                "latitude": value,
-                "longitude": -47.9292,
-                "supermarket_id": supermarket_id
-            }
+            self.URL, {"latitude": value, "longitude": -47.9292, "supermarket_id": supermarket_id}
         )
 
         results = response.data["results"]
@@ -238,12 +218,7 @@ class TestBranchProductOfferListView:
         supermarket_id = offers_list[0].branch_supermarket.id
 
         response = api_client.get(
-            self.URL,
-            {
-                "latitude": -78.543,
-                "longitude": -1.213,
-                "supermarket_id": supermarket_id
-            }
+            self.URL, {"latitude": -78.543, "longitude": -1.213, "supermarket_id": supermarket_id}
         )
         results = response.data["results"]
         assert not results

@@ -4,7 +4,7 @@ site/
 # Arquivos de cache do Python
 __pycache__/
 *.pyc
-*.ruff_cache/
+.ruff_cache/
 
 # Pytest
 .pytest_cache/
@@ -17,12 +17,12 @@ htmlcov/
 
 # Dependências
 node_modules/
-/package-lock.json/
-/package.json/
-/tsconfig.json/
-/requirements.txt/
-/biome.json/
-/app.json/
+/package-lock.json
+/package.json
+/tsconfig.json
+/requirements.txt
+/biome.json
+/app.json
 
 # Expo
 .expo/

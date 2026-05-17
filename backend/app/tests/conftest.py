@@ -3,7 +3,16 @@ from django.contrib.gis.geos import Point
 from model_bakery import baker
 from rest_framework.test import APIClient
 
-from app.models import BranchSupermarket, Location, ParentSupermarket, BranchProductOffer
+from app.models import BranchProductOffer, BranchSupermarket, Location, ParentSupermarket
+
+# Sqlite doesn't support composite unique contraint.
+# So I had to remove it from testing
+if hasattr(BranchSupermarket._meta, "constraints"):
+    BranchSupermarket._meta.constraints = [
+        c
+        for c in BranchSupermarket._meta.constraints
+        if c.name != "unique_coordinates_parent_supermarket"
+    ]
 
 
 @pytest.fixture(autouse=True)
@@ -44,8 +53,7 @@ def supermarkets_list(db):
 
     parent_supermarkets = baker.make(ParentSupermarket, _quantity=5)
     branch_supermarkets = [
-        baker.make(BranchSupermarket, parent_supermarket=parent)
-        for parent in parent_supermarkets
+        baker.make(BranchSupermarket, parent_supermarket=parent) for parent in parent_supermarkets
     ]
     branch_supermarkets.sort(key=lambda x: x.parent_supermarket.name)
 
