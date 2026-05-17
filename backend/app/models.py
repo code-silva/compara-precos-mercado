@@ -17,11 +17,11 @@ class Product(models.Model):
     """Class representing the 'Product' entity in the database."""
 
     class MeasurementUnit(models.TextChoices):
-        KG = "KG", "Quilo"
-        G = "G", "Grama"
-        L = "L", "Litro"
-        ML = "ML", "Mililitro"
-        UN = "UN", "Unidade"
+        KG = "KG", "KG"
+        G = "G", "G"
+        L = "L", "L"
+        ML = "ML", "ML"
+        UN = "UN", "UN"
 
     name = models.CharField(max_length=50, blank=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")

@@ -1,14 +1,14 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { memo } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import type { Product } from "../types/product";
+
 
 interface ProductCardProps {
   product: Product;
   ranking?: number;
   handlePress: (product: Product) => void;
   handleAddToList: (product: Product) => void;
-  isGrid?: boolean;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -18,6 +18,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
   handleAddToList,
   isGrid,
 }) => {
+
+  const screenWidth = Dimensions.get("window").width;
+  const isSmallDevice = screenWidth < 360;
+
   const formattedDistance = React.useMemo(() => {
     if (product.distanceInKilometers === undefined) return null;
     if (product.distanceInKilometers === null) return null;
@@ -31,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.card, isGrid ? styles.gridStyle : styles.listStyle]}
+      style={[styles.card, { padding: isSmallDevice ? 8 : 12 }]}
       onPress={() => handlePress(product)}
       activeOpacity={0.9}
     >
@@ -43,24 +47,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
 
         <View style={styles.rankingBadge}>
-          <Text style={styles.rankingText}>
-            #{ranking || product.id}
-          </Text>
+          <Text style={styles.rankingText}>#{ranking || product.id}</Text>
         </View>
 
-        <View
-          style={[
-            styles.priceLabel,
-            isGrid && {
-              minWidth: undefined,
-              height: 23,
-              paddingHorizontal: 6,
-              top: 10,
-              right: 6,
-            },
-          ]}
-        >
-          <Text style={[styles.priceText, isGrid && { fontSize: 11 }]}>
+        <View style={styles.priceLabel}>
+          <Text style={[styles.priceText, { fontSize: isSmallDevice ? 10 : 11 }]}>
             R$ {Number(product.price).toFixed(2).replace(".", ",")}
           </Text>
         </View>
@@ -68,65 +59,59 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <TouchableOpacity
           style={[
             styles.addButton,
-            isGrid && { width: 30, height: 30, borderRadius: 15, bottom: 8 },
+            { 
+              width: isSmallDevice ? 26 : 30, 
+              height: isSmallDevice ? 26 : 30, 
+              borderRadius: isSmallDevice ? 13 : 15 
+            }
           ]}
           onPress={() => handleAddToList(product)}
         >
           <MaterialCommunityIcons
             name="playlist-plus"
-            size={isGrid ? 20 : 24}
+            size={isSmallDevice ? 16 : 18}
             color="#28a8b5"
           />
         </TouchableOpacity>
       </View>
 
       <View style={styles.infoContainer}>
-        <View style={isGrid ? { height: 44, justifyContent: "center" } : null}>
-          <Text
-            style={[
-              styles.productName,
-              isGrid && { fontSize: 13, lineHeight: 16 },
-            ]}
-            numberOfLines={2}
-          >
-            {product.productName}
-          </Text>
+        <View style={styles.topInfoRow}>
+          <View style={styles.productNameWrapper}>
+            <Text style={styles.productName} numberOfLines={2}>
+              {product.productName}
+              {product.measurement 
+                ? ` | ${Math.floor(Number(product.measurement))} ${product.measurementUnit || ""}` 
+                : product.measurementUnit 
+                ? ` | ${product.measurementUnit}` 
+                : ""
+              }
+            </Text>
+          </View>
+          
+          <View style={styles.marketWrapper}>
+            <Text style={styles.marketName} numberOfLines={1}>
+              {product.marketName}
+            </Text>
+          </View>
         </View>
 
-        <View
-          style={
-            isGrid
-              ? { height: 20, justifyContent: "center", marginTop: 2 }
-              : null
-          }
-        >
+        <View style={styles.bottomInfoRow}>
           <Text style={styles.brandStyle} numberOfLines={1}>
             {product.brand}
           </Text>
-        </View>
 
-        <View style={[styles.footerLine, isGrid && { marginTop: 5 }]}>
-          {product.measurementUnit && (
-            <View style={styles.weightLabel}>
-              <Text style={styles.weightText}>{product.measurementUnit}</Text>
+          {formattedDistance && (
+            <View style={styles.distanceWrapper}>
+              <View style={styles.iconContainer}>
+                <FontAwesome5 name="walking" size={8} color="#999" />
+                <View style={styles.dashLine} />
+                <FontAwesome5 name="map-marker-alt" size={8} color="#999" />
+              </View>
+              <Text style={styles.distanceText}>{formattedDistance}</Text>
             </View>
           )}
-
-          <Text style={styles.marketName} numberOfLines={1}>
-            {product.marketName}
-          </Text>
         </View>
-
-        {formattedDistance && (
-          <View style={styles.distanceContainer}>
-            <MaterialCommunityIcons
-              name="map-marker-distance"
-              size={12}
-              color="#666"
-            />
-            <Text style={styles.distanceText}>{formattedDistance}</Text>
-          </View>
-        )}
       </View>
     </TouchableOpacity>
   );
@@ -157,7 +142,7 @@ const styles = StyleSheet.create({
     position: "relative",
     overflow: "hidden",
     borderRadius: 12,
-    marginBottom: 5,
+    marginBottom: 8,
     backgroundColor: "#f9f9f9",
     justifyContent: "center",
     alignItems: "center",
@@ -168,8 +153,18 @@ const styles = StyleSheet.create({
   },
   productName: {
     fontWeight: "700",
-    fontSize: 14,
+    fontSize: 11,
     color: "#333",
+  },
+  marketName: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#28a8b5",
+    textAlign: "right",
+  },
+  marketWrapper: {
+    flex: 0.7, 
+    alignItems: "flex-end",
   },
   rankingBadge: {
     position: "absolute",
@@ -181,7 +176,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: "#eee",
-    elevation: 2,
   },
   rankingText: {
     fontSize: 10,
@@ -189,15 +183,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   priceLabel: {
-    minWidth: 65,
-    paddingVertical: 4,
+    minWidth: 30,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
     backgroundColor: "#28a8b5",
     borderRadius: 6,
     position: "absolute",
     top: 8,
     right: 8,
-    justifyContent: "center",
-    alignItems: "center",
   },
   priceText: {
     color: "#ffffff",
@@ -206,24 +199,40 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: "absolute",
-    bottom: 16,
+    bottom: 10,
     alignSelf: "center",
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    borderRadius: 5,
     backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
     elevation: 4,
   },
   infoContainer: {
-    paddingVertical: 4,
-    flex: 1,
+    paddingVertical: 2,
+    gap: 2,
+  },
+  topInfoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  bottomInfoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    marginTop: 2,
+  },
+  productNameWrapper: {
+    flex: 1.3,
+    paddingRight: 10,
   },
   brandStyle: {
-    fontSize: 11,
+    fontSize: 10,
     color: "#888",
     textTransform: "uppercase",
+  },
+  brandWrapper: {
+    flex: 1,
   },
   footerLine: {
     flexDirection: "row",
@@ -242,22 +251,27 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#666",
   },
-  marketName: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#28a8b5",
-    flex: 1,
+  distanceWrapper: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+    flexDirection: "column",
   },
-  distanceContainer: {
-    flexDirection: "row",
+  iconContainer: {
+    flexDirection: "row",    
     alignItems: "center",
-    marginTop: 4,
+    marginBottom: 2,         
+  },
+  dashLine: {
+    width: 8,
+    height: 1,
+    backgroundColor: "#999", 
+    marginHorizontal: 3,
   },
   distanceText: {
-    fontSize: 11,
+    fontSize: 10,
     color: "#999",
-    marginLeft: 3,
     fontWeight: "600",
+    textAlign: "right",
   },
 });
 
