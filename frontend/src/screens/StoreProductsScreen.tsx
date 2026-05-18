@@ -71,7 +71,7 @@ export function StoreProductsScreen({ route }: any) {
   };
 
   const renderFooter = () => {
-    if (isLoading && products.length > 0) {
+    if (isLoading) {
       return <LoadingFooter isLoading={isLoading} />;
     }
     if (!isLoading && products.length === 0 && !hasMoreData) {
@@ -96,7 +96,7 @@ export function StoreProductsScreen({ route }: any) {
           zIndex: 10,
           backgroundColor: "#FFF",
           paddingHorizontal: 14,
-          paddingBottom: 10, // 🎯 ADICIONADO: Evita que a SearchBar grude fisicamente no banner do mercado abaixo
+          paddingBottom: 10, 
         }}
       >
         <SearchBar />
@@ -123,14 +123,14 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     paddingHorizontal: 14, 
-    flexGrow: 1, // 🎯 DESCOMENTADO: Essencial para que a lista preencha a tela corretamente e alinhe o rodapé
+    flexGrow: 1, 
   },
   marketBanner: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
     backgroundColor: "#FFF",
-    marginHorizontal: 0, // 🎯 CORREÇÃO CRUCIAL: Mudado de 6 para 0! Agora ele segue a linha guia de 14px perfeitamente, sem entortar a grade de baixo
+    marginHorizontal: 0, 
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,

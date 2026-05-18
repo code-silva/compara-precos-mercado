@@ -16,7 +16,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   ranking,
   handlePress,
   handleAddToList,
-  isGrid,
 }) => {
 
   const screenWidth = Dimensions.get("window").width;

@@ -49,7 +49,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
       data={products}
       keyExtractor={(item, index) => `${item.id}-${index}`}
       renderItem={({ item, index }) => (
-        <View style={[styles.cardWrapper, { maxWidth: `${100 / numColumns}%` }]}>
+        <View 
+          style={
+            numColumns > 1 
+              ? [styles.cardWrapper, { maxWidth: `${100 / numColumns}%` }]
+              : { width: "100%", padding: 6 } // Layout limpo e em largura cheia para celulares ultra finos
+          }
+        >
           <ProductCard
             product={item}
             ranking={index + 1}
