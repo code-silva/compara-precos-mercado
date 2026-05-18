@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { ProductGrid } from "../components/ProductGrid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchProducts } from "../api/products";
 import { LoadingFooter } from "../components/LoadingFooter";
-import ProductCard from "../components/ProductCard";
 import { SearchBar } from "../components/SearchBar";
 import type { Product } from "../types/product";
+import { EmptyProductState } from "../components/EmptyProductState";
 
 export function StoreProductsScreen({ route }: any) {
   const insets = useSafeAreaInsets();
@@ -69,6 +70,19 @@ export function StoreProductsScreen({ route }: any) {
     );
   };
 
+  const renderFooter = () => {
+    if (isLoading && products.length > 0) {
+      return <LoadingFooter isLoading={isLoading} />;
+    }
+    if (!isLoading && products.length === 0 && !hasMoreData) {
+      return <EmptyProductState />;
+    }
+    if (!isLoading && !hasMoreData && products.length > 0) {
+      return <EmptyProductState />;
+    }
+    return null;
+  };
+
   return (
     <View
       style={{
@@ -81,33 +95,22 @@ export function StoreProductsScreen({ route }: any) {
         style={{
           zIndex: 10,
           backgroundColor: "#FFF",
-          paddingHorizontal: 20,
-          paddingBottom: 15,
+          paddingHorizontal: 14,
+          paddingBottom: 10, // 🎯 ADICIONADO: Evita que a SearchBar grude fisicamente no banner do mercado abaixo
         }}
       >
         <SearchBar />
       </View>
 
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item, index }) => (
-          <View style={styles.cardWrapper}>
-            <ProductCard
-              product={{ ...item, ranking: index + 1 }}
-              isGrid={true}
-              handlePress={() => console.log("Details")}
-              handleAddToList={() => console.log("Add to List")}
-            />
-          </View>
-        )}
-        numColumns={2}
-        columnWrapperStyle={styles.gridRow}
-        ListHeaderComponent={Header}
-        ListFooterComponent={() => <LoadingFooter isLoading={isLoading} />}
+      <ProductGrid
+        products={products}
+        handlePress={(product) => console.log("Details for:", product.productName)}
+        handleAddToList={(product) => console.log("Add to List:", product.productName)}
         onEndReached={fetchData}
-        onEndReachedThreshold={0.5}
-        contentContainerStyle={styles.gridContainer}
+        onEndReachedThreshold={0.7}
+        ListHeaderComponent={<Header />}
+        ListFooterComponent={renderFooter()}
+        contentContainerStyle={styles.gridContainer} 
       />
     </View>
   );
@@ -115,31 +118,24 @@ export function StoreProductsScreen({ route }: any) {
 
 const styles = StyleSheet.create({
   headerContainer: {
+    width: "100%",
     paddingBottom: 10,
   },
   gridContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  gridRow: {
-    justifyContent: "flex-start",
-  },
-  cardWrapper: {
-    flex: 1,
-    maxWidth: "50%",
-    marginHorizontal: 5,
-    marginBottom: 10,
+    paddingHorizontal: 14, 
+    flexGrow: 1, // 🎯 DESCOMENTADO: Essencial para que a lista preencha a tela corretamente e alinhe o rodapé
   },
   marketBanner: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
     backgroundColor: "#FFF",
-    marginHorizontal: 10,
+    marginHorizontal: 0, // 🎯 CORREÇÃO CRUCIAL: Mudado de 6 para 0! Agora ele segue a linha guia de 14px perfeitamente, sem entortar a grade de baixo
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,
     borderColor: "#EEE",
+    alignSelf: "stretch",
   },
   marketInitials: {
     fontSize: 20,
