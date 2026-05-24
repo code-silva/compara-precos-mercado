@@ -1,0 +1,34 @@
+name: Ruff Check  
+
+on:
+  push: 
+    branches: [ main, integration ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ main, integration ]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Instalar o Ruff
+        run: pip install ruff
+
+      - name: Rodar o Ruff (check e linter)
+        run: |
+          cd ./backend
+          ruff check .
+          ruff format --check .
