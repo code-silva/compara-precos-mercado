@@ -2,11 +2,11 @@ name: Pytest Execution
 
 on:
   push: 
-    branches: [ main, 'backend/**']
+    branches: [ main, integration ]
     paths:
       - 'backend/**'
   pull_request:
-    branches: [ main ]
+    branches: [ main, integration ]
     paths:
       - 'backend/**'
   workflow_dispatch:
@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
 
       - name: Instalar dependências do Sistema (GIS)
         run: |
