@@ -15,7 +15,7 @@ export interface Product {
 export interface ProductCardProps {
   product: Product;
   handlePress: (product: Product) => void;
-  ranking?: number; 
+  ranking?: number;
   handleAddToList: (product: Product) => void;
   isGrid?: boolean;
 }

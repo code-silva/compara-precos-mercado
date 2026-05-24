@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ProductGrid } from "../components/ProductGrid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchProducts } from "../api/products";
+import { EmptyProductState } from "../components/EmptyProductState";
 import { LoadingFooter } from "../components/LoadingFooter";
+import { ProductGrid } from "../components/ProductGrid";
 import { SearchBar } from "../components/SearchBar";
 import type { Product } from "../types/product";
-import { EmptyProductState } from "../components/EmptyProductState";
 
 export function StoreProductsScreen({ route }: any) {
   const insets = useSafeAreaInsets();
@@ -96,7 +96,7 @@ export function StoreProductsScreen({ route }: any) {
           zIndex: 10,
           backgroundColor: "#FFF",
           paddingHorizontal: 14,
-          paddingBottom: 10, 
+          paddingBottom: 10,
         }}
       >
         <SearchBar />
@@ -104,13 +104,17 @@ export function StoreProductsScreen({ route }: any) {
 
       <ProductGrid
         products={products}
-        handlePress={(product) => console.log("Details for:", product.productName)}
-        handleAddToList={(product) => console.log("Add to List:", product.productName)}
+        handlePress={(product) =>
+          console.log("Details for:", product.productName)
+        }
+        handleAddToList={(product) =>
+          console.log("Add to List:", product.productName)
+        }
         onEndReached={fetchData}
         onEndReachedThreshold={0.7}
         ListHeaderComponent={<Header />}
         ListFooterComponent={renderFooter()}
-        contentContainerStyle={styles.gridContainer} 
+        contentContainerStyle={styles.gridContainer}
       />
     </View>
   );
@@ -122,15 +126,15 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   gridContainer: {
-    paddingHorizontal: 14, 
-    flexGrow: 1, 
+    paddingHorizontal: 14,
+    flexGrow: 1,
   },
   marketBanner: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
     backgroundColor: "#FFF",
-    marginHorizontal: 0, 
+    marginHorizontal: 0,
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,

@@ -1,20 +1,24 @@
 import { useNavigation } from "@react-navigation/native";
 import type * as Location from "expo-location";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchMarkets } from "../api/markets";
 import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
-import { ProductGrid } from "../components/ProductGrid";
 import { HomeHeader } from "../components/HomeScreenHeader";
 import { LoadingFooter } from "../components/LoadingFooter";
+import { ProductGrid } from "../components/ProductGrid";
 import type { Market } from "../types/market";
 import type { Product } from "../types/product";
 
 // SUPPORT FUNCTIONS
 
-export function HomeScreen({location}: {location: Location.LocationObject}) {
+export function HomeScreen({
+  location,
+}: {
+  location: Location.LocationObject;
+}) {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -101,23 +105,21 @@ export function HomeScreen({location}: {location: Location.LocationObject}) {
     loadMarkets();
   }, [location]);
 
+  const renderFooter = () => {
+    if (isLoading && products.length > 0) {
+      return <LoadingFooter isLoading={isLoading} />;
+    }
 
- const renderFooter = () => {
+    if (!isLoading && products.length === 0 && !hasMoreData) {
+      return <EmptyProductState isSearchEmpty={true} />;
+    }
 
-  if (isLoading && products.length > 0) {
-    return <LoadingFooter isLoading={isLoading} />;
-  }
+    if (!isLoading && !hasMoreData && products.length > 0) {
+      return <EmptyProductState isSearchEmpty={false} />;
+    }
 
-  if (!isLoading && products.length === 0 && !hasMoreData) {
-    return <EmptyProductState isSearchEmpty={true} />;
-  }
-
-  if (!isLoading && !hasMoreData && products.length > 0) {
-    return <EmptyProductState isSearchEmpty={false} />;
-  }
-
-  return null;
-};
+    return null;
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
@@ -127,12 +129,9 @@ export function HomeScreen({location}: {location: Location.LocationObject}) {
         handleAddToList={handleAdd}
         onEndReached={fetchProductsData}
         onEndReachedThreshold={0.7}
-        ListFooterComponent={renderFooter()}
-        ListHeaderComponent={
-          <HomeHeader
-            markets={markets}
-            handleMarketPress={handleMarketPress}
-          />
+        listFooterComponent={renderFooter()}
+        listHeaderComponent={
+          <HomeHeader markets={markets} handleMarketPress={handleMarketPress} />
         }
         contentContainerStyle={[
           styles.gridContainer,

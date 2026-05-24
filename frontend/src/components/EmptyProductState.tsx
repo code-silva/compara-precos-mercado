@@ -1,33 +1,36 @@
+import { Feather } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons"; 
 
 interface EmptyProductStateProps {
   isSearchEmpty?: boolean;
 }
 
-export const EmptyProductState = ({ isSearchEmpty = false }: EmptyProductStateProps) => (
+export const EmptyProductState = ({
+  isSearchEmpty = false,
+}: EmptyProductStateProps) => (
   <View style={styles.container}>
     <View style={styles.iconRow}>
       <View style={styles.stickmanWrapper}>
-
-        <Feather 
-          name={isSearchEmpty ? "search" : "check"} 
-          size={18} 
-          color="#A0AAB2" 
-          style={styles.topIcon} 
+        <Feather
+          name={isSearchEmpty ? "search" : "check"}
+          size={18}
+          color="#A0AAB2"
+          style={styles.topIcon}
         />
         <Feather name="user" size={32} color="#A0AAB2" />
       </View>
     </View>
 
     <Text style={styles.title}>
-      {isSearchEmpty ? "Nenhum produto encontrado" : "Você chegou ao fim das ofertas."}
+      {isSearchEmpty
+        ? "Nenhum produto encontrado"
+        : "Você chegou ao fim das ofertas."}
     </Text>
     <Text style={styles.subtitle}>
-      {isSearchEmpty 
-        ? "Ops! Não conseguimos localizar as ofertas. Verifique se o seu Wi-Fi está ativo ou tente atualizar a página em alguns instantes." 
+      {isSearchEmpty
+        ? "Ops! Não conseguimos localizar as ofertas. Verifique se o seu Wi-Fi está ativo ou tente atualizar a página em alguns instantes."
         : "Ufa! Você percorreu todas as nossas ofertas atuais."}
-    </Text> 
+    </Text>
   </View>
 );
 
@@ -39,28 +42,28 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   iconRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end', 
+    flexDirection: "row",
+    alignItems: "flex-end",
     marginBottom: 15,
   },
 
   icon: {
     fontSize: 30,
-    marginRight: 10, 
+    marginRight: 10,
   },
   stickmanWrapper: {
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   topIcon: {
-    marginBottom: -4, 
+    marginBottom: -4,
   },
   questionMark: {
     fontSize: 16,
     color: "#A0AAB2",
     fontWeight: "bold",
-    marginBottom: -6, 
-    marginLeft: 15,   
+    marginBottom: -6,
+    marginLeft: 15,
   },
   title: {
     fontSize: 18,

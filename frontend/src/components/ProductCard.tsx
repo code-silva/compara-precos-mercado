@@ -1,8 +1,14 @@
 import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { memo } from "react";
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import type { Product } from "../types/product";
-
 
 interface ProductCardProps {
   product: Product;
@@ -17,7 +23,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   handlePress,
   handleAddToList,
 }) => {
-
   const screenWidth = Dimensions.get("window").width;
   const isSmallDevice = screenWidth < 360;
 
@@ -50,7 +55,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </View>
 
         <View style={styles.priceLabel}>
-          <Text style={[styles.priceText, { fontSize: isSmallDevice ? 10 : 11 }]}>
+          <Text
+            style={[styles.priceText, { fontSize: isSmallDevice ? 10 : 11 }]}
+          >
             R$ {Number(product.price).toFixed(2).replace(".", ",")}
           </Text>
         </View>
@@ -58,11 +65,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <TouchableOpacity
           style={[
             styles.addButton,
-            { 
-              width: isSmallDevice ? 26 : 30, 
-              height: isSmallDevice ? 26 : 30, 
-              borderRadius: isSmallDevice ? 13 : 15 
-            }
+            {
+              width: isSmallDevice ? 26 : 30,
+              height: isSmallDevice ? 26 : 30,
+              borderRadius: isSmallDevice ? 13 : 15,
+            },
           ]}
           onPress={() => handleAddToList(product)}
         >
@@ -79,15 +86,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <View style={styles.productNameWrapper}>
             <Text style={styles.productName} numberOfLines={2}>
               {product.productName}
-              {product.measurement 
-                ? ` | ${Math.floor(Number(product.measurement))} ${product.measurementUnit || ""}` 
-                : product.measurementUnit 
-                ? ` | ${product.measurementUnit}` 
-                : ""
-              }
+              {product.measurement
+                ? ` | ${Math.floor(Number(product.measurement))} ${product.measurementUnit || ""}`
+                : product.measurementUnit
+                  ? ` | ${product.measurementUnit}`
+                  : ""}
             </Text>
           </View>
-          
+
           <View style={styles.marketWrapper}>
             <Text style={styles.marketName} numberOfLines={1}>
               {product.marketName}
@@ -162,7 +168,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   marketWrapper: {
-    flex: 0.7, 
+    flex: 0.7,
     alignItems: "flex-end",
   },
   rankingBadge: {
@@ -256,14 +262,14 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   iconContainer: {
-    flexDirection: "row",    
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 2,         
+    marginBottom: 2,
   },
   dashLine: {
     width: 8,
     height: 1,
-    backgroundColor: "#999", 
+    backgroundColor: "#999",
     marginHorizontal: 3,
   },
   distanceText: {
