@@ -1,7 +1,7 @@
 name: Pytest Execution
 
 on:
-  push: 
+  push:
     branches: [ main, integration ]
     paths:
       - 'backend/**'
@@ -36,7 +36,7 @@ jobs:
           pip install pytest pytest-django
 
       - name: Rodar Pytest
-        env:  
+        env:
           DJANGO_SETTINGS_MODULE: core.settings_test
         run: |
           cd backend

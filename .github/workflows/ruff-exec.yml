@@ -1,7 +1,7 @@
-name: Ruff Check  
+name: Ruff Check
 
 on:
-  push: 
+  push:
     branches: [ main, integration ]
     paths:
       - 'backend/**'
