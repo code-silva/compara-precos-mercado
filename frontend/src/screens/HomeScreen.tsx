@@ -1,21 +1,24 @@
 import { useNavigation } from "@react-navigation/native";
 import type * as Location from "expo-location";
-import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchMarkets } from "../api/markets";
 import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
 import { HomeHeader } from "../components/HomeScreenHeader";
 import { LoadingFooter } from "../components/LoadingFooter";
-import ProductCard from "../components/ProductCard";
+import { ProductGrid } from "../components/ProductGrid";
 import type { Market } from "../types/market";
 import type { Product } from "../types/product";
 
 // SUPPORT FUNCTIONS
-const renderSeparator = () => <View style={styles.separator} />;
 
-export function HomeScreen({location}: {location: Location.LocationObject}) {
+export function HomeScreen({
+  location,
+}: {
+  location: Location.LocationObject;
+}) {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -102,72 +105,46 @@ export function HomeScreen({location}: {location: Location.LocationObject}) {
     loadMarkets();
   }, [location]);
 
-  const renderItem = useCallback(
-  ({ item, index }: { item: Product; index: number }) => (
-    <ProductCard
-      product={item}
-      ranking={index + 1}
-      handlePress={handlePress}
-      handleAddToList={handleAdd}
-    />
-  ),
-  [handlePress, handleAdd]
-);
+  const renderFooter = () => {
+    if (isLoading && products.length > 0) {
+      return <LoadingFooter isLoading={isLoading} />;
+    }
 
- const renderFooter = () => {
+    if (!isLoading && products.length === 0 && !hasMoreData) {
+      return <EmptyProductState isSearchEmpty={true} />;
+    }
 
-  if (isLoading && products.length > 0) {
-    return <LoadingFooter isLoading={isLoading} />;
-  }
+    if (!isLoading && !hasMoreData && products.length > 0) {
+      return <EmptyProductState isSearchEmpty={false} />;
+    }
 
-  if (!isLoading && products.length === 0 && !hasMoreData) {
-    return <EmptyProductState isSearchEmpty={true} />;
-  }
-
-  if (!isLoading && !hasMoreData && products.length > 0) {
-    return <EmptyProductState isSearchEmpty={false} />;
-  }
-
-  return null;
-};
-
-const dynamicPadding = hasMoreData ? insets.bottom + 20: insets.bottom + 10;
+    return null;
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF", paddingTop: insets.top }}>
-      <FlatList
-        data={products}
-        initialNumToRender={10}
-        windowSize={5}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        style={{ flex: 1 }}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: insets.bottom + 5 },
-        ]}
-        ItemSeparatorComponent={renderSeparator}
-        ListHeaderComponent={
-          <HomeHeader
-            markets={markets}
-            handleMarketPress={handleMarketPress}
-          />
-        }
-        showsVerticalScrollIndicator={false}
+      <ProductGrid
+        products={products}
+        handlePress={handlePress}
+        handleAddToList={handleAdd}
         onEndReached={fetchProductsData}
         onEndReachedThreshold={0.7}
-        ListFooterComponent={renderFooter}
+        listFooterComponent={renderFooter()}
+        listHeaderComponent={
+          <HomeHeader markets={markets} handleMarketPress={handleMarketPress} />
+        }
+        contentContainerStyle={[
+          styles.gridContainer,
+          { paddingBottom: insets.bottom + 5 },
+        ]}
       />
     </View>
   );
 }
 
 export const styles = StyleSheet.create({
-  listContent: {
-    paddingHorizontal: 15,
+  gridContainer: {
+    paddingHorizontal: 14,
     flexGrow: 1,
-  },
-  separator: {
-    height: 12,
   },
 });

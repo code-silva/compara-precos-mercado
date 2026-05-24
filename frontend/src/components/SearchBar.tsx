@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -11,7 +12,6 @@ import {
 } from "react-native";
 import { fetchHybridSearch } from "../api/search";
 import { colors } from "../theme/colors";
-import { Platform } from 'react-native';
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -68,7 +68,7 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
       <View style={styles.searchContainer}>
         <TextInput
           style={[
-            // @ts-ignore
+            // @ts-expect-error
             styles.input,
             { fontSize: isUltraNarrow ? 13 : isSmall ? 14 : 16 },
           ]}
@@ -174,10 +174,10 @@ const styles = StyleSheet.create({
     paddingRight: isUltraNarrow ? 20 : 35,
     color: colors.textPrimary,
     ...Platform.select({
-      'web': {
+      web: {
         outlineStyle: "none",
-      }
-    })
+      },
+    }),
   },
   iconContainer: {
     width: isUltraNarrow ? 55 : isSmall ? "20%" : 85,
