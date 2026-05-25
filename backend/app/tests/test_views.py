@@ -176,9 +176,7 @@ class TestBranchProductOfferListView:
         It should return a list of offers ordered by the 'category' priority.
         """
 
-        response = api_client.get(
-            self.URL, {"latitude": -15.7801, "longitude": value}
-        )
+        response = api_client.get(self.URL, {"latitude": -15.7801, "longitude": value})
 
         results = response.data["results"]
         priority_map = {offer.id: offer.product.category.priority for offer in offers_list}
@@ -194,9 +192,7 @@ class TestBranchProductOfferListView:
         It should return a list of offers ordered by the 'category' priority.
         """
 
-        response = api_client.get(
-            self.URL, {"latitude": value, "longitude": -47.9292}
-        )
+        response = api_client.get(self.URL, {"latitude": value, "longitude": -47.9292})
 
         results = response.data["results"]
         priority_map = {offer.id: offer.product.category.priority for offer in offers_list}

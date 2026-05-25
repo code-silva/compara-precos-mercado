@@ -65,10 +65,14 @@ class BranchSupermarketListView(generics.ListAPIView):
         user_latitude = self.request.query_params.get("latitude")
         user_longitude = self.request.query_params.get("longitude")
 
-        queryset = BranchSupermarket.objects.select_related(
-            "parent_supermarket",
-            "location",
-        ).filter(product_offers__isnull=False).distinct()
+        queryset = (
+            BranchSupermarket.objects.select_related(
+                "parent_supermarket",
+                "location",
+            )
+            .filter(product_offers__isnull=False)
+            .distinct()
+        )
 
         try:
             user_location = Point(float(user_longitude), float(user_latitude), srid=4326)
@@ -99,8 +103,9 @@ class BranchProductOfferListView(generics.ListAPIView):
         )
 
         if market_id:
-            return queryset.filter(branch_supermarket__id=market_id
-            ).order_by("product__category__priority")
+            return queryset.filter(branch_supermarket__id=market_id).order_by(
+                "product__category__priority"
+            )
 
         try:
             user_location = Point(float(user_longitude), float(user_latitude), srid=4326)
