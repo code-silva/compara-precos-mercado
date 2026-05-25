@@ -135,7 +135,7 @@ class TestBranchProductOfferListView:
 
         response = api_client.get(
             self.URL,
-            {"latitude": -15.7801, "longitude": -47.9292, "supermarket_id": supermarket_id},
+            {"latitude": -15.7801, "longitude": -47.9292, "marketId": supermarket_id},
         )
 
         results = response.data["results"]
@@ -176,10 +176,8 @@ class TestBranchProductOfferListView:
         It should return a list of offers ordered by the 'category' priority.
         """
 
-        supermarket_id = offers_list[0].branch_supermarket.id
-
         response = api_client.get(
-            self.URL, {"latitude": -15.7801, "longitude": value, "supermarket_id": supermarket_id}
+            self.URL, {"latitude": -15.7801, "longitude": value}
         )
 
         results = response.data["results"]
@@ -196,10 +194,8 @@ class TestBranchProductOfferListView:
         It should return a list of offers ordered by the 'category' priority.
         """
 
-        supermarket_id = offers_list[0].branch_supermarket.id
-
         response = api_client.get(
-            self.URL, {"latitude": value, "longitude": -47.9292, "supermarket_id": supermarket_id}
+            self.URL, {"latitude": value, "longitude": -47.9292}
         )
 
         results = response.data["results"]
