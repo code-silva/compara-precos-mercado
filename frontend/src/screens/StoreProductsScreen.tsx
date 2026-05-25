@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
@@ -9,16 +9,29 @@ import { ProductGrid } from "../components/ProductGrid";
 import { SearchBar } from "../components/SearchBar";
 import type { Product } from "../types/product";
 
-export function StoreProductsScreen({ route }: any) {
+interface StoreProductsScreenProps {
+  route: {
+    params: {
+      selectedMarket: {id: number, name: string;};
+      latitude?: number;
+      longitude?: number;
+    };
+  };
+}
+
+export function StoreProductsScreen({route}: StoreProductsScreenProps) {
   const insets = useSafeAreaInsets();
-  const { selectedMarket, latitude, longitude } = route.params || {};
+  const { selectedMarket, latitude, longitude } = route.params;
 
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
 
-  const fetchData = useCallback(async () => {
+  const actualName: string = selectedMarket?.name || "";
+  const displayName: string = actualName.toUpperCase();
+
+  const fetchData = async () => {
     if (isLoading || !hasMoreData) return;
     setIsLoading(true);
 
@@ -45,25 +58,21 @@ export function StoreProductsScreen({ route }: any) {
     } finally {
       setIsLoading(false);
     }
-  }, [page, isLoading, hasMoreData, selectedMarket.id, latitude, longitude]);
+  };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initial fetch on mount
   useEffect(() => {
     fetchData();
   }, []);
 
-  const Header = () => {
-    const actualName: string = selectedMarket?.name || "";
-    const displayName: string = actualName.toUpperCase();
-
-    return (
-      <View style={styles.headerContainer}>
-        <MarketBanner
-          marketName={displayName}
-          subtitle="OFERTAS DESTA UNIDADE"
-        ></MarketBanner>
-      </View>
-    );
-  };
+  const headerElement = (
+    <View style={styles.headerContainer}>
+      <MarketBanner
+        marketName={displayName}
+        subtitle="OFERTAS DESTA UNIDADE"
+      ></MarketBanner>
+    </View>
+  );
 
   const renderFooter = () => {
     if (isLoading) {
@@ -107,7 +116,7 @@ export function StoreProductsScreen({ route }: any) {
         }
         onEndReached={fetchData}
         onEndReachedThreshold={0.7}
-        listHeaderComponent={<Header />}
+        listHeaderComponent={headerElement}
         listFooterComponent={renderFooter()}
         contentContainerStyle={styles.gridContainer}
       />

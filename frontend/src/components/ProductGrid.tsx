@@ -1,5 +1,5 @@
 import type React from "react";
-import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
+import { FlatList, StyleSheet, useWindowDimensions, View, type StyleProp, type ViewStyle } from "react-native";
 import type { Product } from "../types/product";
 import ProductCard from "./ProductCard";
 
@@ -9,10 +9,10 @@ interface ProductGridProps {
   handleAddToList: (product: Product) => void;
   onEndReached?: () => void;
   onEndReachedThreshold?: number;
-  listFooterComponent?: React.ComponentType<any> | React.ReactElement | null;
-  listHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
-  listEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
-  contentContainerStyle?: any;
+  listFooterComponent?: React.ReactElement | null;
+  listHeaderComponent?: React.ReactElement | null;
+  listEmptyComponent?: React.ReactElement | null;
+  contentContainerStyle?: StyleProp<ViewStyle>;
 }
 
 const TABLET_LARGE = 1024;

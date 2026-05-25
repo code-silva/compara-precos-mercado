@@ -10,8 +10,19 @@ import ProductCard from "../components/ProductCard";
 import { SearchBar } from "../components/SearchBar";
 import type { Product } from "../types/product";
 
-export function SearchResultsScreen({ route }: any) {
-  const { query, selectedMarket, latitude, longitude } = route?.params;
+interface SearchResultsScreenProps {
+  route: {
+    params: {
+      query: string,
+      selectedMarket: {id: number, name: string;};
+      latitude?: number;
+      longitude?: number;
+    };
+  };
+}
+
+export function SearchResultsScreen({ route }: SearchResultsScreenProps) {
+  const { query, selectedMarket, latitude, longitude } = route.params;
 
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +81,7 @@ export function SearchResultsScreen({ route }: any) {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initial fetch on mount
   useEffect(() => {
     fetchData();
   }, []);

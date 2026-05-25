@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, type NavigationProp, type ParamListBase } from "@react-navigation/native";
 import type * as Location from "expo-location";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -14,18 +14,14 @@ import type { Product } from "../types/product";
 
 // SUPPORT FUNCTIONS
 
-export function HomeScreen({
-  location,
-}: {
-  location: Location.LocationObject;
-}) {
+export function HomeScreen({location}: {location: Location.LocationObject}) {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [markets, setMarkets] = useState<Market[]>([]);
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
 
   // ACTION WHEN CLICKING ON PRODUCT
   const handlePress = useCallback((product: Product) => {
