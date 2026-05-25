@@ -1,4 +1,8 @@
-import { useNavigation } from "@react-navigation/native";
+import {
+  type NavigationProp,
+  type ParamListBase,
+  useNavigation,
+} from "@react-navigation/native";
 import type * as Location from "expo-location";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -25,7 +29,7 @@ export function HomeScreen({
   const [isLoading, setIsLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [markets, setMarkets] = useState<Market[]>([]);
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
 
   // ACTION WHEN CLICKING ON PRODUCT
   const handlePress = useCallback((product: Product) => {
@@ -39,7 +43,7 @@ export function HomeScreen({
   // NAVIGATION TO SPECIFIC MARKET SCREEN
   const handleMarketPress = useCallback(
     (market: Market) => {
-      navigation.navigate("StoreProducts", {
+      navigation.navigate("StoreProductsScreen", {
         selectedMarket: {
           id: market.id,
           name: market.name,

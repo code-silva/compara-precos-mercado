@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { fetchHybridSearch } from "../api/search";
 import { colors } from "../theme/colors";
+import type { Product } from "../types/product";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -47,7 +48,9 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
         const data = await fetchHybridSearch(term);
 
         if (data.offers) {
-          const productNames = data.offers.map((item: any) => item.productName);
+          const productNames = data.offers.map(
+            (item: Product) => item.productName,
+          );
           const uniqueNames = Array.from(new Set(productNames));
           setSuggestions(uniqueNames as string[]);
         }
