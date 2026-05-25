@@ -12,14 +12,14 @@ import type { Product } from "../types/product";
 interface StoreProductsScreenProps {
   route: {
     params: {
-      selectedMarket: {id: number, name: string;};
+      selectedMarket: { id: number; name: string };
       latitude?: number;
       longitude?: number;
     };
   };
 }
 
-export function StoreProductsScreen({route}: StoreProductsScreenProps) {
+export function StoreProductsScreen({ route }: StoreProductsScreenProps) {
   const insets = useSafeAreaInsets();
   const { selectedMarket, latitude, longitude } = route.params;
 

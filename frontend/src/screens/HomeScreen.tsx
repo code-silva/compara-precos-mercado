@@ -1,4 +1,8 @@
-import { useNavigation, type NavigationProp, type ParamListBase } from "@react-navigation/native";
+import {
+  type NavigationProp,
+  type ParamListBase,
+  useNavigation,
+} from "@react-navigation/native";
 import type * as Location from "expo-location";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -14,7 +18,11 @@ import type { Product } from "../types/product";
 
 // SUPPORT FUNCTIONS
 
-export function HomeScreen({location}: {location: Location.LocationObject}) {
+export function HomeScreen({
+  location,
+}: {
+  location: Location.LocationObject;
+}) {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);

@@ -1,5 +1,12 @@
 import type React from "react";
-import { FlatList, StyleSheet, useWindowDimensions, View, type StyleProp, type ViewStyle } from "react-native";
+import {
+  FlatList,
+  type StyleProp,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+  type ViewStyle,
+} from "react-native";
 import type { Product } from "../types/product";
 import ProductCard from "./ProductCard";
 

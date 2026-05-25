@@ -13,8 +13,8 @@ import type { Product } from "../types/product";
 interface SearchResultsScreenProps {
   route: {
     params: {
-      query: string,
-      selectedMarket: {id: number, name: string;};
+      query: string;
+      selectedMarket: { id: number; name: string };
       latitude?: number;
       longitude?: number;
     };
