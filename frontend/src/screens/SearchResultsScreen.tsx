@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
 import { InfoBanner } from "../components/InfoBanner";
 import { LoadingFooter } from "../components/LoadingFooter";
 import { MarketBanner } from "../components/MarketBanner";
 import ProductCard from "../components/ProductCard";
 import { SearchBar } from "../components/SearchBar";
-import type { Product } from "../types/product";
+import { useProductsFetch } from "../hooks/useProductsFetch";
 
 interface SearchResultsScreenProps {
   route: {
@@ -24,10 +23,12 @@ interface SearchResultsScreenProps {
 export function SearchResultsScreen({ route }: SearchResultsScreenProps) {
   const { query, selectedMarket, latitude, longitude } = route.params;
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasMoreData, setHasMoreData] = useState(true);
+  const { products, isLoading, hasMoreData, fetchData } = useProductsFetch({
+    latitude,
+    longitude,
+    query,
+    marketId: selectedMarket?.id,
+  });
 
   // --- SEARCH HEADER COMPONENT ---
   const SearchHeader = useCallback(
@@ -53,33 +54,6 @@ export function SearchResultsScreen({ route }: SearchResultsScreenProps) {
     ),
     [query, selectedMarket],
   );
-
-  const fetchData = async () => {
-    if (isLoading || !hasMoreData) return;
-
-    setIsLoading(true);
-
-    try {
-      const newProducts = await fetchProducts(
-        latitude || 0,
-        longitude || 0,
-        page,
-        query,
-        selectedMarket?.id,
-      );
-      if (newProducts && newProducts.length > 0) {
-        setProducts((prev) => [...prev, ...newProducts]);
-        setPage((p) => p + 1);
-      } else {
-        setHasMoreData(false);
-      }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setHasMoreData(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: initial fetch on mount
   useEffect(() => {
