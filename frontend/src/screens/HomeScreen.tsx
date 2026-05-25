@@ -39,7 +39,7 @@ export function HomeScreen({
   // NAVIGATION TO SPECIFIC MARKET SCREEN
   const handleMarketPress = useCallback(
     (market: Market) => {
-      navigation.navigate("StoreProducts", {
+      navigation.navigate("StoreProductsScreen", {
         selectedMarket: {
           id: market.id,
           name: market.name,

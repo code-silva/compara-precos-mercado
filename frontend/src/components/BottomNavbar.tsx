@@ -9,7 +9,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HomeScreen } from "../screens/HomeScreen";
 import { MyListScreen } from "../screens/MyListScreen";
-import { SearchResults } from "../screens/SearchResultsScreen";
+import { SearchResultsScreen } from "../screens/SearchResultsScreen";
 import { StoreProductsScreen } from "../screens/StoreProductsScreen";
 import { SupermarketsScreen } from "../screens/SupermarketsScreen";
 
@@ -77,9 +77,15 @@ function HomeStackScreen({
         {() => <HomeScreen location={location} />}
       </HomeStack.Screen>
 
-      <HomeStack.Screen name="SearchResults" component={SearchResults} />
+      <HomeStack.Screen
+        name="SearchResultsScreen"
+        component={SearchResultsScreen}
+      />
 
-      <HomeStack.Screen name="StoreProducts" component={StoreProductsScreen} />
+      <HomeStack.Screen
+        name="StoreProductsScreen"
+        component={StoreProductsScreen}
+      />
     </HomeStack.Navigator>
   );
 }
@@ -97,7 +103,7 @@ function SupermarketStackScreen() {
         component={SupermarketsScreen}
       />
       <SupermarketStack.Screen
-        name="StoreProducts"
+        name="StoreProductsScreen"
         component={StoreProductsScreen}
       />
     </SupermarketStack.Navigator>

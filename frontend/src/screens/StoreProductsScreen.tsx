@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
 import { LoadingFooter } from "../components/LoadingFooter";
+import { MarketBanner } from "../components/MarketBanner";
 import { ProductGrid } from "../components/ProductGrid";
 import { SearchBar } from "../components/SearchBar";
 import type { Product } from "../types/product";
@@ -51,21 +52,15 @@ export function StoreProductsScreen({ route }: any) {
   }, []);
 
   const Header = () => {
-    const actualName = selectedMarket?.name || selectedMarket?.marketName || "";
-    const firstLetter = actualName ? actualName[0].toUpperCase() : "?";
-    const displayName = actualName ? actualName.toUpperCase() : "LOADING...";
+    const actualName: string = selectedMarket?.name || "";
+    const displayName: string = actualName.toUpperCase();
 
     return (
       <View style={styles.headerContainer}>
-        <View style={styles.marketBanner}>
-          <View style={styles.marketLogo}>
-            <Text style={styles.marketInitials}>{firstLetter}</Text>
-          </View>
-          <View>
-            <Text style={styles.marketName}>{displayName}</Text>
-            <Text style={styles.marketStatus}>OFERTAS DESTA UNIDADE</Text>
-          </View>
-        </View>
+        <MarketBanner
+          marketName={displayName}
+          subtitle="OFERTAS DESTA UNIDADE"
+        ></MarketBanner>
       </View>
     );
   };
@@ -112,8 +107,8 @@ export function StoreProductsScreen({ route }: any) {
         }
         onEndReached={fetchData}
         onEndReachedThreshold={0.7}
-        ListHeaderComponent={<Header />}
-        ListFooterComponent={renderFooter()}
+        listHeaderComponent={<Header />}
+        listFooterComponent={renderFooter()}
         contentContainerStyle={styles.gridContainer}
       />
     </View>
@@ -128,43 +123,5 @@ const styles = StyleSheet.create({
   gridContainer: {
     paddingHorizontal: 14,
     flexGrow: 1,
-  },
-  marketBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
-    backgroundColor: "#FFF",
-    marginHorizontal: 0,
-    borderRadius: 12,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#EEE",
-    alignSelf: "stretch",
-  },
-  marketInitials: {
-    fontSize: 20,
-    fontFamily: "Inter-Bold",
-    color: "#28a8b5",
-  },
-  marketLogo: {
-    width: 80,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: "#f8f8f8",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 5,
-    borderWidth: 1,
-    borderColor: "#DDD",
-  },
-  marketName: {
-    fontFamily: "Inter-Bold",
-    fontSize: 16,
-    color: "#000",
-  },
-  marketStatus: {
-    fontSize: 10,
-    color: "#28a8b5",
-    fontFamily: "Inter-Bold",
   },
 });
