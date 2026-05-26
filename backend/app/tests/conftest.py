@@ -38,23 +38,32 @@ def parent_supermarket(db):
 
 @pytest.fixture
 def branch_supermarket(db, location, parent_supermarket):
-    """Creates a branch store at a specific coordinate."""
-    return baker.make(
+    """Creates a branch store at a specific coordinate and links an offer to it."""
+    branch = baker.make(
         BranchSupermarket,
         parent_supermarket=parent_supermarket,
         location=location,
         coordinates=Point(-47.9292, -15.7801),
     )
 
+    baker.make(BranchProductOffer, branch_supermarket=branch)
+
+    return branch
+
 
 @pytest.fixture
 def supermarkets_list(db):
-    """Creates multiple supermarkets to test sorting and filters."""
+    """Creates multiple supermarkets to test sorting and filters, with offers linked."""
 
     parent_supermarkets = baker.make(ParentSupermarket, _quantity=5)
-    branch_supermarkets = [
-        baker.make(BranchSupermarket, parent_supermarket=parent) for parent in parent_supermarkets
-    ]
+    branch_supermarkets = []
+
+    for parent in parent_supermarkets:
+        branch = baker.make(BranchSupermarket, parent_supermarket=parent)
+        baker.make(BranchProductOffer, branch_supermarket=branch)
+
+        branch_supermarkets.append(branch)
+
     branch_supermarkets.sort(key=lambda x: x.parent_supermarket.name)
 
     return branch_supermarkets
