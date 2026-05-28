@@ -6,13 +6,13 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .utils import remove_accents
 from .models import BranchProductOffer, BranchSupermarket
 from .pagination import BranchSupermarketPagination, OffersPagination
 from .serializers import (
     BranchProductOfferSerializer,
     BranchSupermarketSerializer,
 )
+from .utils import remove_accents
 
 
 class HybridSearchView(APIView):

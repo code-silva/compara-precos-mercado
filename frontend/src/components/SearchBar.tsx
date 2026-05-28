@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Keyboard,
   Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Keyboard,
 } from "react-native";
 import { fetchHybridSearch } from "../api/search";
 import { colors } from "../theme/colors";
@@ -108,7 +108,11 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
                 style={isUltraNarrow ? { transform: [{ scale: 0.8 }] } : null}
               />
             ) : (
-              <TouchableOpacity onPress={() => {handleSearchAction(term)}}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleSearchAction(term);
+                }}
+              >
                 <Feather
                   name="search"
                   size={isUltraNarrow ? 18 : isSmall ? 20 : 24}
@@ -145,7 +149,8 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
         </View>
       )}
 
-      {isFocused && term.length >= 2 &&
+      {isFocused &&
+        term.length >= 2 &&
         isSearchPerformed &&
         suggestions.length === 0 &&
         !isLoading && (
