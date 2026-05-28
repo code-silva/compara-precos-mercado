@@ -9,7 +9,4 @@ def remove_accents(text: str) -> str:
     if not text:
         return ""
 
-    return "".join(
-        c for c in unicodedata.normalize("NFKD", text)
-        if not unicodedata.combining(c)
-    )
+    return "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c))
