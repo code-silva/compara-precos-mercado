@@ -81,12 +81,15 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
           onChangeText={setTerm}
           autoCapitalize="none"
           underlineColorAndroid="transparent"
+          returnKeyType="search"
+          onSubmitEditing={() => fetchHybridSearch(term)}
         />
 
         <View style={styles.iconContainer}>
           <View style={styles.shapeLight} />
           <View style={styles.shapeDark} />
 
+          {/* Lupe Icon*/}
           <View style={styles.iconWrapper}>
             {isLoading ? (
               <ActivityIndicator
@@ -95,11 +98,17 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
                 style={isUltraNarrow ? { transform: [{ scale: 0.8 }] } : null}
               />
             ) : (
-              <Feather
-                name="search"
-                size={isUltraNarrow ? 18 : isSmall ? 20 : 24}
-                color="#FFFFFF"
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  fetchHybridSearch(term);
+                }}
+              >
+                <Feather
+                  name="search"
+                  size={isUltraNarrow ? 18 : isSmall ? 20 : 24}
+                  color="#FFFFFF"
+                />
+              </TouchableOpacity>
             )}
           </View>
         </View>
