@@ -26,7 +26,7 @@ export const OnboardingButton: React.FC<OnboardingButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    width: "100%",
+    flex: 1,
     backgroundColor: colors.primary,
     flexDirection: "row",
     alignItems: "center",
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     // Elevation for Android
     elevation: 4,
   },
+
   text: {
     color: colors.onPrimary,
     fontSize: 16,

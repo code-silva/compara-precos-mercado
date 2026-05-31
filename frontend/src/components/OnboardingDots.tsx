@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   dot: {
     borderRadius: 4,
-    transitionDuration: "300ms",
+    height: 8,
   },
   activeDot: {
     width: 24,

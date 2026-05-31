@@ -84,6 +84,12 @@ export const OnboardingLocal = ({
     }
   };
 
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   const handleClose = () => {
     finishOnboarding();
   };
@@ -97,8 +103,10 @@ export const OnboardingLocal = ({
         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
           <MaterialIcons name="close" size={24} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Feirix</Text>
-        <View style={{ width: 40 }} />
+        <Text style={styles.headerTitle}>Compara Preços</Text>
+        <TouchableOpacity onPress={handleClose} style={styles.skipButton}>
+          <Text style={styles.skipText}>Pular</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Main Content */}
@@ -124,7 +132,14 @@ export const OnboardingLocal = ({
           activeStep={currentStep}
           totalSteps={ONBOARDING_DATA.length}
         />
-        <OnboardingButton title="Próximo" onPress={handleNext} />
+        <View style={styles.buttonRow}>
+          {currentStep > 0 && (
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Text style={styles.backButtonText}>Voltar</Text>
+            </TouchableOpacity>
+          )}
+          <OnboardingButton title="Próximo" onPress={handleNext} />
+        </View>
       </View>
     </View>
   );
@@ -136,7 +151,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     paddingHorizontal: 24,
     paddingTop: 60,
-    paddingBottom: 40,
+    paddingBottom: 80,
   },
   header: {
     flexDirection: "row",
@@ -149,6 +164,15 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
+  },
+  skipButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  skipText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: "600",
   },
   headerTitle: {
     fontSize: 20,
@@ -202,5 +226,21 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     gap: 24,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    width: "100%",
+  },
+  backButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+  },
+  backButtonText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
