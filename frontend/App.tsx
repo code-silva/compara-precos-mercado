@@ -67,11 +67,11 @@ export default function App() {
         >
           {showOnboarding && (
             <Stack.Screen name="OnboardingLocal">
-              {() => <OnboardingLocal />}
+              {(props) => <OnboardingLocal {...props} />}
             </Stack.Screen>
           )}
           <Stack.Screen name="MainTabs">
-            {() => <BottomNavbar location={location} />}
+            {(props) => <BottomNavbar {...props} location={location} />}
           </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>

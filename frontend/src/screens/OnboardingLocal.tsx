@@ -25,8 +25,8 @@ interface OnboardingStep {
 
 const ONBOARDING_DATA: OnboardingStep[] = [
   {
-    title: 'Bem-vindo ao Feirix',
-    description: 'Encontre as melhores ofertas de supermercados da sua região de forma rápida e simples.',
+    title: 'Bem-vindo ao Compara Preços!',
+    description: 'Reunimos os principais supermercados da sua região em um só lugar para você encontrar as melhores ofertas sem sair de casa.',
     image: { uri: 'https://via.placeholder.com/300' }, 
   },
   {
@@ -35,13 +35,13 @@ const ONBOARDING_DATA: OnboardingStep[] = [
     image: { uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBGGUd_nrAK47hE2bjf8pmtcSQlwYuI6Fo2pzpLFvkiRazvZi2x1Eczf6JkOKiC3O9obsML7buiQ9gNu1FITE1TAveFIISw1rD1zO-UZRuPNBS_fNKtkXSULDfyNC4GO4bXxI3psNFxiE23cYE02NfvnDZ7Y4MgUKqT_tbJSwzYbUfbYP4qkXA3xkLi_H8VtehK62HOIwxxOOG6YpN0LApd41UmzwiQLxkca-aIZOceRYVS8zmiR40_UxgT2mTE1zyqZ0j0L1agbK1K' },
   },
   {
-    title: 'Economize tempo e dinheiro',
-    description: 'Compare preços entre diferentes mercados e monte sua lista de compras inteligente.',
+    title: 'Compare antes de comprar',
+    description: 'Use a barra de busca para encontrar marcas ou produtos específicos. Clique no item e veja um comparativo em tempo real com outros mercados da mesma região no mesmo instante.',
     image: { uri: 'https://via.placeholder.com/300' },
   },
   {
-    title: 'Tudo na palma da mão',
-    description: 'Acompanhe as promoções em tempo real e não perca mais nenhuma oportunidade de economizar.',
+    title: 'Monte sua Lista Personalizada',
+    description: 'Ao encontrar o que deseja, clique em adicionar para montar sua lista de compras. Planeje seus gastos com antecedência e garanta a maior economia no fechamento do caixa.',
     image: { uri: 'https://via.placeholder.com/300' },
   },
 ];
