@@ -76,7 +76,15 @@ export function SearchResults({ route }: any) {
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, hasMoreData, page, query, selectedMarket, latitude, longitude]);
+  }, [
+    isLoading,
+    hasMoreData,
+    page,
+    query,
+    selectedMarket,
+    latitude,
+    longitude,
+  ]);
 
   useEffect(() => {
     fetchData();

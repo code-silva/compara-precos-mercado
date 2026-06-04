@@ -11,20 +11,18 @@ export const OnboardingDots: React.FC<OnboardingDotsProps> = ({
   activeStep,
   totalSteps,
 }) => {
+  const dotKeys = Array.from({ length: totalSteps }, (_, i) => `dot-${i}`);
   return (
     <View style={styles.container}>
-      {Array.from({ length: totalSteps }).map((_, index) => {
-        // biome-ignore lint/suspicious/noArrayIndexKey: static list with no unique ids
-        return (
-          <View
-            key={`dot-${index}`}
-            style={[
-              styles.dot,
-              index === activeStep ? styles.activeDot : styles.inactiveDot,
-            ]}
-          />
-        );
-      })}
+      {dotKeys.map((key, index) => (
+        <View
+          key={key}
+          style={[
+            styles.dot,
+            index === activeStep ? styles.activeDot : styles.inactiveDot,
+          ]}
+        />
+      ))}
     </View>
   );
 };
