@@ -1,74 +1,47 @@
-import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
 import { LoadingFooter } from "../components/LoadingFooter";
+import { MarketBanner } from "../components/MarketBanner";
 import { ProductGrid } from "../components/ProductGrid";
 import { SearchBar } from "../components/SearchBar";
-import type { Product } from "../types/product";
+import { useProductsFetch } from "../hooks/useProductsFetch";
 
-export function StoreProductsScreen({ route }: any) {
+interface StoreProductsScreenProps {
+  route: {
+    params: {
+      selectedMarket: { id: number; name: string };
+      latitude?: number;
+      longitude?: number;
+    };
+  };
+}
+
+export function StoreProductsScreen({ route }: StoreProductsScreenProps) {
   const insets = useSafeAreaInsets();
-  const { selectedMarket, latitude, longitude } = route.params || {};
+  const { selectedMarket, latitude, longitude } = route.params;
+  const actualName: string = selectedMarket?.name || "";
+  const displayName: string = actualName.toUpperCase();
+  const { products, isLoading, hasMoreData, fetchData } = useProductsFetch({
+    latitude,
+    longitude,
+    marketId: selectedMarket?.id,
+  });
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasMoreData, setHasMoreData] = useState(true);
-
-  const fetchData = useCallback(async () => {
-    if (isLoading || !hasMoreData) return;
-    setIsLoading(true);
-
-    try {
-      const response = await fetchProducts(
-        latitude || 0,
-        longitude || 0,
-        page,
-        undefined,
-        selectedMarket.id,
-      );
-
-      const newProducts = response.results || [];
-      if (newProducts.length > 0) {
-        setProducts((prev) => [...prev, ...newProducts]);
-        setPage((p) => p + 1);
-        if (!response.next) setHasMoreData(false);
-      } else {
-        setHasMoreData(false);
-      }
-    } catch (error) {
-      console.error("Error fetching market products:", error);
-      setHasMoreData(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [page, isLoading, hasMoreData, selectedMarket.id, latitude, longitude]);
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initial fetch on mount
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const Header = () => {
-    const actualName = selectedMarket?.name || selectedMarket?.marketName || "";
-    const firstLetter = actualName ? actualName[0].toUpperCase() : "?";
-    const displayName = actualName ? actualName.toUpperCase() : "LOADING...";
-
-    return (
-      <View style={styles.headerContainer}>
-        <View style={styles.marketBanner}>
-          <View style={styles.marketLogo}>
-            <Text style={styles.marketInitials}>{firstLetter}</Text>
-          </View>
-          <View>
-            <Text style={styles.marketName}>{displayName}</Text>
-            <Text style={styles.marketStatus}>OFERTAS DESTA UNIDADE</Text>
-          </View>
-        </View>
-      </View>
-    );
-  };
+  const headerElement = (
+    <View style={styles.headerContainer}>
+      <MarketBanner
+        marketName={displayName}
+        subtitle="OFERTAS DESTA UNIDADE"
+      ></MarketBanner>
+    </View>
+  );
 
   const renderFooter = () => {
     if (isLoading) {
@@ -112,7 +85,7 @@ export function StoreProductsScreen({ route }: any) {
         }
         onEndReached={fetchData}
         onEndReachedThreshold={0.7}
-        listHeaderComponent={<Header />}
+        listHeaderComponent={headerElement}
         listFooterComponent={renderFooter()}
         contentContainerStyle={styles.gridContainer}
       />
@@ -128,43 +101,5 @@ const styles = StyleSheet.create({
   gridContainer: {
     paddingHorizontal: 14,
     flexGrow: 1,
-  },
-  marketBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
-    backgroundColor: "#FFF",
-    marginHorizontal: 0,
-    borderRadius: 12,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#EEE",
-    alignSelf: "stretch",
-  },
-  marketInitials: {
-    fontSize: 20,
-    fontFamily: "Inter-Bold",
-    color: "#28a8b5",
-  },
-  marketLogo: {
-    width: 80,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: "#f8f8f8",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 5,
-    borderWidth: 1,
-    borderColor: "#DDD",
-  },
-  marketName: {
-    fontFamily: "Inter-Bold",
-    fontSize: 16,
-    color: "#000",
-  },
-  marketStatus: {
-    fontSize: 10,
-    color: "#28a8b5",
-    fontFamily: "Inter-Bold",
   },
 });

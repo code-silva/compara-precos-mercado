@@ -1,21 +1,34 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
-import { InfoBanner } from "../components/InfoBanner";
 import { LoadingFooter } from "../components/LoadingFooter";
+import { MarketBanner } from "../components/MarketBanner";
 import ProductCard from "../components/ProductCard";
 import { SearchBar } from "../components/SearchBar";
-import type { Product } from "../types/product";
+import { InfoBanner } from "../components/InfoBanner";
+import { useProductsFetch } from "../hooks/useProductsFetch";
 
-export function SearchResults({ route }: any) {
-  const { query, selectedMarket, latitude, longitude } = route.params || {};
+interface SearchResultsScreenProps {
+  route: {
+    params: {
+      query: string;
+      selectedMarket: { id: number; name: string };
+      latitude?: number;
+      longitude?: number;
+    };
+  };
+}
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasMoreData, setHasMoreData] = useState(true);
+export function SearchResultsScreen({ route }: SearchResultsScreenProps) {
+  const { query, selectedMarket, latitude, longitude } = route.params;
+
+  const { products, isLoading, hasMoreData, fetchData } = useProductsFetch({
+    latitude,
+    longitude,
+    query,
+    marketId: selectedMarket?.id,
+  });
 
   // --- SEARCH HEADER COMPONENT ---
   const SearchHeader = useCallback(
@@ -24,19 +37,10 @@ export function SearchResults({ route }: any) {
         <SearchBar initialValue={query} />
 
         {selectedMarket && (
-          <View style={styles.marketBanner}>
-            <View style={styles.marketLogo}>
-              <Text style={styles.marketInitials}>
-                {selectedMarket.name[0]}
-              </Text>
-            </View>
-            <View>
-              <Text style={styles.marketName}>
-                {selectedMarket.name.toUpperCase()}
-              </Text>
-              <Text style={styles.marketStatus}>OFERTAS DA REDE</Text>
-            </View>
-          </View>
+          <MarketBanner
+            marketName={selectedMarket.name}
+            subtitle={"OFERTAS DA REDE"}
+          />
         )}
 
         <InfoBanner />
@@ -51,41 +55,7 @@ export function SearchResults({ route }: any) {
     [query, selectedMarket],
   );
 
-  const fetchData = useCallback(async () => {
-    if (isLoading || !hasMoreData) return;
-
-    setIsLoading(true);
-
-    try {
-      const newProducts = await fetchProducts(
-        latitude || 0,
-        longitude || 0,
-        page,
-        query,
-        selectedMarket?.id,
-      );
-      if (newProducts && newProducts.length > 0) {
-        setProducts((prev) => [...prev, ...newProducts]);
-        setPage((p) => p + 1);
-      } else {
-        setHasMoreData(false);
-      }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setHasMoreData(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [
-    isLoading,
-    hasMoreData,
-    page,
-    query,
-    selectedMarket,
-    latitude,
-    longitude,
-  ]);
-
+  // Executa o fetch inicial ao montar a tela
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -94,11 +64,9 @@ export function SearchResults({ route }: any) {
     if (isLoading) {
       return <LoadingFooter isLoading={isLoading} />;
     }
-
     if (!hasMoreData && products.length > 0) {
       return <EmptyProductState />;
     }
-
     return null;
   };
 
@@ -111,7 +79,6 @@ export function SearchResults({ route }: any) {
           <View style={styles.cardWrapper}>
             <ProductCard
               product={{ ...item, ranking: index + 1 }}
-              isGrid={true}
               handlePress={() => console.log("Clicked on product")}
               handleAddToList={() => console.log("Added to list")}
             />
@@ -152,42 +119,5 @@ const styles = StyleSheet.create({
     color: "#333",
     marginVertical: 15,
     marginLeft: 10,
-  },
-  marketBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
-    backgroundColor: "#FFF",
-    marginHorizontal: 10,
-    borderRadius: 12,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#EEE",
-  },
-  marketInitials: {
-    fontSize: 20,
-    fontFamily: "Inter-Bold",
-    color: "#28a8b5",
-  },
-  marketLogo: {
-    width: 80,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: "#f8f8f8",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 5,
-    borderWidth: 1,
-    borderColor: "#DDD",
-  },
-  marketName: {
-    fontFamily: "Inter-Bold",
-    fontSize: 16,
-    color: "#000",
-  },
-  marketStatus: {
-    fontSize: 10,
-    color: "#28a8b5",
-    fontFamily: "Inter-Bold",
   },
 });

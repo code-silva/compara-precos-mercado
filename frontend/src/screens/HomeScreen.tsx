@@ -1,14 +1,18 @@
-import { useNavigation } from "@react-navigation/native";
+import {
+  type NavigationProp,
+  type ParamListBase,
+  useNavigation,
+} from "@react-navigation/native";
 import type * as Location from "expo-location";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchMarkets } from "../api/markets";
-import { fetchProducts } from "../api/products";
 import { EmptyProductState } from "../components/EmptyProductState";
 import { HomeHeader } from "../components/HomeScreenHeader";
 import { LoadingFooter } from "../components/LoadingFooter";
 import { ProductGrid } from "../components/ProductGrid";
+import { useProductsFetch } from "../hooks/useProductsFetch";
 import type { Market } from "../types/market";
 import type { Product } from "../types/product";
 
@@ -20,12 +24,12 @@ export function HomeScreen({
   location: Location.LocationObject;
 }) {
   const insets = useSafeAreaInsets();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMoreData, setHasMoreData] = useState(true);
   const [markets, setMarkets] = useState<Market[]>([]);
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
+  const { products, isLoading, hasMoreData, fetchData } = useProductsFetch({
+    latitude: location?.coords.latitude,
+    longitude: location?.coords.longitude,
+  });
 
   // ACTION WHEN CLICKING ON PRODUCT
   const handlePress = useCallback((product: Product) => {
@@ -39,7 +43,7 @@ export function HomeScreen({
   // NAVIGATION TO SPECIFIC MARKET SCREEN
   const handleMarketPress = useCallback(
     (market: Market) => {
-      navigation.navigate("StoreProducts", {
+      navigation.navigate("StoreProductsScreen", {
         selectedMarket: {
           id: market.id,
           name: market.name,
@@ -51,44 +55,14 @@ export function HomeScreen({
     [location, navigation],
   );
 
-  // FETCHING GENERAL PRODUCTS
-  const fetchProductsData = useCallback(async () => {
-    if (isLoading || !hasMoreData) return;
-
-    setIsLoading(true);
-    try {
-      const { latitude, longitude } = location?.coords ?? {};
-
-      const response = await fetchProducts(latitude, longitude, page);
-      console.log(response);
-
-      const newProducts = response.results || [];
-      const nextPage = response.next;
-
-      if (newProducts.length > 0) {
-        setProducts((prev) => [...prev, ...newProducts]);
-        if (nextPage === null) {
-          setHasMoreData(false);
-        } else {
-          setPage((prev) => prev + 1);
-        }
-      } else {
-        setHasMoreData(false);
-      }
-    } catch (error) {
-      console.log("Error fetching products on Home:", error);
-      setHasMoreData(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [location, hasMoreData, isLoading, page]);
-
   // EFFECTS
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initial fetch on mount
   useEffect(() => {
-    if (location && products.length === 0 && !isLoading && hasMoreData) {
-      fetchProductsData();
+    if (location) {
+      fetchData();
     }
-  }, [location, products.length, isLoading, hasMoreData, fetchProductsData]);
+  }, [location]);
 
   useEffect(() => {
     async function loadMarkets() {
@@ -127,7 +101,7 @@ export function HomeScreen({
         products={products}
         handlePress={handlePress}
         handleAddToList={handleAdd}
-        onEndReached={fetchProductsData}
+        onEndReached={fetchData}
         onEndReachedThreshold={0.7}
         listFooterComponent={renderFooter()}
         listHeaderComponent={
