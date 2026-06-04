@@ -1,61 +1,65 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { RouteProp } from "@react-navigation/native";
-import type { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useState } from "react";
 import {
-  Dimensions,
   Image,
+  type ImageSourcePropType,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OnboardingButton } from "../components/OnboardingButton";
 import { OnboardingDots } from "../components/OnboardingDots";
 import { colors } from "../theme/colors";
 
-const { width } = Dimensions.get("window");
+const SCALE_BASE = 375;
 
 interface OnboardingStep {
   title: string;
   description: string;
-  image: any; // Agora aceita URI ou require
+  image: ImageSourcePropType;
 }
 
 const ONBOARDING_DATA: OnboardingStep[] = [
   {
-    title: 'Bem-vindo ao Compara Preços!',
-    description: 'Reunimos os principais supermercados da sua região em um só lugar para você encontrar as melhores ofertas sem sair de casa.',
-    image: { uri: 'https://via.placeholder.com/300' }, 
+    title: "Bem-vindo ao Compara Preços!",
+    description:
+      "Reunimos os principais supermercados da sua região em um só lugar para você encontrar as melhores ofertas sem sair de casa.",
+    image: require("../assets/stickman_1-removebg-preview.png"),
   },
   {
-    title: 'Ofertas perto de você',
-    description: 'Utilizamos inteligência artificial para extrair dados e preços atualizados dos encartes. Ative sua geolocalização para visualizar os mercados e produtos mais próximos do seu endereço.',
-    image: { uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBGGUd_nrAK47hE2bjf8pmtcSQlwYuI6Fo2pzpLFvkiRazvZi2x1Eczf6JkOKiC3O9obsML7buiQ9gNu1FITE1TAveFIISw1rD1zO-UZRuPNBS_fNKtkXSULDfyNC4GO4bXxI3psNFxiE23cYE02NfvnDZ7Y4MgUKqT_tbJSwzYbUfbYP4qkXA3xkLi_H8VtehK62HOIwxxOOG6YpN0LApd41UmzwiQLxkca-aIZOceRYVS8zmiR40_UxgT2mTE1zyqZ0j0L1agbK1K' },
+    title: "Ofertas perto de você",
+    description:
+      "Utilizamos inteligência artificial para extrair dados e preços atualizados dos encartes. Ative sua geolocalização para visualizar os mercados e produtos mais próximos do seu endereço.",
+    image: require("../assets/stickman_2-removebg-preview.png"),
   },
   {
-    title: 'Compare antes de comprar',
-    description: 'Use a barra de busca para encontrar marcas ou produtos específicos. Clique no item e veja um comparativo em tempo real com outros mercados da mesma região no mesmo instante.',
-    image: { uri: 'https://via.placeholder.com/300' },
+    title: "Compare antes de comprar",
+    description:
+      "Use a barra de busca para encontrar marcas ou produtos específicos. Clique no item e veja um comparativo em tempo real com outros mercados da mesma região no mesmo instante.",
+    image: require("../assets/stickman_3.png"),
   },
   {
-    title: 'Monte sua Lista Personalizada',
-    description: 'Ao encontrar o que deseja, clique em adicionar para montar sua lista de compras. Planeje seus gastos com antecedência e garanta a maior economia no fechamento do caixa.',
-    image: { uri: 'https://via.placeholder.com/300' },
+    title: "Monte sua Lista Personalizada",
+    description:
+      "Ao encontrar o que deseja, clique em adicionar para montar sua lista de compras. Planeje seus gastos com antecedência e garanta a maior economia no fechamento do caixa.",
+    image: require("../assets/stickman_4-removebg-preview.png"),
   },
 ];
 
 type RootStackParamList = {
+  // biome-ignore lint/style/useNamingConvention: route names use PascalCase
   OnboardingLocal: undefined;
+  // biome-ignore lint/style/useNamingConvention: route names use PascalCase
   MainTabs: undefined;
 };
 
-type OnboardingScreenRouteProp = RouteProp<
-  RootStackParamList,
-  "OnboardingLocal"
->;
-type OnboardingScreenNavigationProp = StackNavigationProp<
+type OnboardingScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "OnboardingLocal"
 >;
@@ -66,6 +70,10 @@ export const OnboardingLocal = ({
   navigation: OnboardingScreenNavigationProp;
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const scale = Math.min(width, SCALE_BASE) / SCALE_BASE;
+  const isSmallScreen = height < 700;
 
   const finishOnboarding = async () => {
     try {
@@ -95,39 +103,65 @@ export const OnboardingLocal = ({
   };
 
   const step = ONBOARDING_DATA[currentStep];
+  const illustrationSize = isSmallScreen ? width * 0.55 : width * 0.72;
+  const titleSize = Math.round(24 * scale);
+  const descriptionSize = Math.round(14 * scale);
+  const paddingTop = Math.max(insets.top + 10, 40);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
           <MaterialIcons name="close" size={24} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Compara Preços</Text>
+        <Text
+          style={[styles.headerTitle, { fontSize: Math.round(20 * scale) }]}
+        >
+          Compara Preços
+        </Text>
         <TouchableOpacity onPress={handleClose} style={styles.skipButton}>
-          <Text style={styles.skipText}>Pular</Text>
+          <Text style={[styles.skipText, { fontSize: Math.round(16 * scale) }]}>
+            Pular
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Main Content */}
-      <View style={styles.content}>
-        <View style={styles.illustrationContainer}>
-          <View style={styles.glow} />
-          <Image
-            source={step.image}
-            style={styles.image}
-            resizeMode="contain"
-          />
-        </View>
+      <ScrollView
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.content}>
+          <View
+            style={[styles.illustrationContainer, { width: illustrationSize }]}
+          >
+            <Image
+              source={step.image}
+              style={styles.image}
+              resizeMode="contain"
+            />
+          </View>
 
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>{step.title}</Text>
-          <Text style={styles.description}>{step.description}</Text>
+          <View style={styles.textContainer}>
+            <Text style={[styles.title, { fontSize: titleSize }]}>
+              {step.title}
+            </Text>
+            <Text style={[styles.description, { fontSize: descriptionSize }]}>
+              {step.description}
+            </Text>
+          </View>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View
+        style={[
+          styles.footer,
+          { paddingBottom: Math.max(insets.bottom + 20, 40) },
+        ]}
+      >
         <OnboardingDots
           activeStep={currentStep}
           totalSteps={ONBOARDING_DATA.length}
@@ -135,7 +169,14 @@ export const OnboardingLocal = ({
         <View style={styles.buttonRow}>
           {currentStep > 0 && (
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Text style={styles.backButtonText}>Voltar</Text>
+              <Text
+                style={[
+                  styles.backButtonText,
+                  { fontSize: Math.round(16 * scale) },
+                ]}
+              >
+                Voltar
+              </Text>
             </TouchableOpacity>
           )}
           <OnboardingButton title="Próximo" onPress={handleNext} />
@@ -150,14 +191,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 80,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 8,
   },
   closeButton: {
     width: 40,
@@ -171,11 +213,9 @@ const styles = StyleSheet.create({
   },
   skipText: {
     color: colors.primary,
-    fontSize: 16,
     fontWeight: "600",
   },
   headerTitle: {
-    fontSize: 20,
     fontWeight: "bold",
     color: colors.primary,
   },
@@ -185,24 +225,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   illustrationContainer: {
-    width: width * 0.8,
     aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 32,
-  },
-  glow: {
-    position: "absolute",
-    width: "80%",
-    height: "80%",
-    backgroundColor: colors.secondaryContainer,
-    borderRadius: 100,
-    opacity: 0.2,
   },
   image: {
     width: "100%",
     height: "100%",
-    zIndex: 10,
   },
   textContainer: {
     alignItems: "center",
@@ -210,14 +239,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   title: {
-    fontSize: 24,
     fontWeight: "700",
     color: colors.onSurface,
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: 12,
   },
   description: {
-    fontSize: 14,
     color: colors.onSurfaceVariant,
     textAlign: "center",
     lineHeight: 20,
@@ -225,7 +252,7 @@ const styles = StyleSheet.create({
   footer: {
     width: "100%",
     alignItems: "center",
-    gap: 24,
+    gap: 16,
   },
   buttonRow: {
     flexDirection: "row",
@@ -240,7 +267,6 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     color: colors.primary,
-    fontSize: 16,
     fontWeight: "600",
   },
 });

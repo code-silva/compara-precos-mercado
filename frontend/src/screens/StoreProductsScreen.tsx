@@ -48,7 +48,7 @@ export function StoreProductsScreen({ route }: any) {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const Header = () => {
     const actualName = selectedMarket?.name || selectedMarket?.marketName || "";
@@ -112,8 +112,8 @@ export function StoreProductsScreen({ route }: any) {
         }
         onEndReached={fetchData}
         onEndReachedThreshold={0.7}
-        ListHeaderComponent={<Header />}
-        ListFooterComponent={renderFooter()}
+        listHeaderComponent={<Header />}
+        listFooterComponent={renderFooter()}
         contentContainerStyle={styles.gridContainer}
       />
     </View>

@@ -51,7 +51,7 @@ export function SearchResults({ route }: any) {
     [query, selectedMarket],
   );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (isLoading || !hasMoreData) return;
 
     setIsLoading(true);
@@ -76,11 +76,11 @@ export function SearchResults({ route }: any) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isLoading, hasMoreData, page, query, selectedMarket, latitude, longitude]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const renderFooter = () => {
     if (isLoading) {

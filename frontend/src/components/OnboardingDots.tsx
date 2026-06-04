@@ -13,15 +13,18 @@ export const OnboardingDots: React.FC<OnboardingDotsProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      {Array.from({ length: totalSteps }).map((_, index) => (
-        <View
-          key={index}
-          style={[
-            styles.dot,
-            index === activeStep ? styles.activeDot : styles.inactiveDot,
-          ]}
-        />
-      ))}
+      {Array.from({ length: totalSteps }).map((_, index) => {
+        // biome-ignore lint/suspicious/noArrayIndexKey: static list with no unique ids
+        return (
+          <View
+            key={`dot-${index}`}
+            style={[
+              styles.dot,
+              index === activeStep ? styles.activeDot : styles.inactiveDot,
+            ]}
+          />
+        );
+      })}
     </View>
   );
 };

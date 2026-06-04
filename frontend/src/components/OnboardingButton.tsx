@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import type React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { colors } from "../theme/colors";
 
 interface OnboardingButtonProps {
