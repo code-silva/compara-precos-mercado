@@ -25,28 +25,24 @@ interface OnboardingStep {
 
 const ONBOARDING_DATA: OnboardingStep[] = [
   {
-    title: "Bem-vindo ao Compara Preços!",
-    description:
-      "Reunimos os principais supermercados da sua região in um só lugar para você encontrar as melhores ofertas sem sair de casa.",
-    image: require("../assets/stickman_1.png"),
+    title: 'Bem-vindo ao Compara Preços!',
+    description: 'Reunimos os principais supermercados da sua região em um só lugar para você encontrar as melhores ofertas sem sair de casa.',
+    image: { uri: 'https://via.placeholder.com/300' }, 
   },
   {
-    title: "Ofertas perto de você",
-    description:
-      "Utilizamos inteligência artificial para extrair dados e preços atualizados dos encartes. Ative sua geolocalização para visualizar os mercados e produtos mais próximos do seu endereço.",
-    image: require("../assets/stickman_2.jpeg"),
+    title: 'Ofertas perto de você',
+    description: 'Utilizamos inteligência artificial para extrair dados e preços atualizados dos encartes. Ative sua geolocalização para visualizar os mercados e produtos mais próximos do seu endereço.',
+    image: { uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBGGUd_nrAK47hE2bjf8pmtcSQlwYuI6Fo2pzpLFvkiRazvZi2x1Eczf6JkOKiC3O9obsML7buiQ9gNu1FITE1TAveFIISw1rD1zO-UZRuPNBS_fNKtkXSULDfyNC4GO4bXxI3psNFxiE23cYE02NfvnDZ7Y4MgUKqT_tbJSwzYbUfbYP4qkXA3xkLi_H8VtehK62HOIwxxOOG6YpN0LApd41UmzwiQLxkca-aIZOceRYVS8zmiR40_UxgT2mTE1zyqZ0j0L1agbK1K' },
   },
   {
-    title: "Compare antes de comprar",
-    description:
-      "Use a barra de busca para encontrar marcas ou produtos específicos. Clique no item e veja um comparativo em tempo real com outros mercados da mesma região no mesmo instante.",
-    image: require("../assets/stickman_1.png"), // Fallback usando a imagem 1
+    title: 'Compare antes de comprar',
+    description: 'Use a barra de busca para encontrar marcas ou produtos específicos. Clique no item e veja um comparativo em tempo real com outros mercados da mesma região no mesmo instante.',
+    image: { uri: 'https://via.placeholder.com/300' },
   },
   {
-    title: "Monte sua Lista Personalizada",
-    description:
-      "Ao encontrar o que deseja, clique em adicionar para montar sua lista de compras. Planeje seus gastos com antecedência e garanta a maior economia no fechamento do caixa.",
-    image: require("../assets/stickman_1.png"), // Fallback usando a imagem 1
+    title: 'Monte sua Lista Personalizada',
+    description: 'Ao encontrar o que deseja, clique em adicionar para montar sua lista de compras. Planeje seus gastos com antecedência e garanta a maior economia no fechamento do caixa.',
+    image: { uri: 'https://via.placeholder.com/300' },
   },
 ];
 
@@ -116,6 +112,7 @@ export const OnboardingLocal = ({
       {/* Main Content */}
       <View style={styles.content}>
         <View style={styles.illustrationContainer}>
+          <View style={styles.glow} />
           <Image
             source={step.image}
             style={styles.image}
@@ -194,11 +191,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 32,
   },
+  glow: {
+    position: "absolute",
+    width: "80%",
+    height: "80%",
+    backgroundColor: colors.secondaryContainer,
+    borderRadius: 100,
+    opacity: 0.2,
+  },
   image: {
     width: "100%",
     height: "100%",
     zIndex: 10,
-    borderRadius: 32,
   },
   textContainer: {
     alignItems: "center",
