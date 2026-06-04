@@ -12,6 +12,7 @@ from .serializers import (
     BranchProductOfferSerializer,
     BranchSupermarketSerializer,
 )
+from .utils import remove_accents
 
 
 class HybridSearchView(APIView):
@@ -22,7 +23,7 @@ class HybridSearchView(APIView):
     """
 
     def get(self, request):
-        query = request.GET.get("query", "").strip()
+        query = remove_accents(request.GET.get("query", "").strip())
         SIMILARITY_THRESHOLD = 0.25
 
         if not query:
@@ -34,9 +35,9 @@ class HybridSearchView(APIView):
                 similarity_brand=TrigramSimilarity("product__brand", query),
             )
             .filter(
-                Q(product__name__icontains=query)
-                | Q(product__brand__icontains=query)
-                | Q(product__category__name__icontains=query)
+                Q(product__name__unaccent__icontains=query)
+                | Q(product__brand__unaccent__icontains=query)
+                | Q(product__category__name__unaccent__icontains=query)
                 | Q(similarity_name__gt=SIMILARITY_THRESHOLD)
                 | Q(similarity_brand__gt=SIMILARITY_THRESHOLD)
             )

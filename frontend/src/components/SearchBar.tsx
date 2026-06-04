@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Keyboard,
   Platform,
   StyleSheet,
   Text,
@@ -28,6 +29,13 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSearchPerformed, setIsSearchPerformed] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleSearchAction = (searchTerm: string) => {
+    Keyboard.dismiss();
+    setIsFocused(false);
+    fetchHybridSearch(searchTerm);
+  };
 
   useEffect(() => {
     setTerm(initialValue);
@@ -81,12 +89,17 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
           onChangeText={setTerm}
           autoCapitalize="none"
           underlineColorAndroid="transparent"
+          returnKeyType="search"
+          onSubmitEditing={() => handleSearchAction(term)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
 
         <View style={styles.iconContainer}>
           <View style={styles.shapeLight} />
           <View style={styles.shapeDark} />
 
+          {/* Lupe Icon*/}
           <View style={styles.iconWrapper}>
             {isLoading ? (
               <ActivityIndicator
@@ -95,17 +108,23 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
                 style={isUltraNarrow ? { transform: [{ scale: 0.8 }] } : null}
               />
             ) : (
-              <Feather
-                name="search"
-                size={isUltraNarrow ? 18 : isSmall ? 20 : 24}
-                color="#FFFFFF"
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  handleSearchAction(term);
+                }}
+              >
+                <Feather
+                  name="search"
+                  size={isUltraNarrow ? 18 : isSmall ? 20 : 24}
+                  color="#FFFFFF"
+                />
+              </TouchableOpacity>
             )}
           </View>
         </View>
       </View>
 
-      {term.length >= 2 && suggestions.length > 0 && (
+      {isFocused && term.length >= 2 && suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
           {suggestions.map((item) => (
             <TouchableOpacity
@@ -130,7 +149,8 @@ export const SearchBar = ({ initialValue = "" }: SearchBarProps) => {
         </View>
       )}
 
-      {term.length >= 2 &&
+      {isFocused &&
+        term.length >= 2 &&
         isSearchPerformed &&
         suggestions.length === 0 &&
         !isLoading && (
