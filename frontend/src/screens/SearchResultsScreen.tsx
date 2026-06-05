@@ -2,11 +2,11 @@ import { useCallback, useEffect } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { EmptyProductState } from "../components/EmptyProductState";
+import { InfoBanner } from "../components/InfoBanner";
 import { LoadingFooter } from "../components/LoadingFooter";
 import { MarketBanner } from "../components/MarketBanner";
 import ProductCard from "../components/ProductCard";
 import { SearchBar } from "../components/SearchBar";
-import { InfoBanner } from "../components/InfoBanner";
 import { useProductsFetch } from "../hooks/useProductsFetch";
 
 interface SearchResultsScreenProps {

@@ -29,7 +29,6 @@ export function StoreProductsScreen({ route }: StoreProductsScreenProps) {
     marketId: selectedMarket?.id,
   });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: initial fetch on mount
   useEffect(() => {
     fetchData();
   }, [fetchData]);
