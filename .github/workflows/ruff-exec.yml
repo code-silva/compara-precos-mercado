@@ -1,12 +1,12 @@
-name: Ruff Check
+name: Ruff Check  
 
 on:
-  push:
-    branches: [ main, integration ]
+  push: 
+    branches: [ main ]
     paths:
       - 'backend/**'
   pull_request:
-    branches: [ main, integration ]
+    branches: [ main ]
     paths:
       - 'backend/**'
   workflow_dispatch:
