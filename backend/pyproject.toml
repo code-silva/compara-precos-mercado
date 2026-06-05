@@ -1,0 +1,25 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+indent-width = 4
+output-format = 'grouped'
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+# "E" e "W" são os erros e avisos da PEP 8
+# "F" são erros de lógica do Pyflakes
+# "I" cuida da ordenação de imports
+# "B" evita bugs comuns
+
+select = ["E", "W", "F", "I", "B", "C4", "UP"]
+ignore = []
+
+[tool.ruff.format]
+exclude = ["migrations/*"]
+docstring-code-format = true
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "core.settings_test"
+addopts = "--no-migrations"

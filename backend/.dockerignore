@@ -1,0 +1,76 @@
+# Git
+.git
+.gitignore
+
+# Python & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ambientes Virtuais (Essencial ignorar para não conflitar com o do container)
+venv/
+.env/
+.envs/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Variáveis de Ambiente e Segredos (Segurança)
+.env
+.env.*
+secrets.json
+
+# Django específico
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static/
+
+# Testes e Coverage
+.tox/
+.nox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+.project
+.pydevproject
+.settings/
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Docker (Evita que o Docker tente copiar a si mesmo)
+Dockerfile
+docker-compose*
+.dockerignore
