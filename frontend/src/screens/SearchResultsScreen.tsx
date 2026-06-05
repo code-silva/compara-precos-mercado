@@ -55,7 +55,6 @@ export function SearchResultsScreen({ route }: SearchResultsScreenProps) {
     [query, selectedMarket],
   );
 
-  // Executa o fetch inicial ao montar a tela
   useEffect(() => {
     fetchData();
   }, [fetchData]);
