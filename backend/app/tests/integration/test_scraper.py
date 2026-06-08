@@ -1,7 +1,9 @@
+import pytest
 import requests
 from bs4 import BeautifulSoup
 
 
+@pytest.mark.integration
 class TestEncartesDFMonitoring:
     """
     Class destined to the elaboration of integration tests of
