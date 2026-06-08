@@ -123,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/Sao_Paulo"
 
 USE_I18N = True
 
@@ -145,7 +145,7 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_BEAT_SCHEDULE = {
     "weekly-scraping-encartesdf": {
         "task": "app.tasks.scrap_home_page",
-        "schedule": crontab(hour=2, minute=0, day_of_week="sun"),
+        "schedule": crontab(minute=30, hour="9,11,15,19,23"),
     },
 }
 
