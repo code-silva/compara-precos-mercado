@@ -11,6 +11,9 @@ __pycache__/
 htmlcov/
 .coverage
 
+# Celery
+celerybeat-schedule*
+
 # Ambiente
 .venv/
 *.env
