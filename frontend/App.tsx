@@ -40,7 +40,7 @@ export default function App() {
       try {
         const hasSeenOnboarding =
           await AsyncStorage.getItem("hasSeenOnboarding");
-        setShowOnboarding(hasSeenOnboarding === "true");
+        setShowOnboarding(hasSeenOnboarding !== "true");
       } catch (error) {
         console.error("Error checking onboarding status:", error);
         setShowOnboarding(false);
