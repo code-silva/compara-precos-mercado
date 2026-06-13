@@ -8,7 +8,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { BottomNavbar } from "./src/components/BottomNavbar";
 // Hooks and Screens
 import { useLoadFonts } from "./src/hooks/useLoadFonts";
-import { OnboardingLocal } from "./src/screens/OnboardingLocal";
+import { OnboardingLocal } from "./src/screens/OnboardingScreen";
 
 // Prevent the splash screen from hiding automatically while fonts load
 SplashScreen.preventAutoHideAsync();
