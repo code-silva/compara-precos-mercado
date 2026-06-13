@@ -25,12 +25,7 @@ def scrap_supermarket_page(url: str):
     market_slug = url.strip("/").split("/")[-1]
 
     # metrics dictionary to be used in the final summary report
-    metrics = {
-        "market": market_slug,
-        "status": "success",
-        "downloaded_images": 0,
-        "reason": ""
-    }
+    metrics = {"market": market_slug, "status": "success", "downloaded_images": 0, "reason": ""}
 
     try:
         # If this supermarket link has already been scrapped, we skip
@@ -103,15 +98,9 @@ def generate_scraping_report(results):
 
     total_markets = len(results)
     total_images = sum(item["downloaded_images"] for item in results if item)
-    successful_markets = sum(
-        1 for item in results if item and item["status"] == "success"
-    )
-    skipped_markets = sum(
-        1 for item in results if item and item["status"] == "skipped"
-    )
-    failed_markets = sum(
-        1 for item in results if item and item["status"] == "error"
-    )
+    successful_markets = sum(1 for item in results if item and item["status"] == "success")
+    skipped_markets = sum(1 for item in results if item and item["status"] == "skipped")
+    failed_markets = sum(1 for item in results if item and item["status"] == "error")
 
     report = f"""
 ======================================================================
@@ -137,7 +126,7 @@ def generate_scraping_report(results):
             "error": "❌",
         }
         status_icon = icons.get(item["status"], icons["error"])
-        reason_str = f" ({item['reason']})" if item['reason'] else ""
+        reason_str = f" ({item['reason']})" if item["reason"] else ""
         report += (
             f"  {status_icon} {item['market'].upper()}:"
             f" {item['downloaded_images']} image(s) saved{reason_str}\n"
@@ -190,11 +179,13 @@ def scrap_home_page():
 
         # Launching the parallel execution group and binding it to the report callback
         if tasks_to_run:
-            logger.info(f"Home Page analysis finished. Launching chord workflow for {len(tasks_to_run)} tasks.")
+            logger.info(
+                f"""Home Page analysis finished.
+                Launching chord workflow for {len(tasks_to_run)} tasks."""
+            )
             chord(tasks_to_run)(generate_scraping_report.s())
         else:
             logger.info("No active supermarket offers found to process.")
 
     except Exception as e:
         logger.error(f"Error when scraping the Home Page: {e}")
-
