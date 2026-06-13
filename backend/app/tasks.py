@@ -17,21 +17,8 @@ FLYERS_BASE_DIR = Path(tempfile.gettempdir()) / "flyers"
 def scrap_supermarket_page(url: str):
     """
     Scrapes a specific supermarket page and downloads all available flyer images.
-
     This task runs in parallel for each supermarket link found on the landing index.
     It collects and returns execution statistics to feed the final orchestration report.
-
-    Args:
-        url (str): The absolute supermarket target URL from the scraping index.
-
-    Returns:
-        dict: A dictionary containing the task metrics following this structure:
-            {
-                "market": str,             # Sluggified name of the supermarket establishment
-                "status": str,
-                "downloaded_images": int,
-                "reason": str,
-            }
     """
 
     FLYERS_BASE_DIR.mkdir(parents=True, exist_ok=True)
@@ -48,8 +35,6 @@ def scrap_supermarket_page(url: str):
     try:
         # If this supermarket link has already been scrapped, we skip
         if Offer.objects.filter(url=url).exists():
-            logger.debug(f"Supermarket URL already processed. Skipping: {url}")
-            # metrics["downloaded_images"]
             metrics["status"] = "skipped"
             metrics["reason"] = "Already processed"
             return metrics
@@ -67,12 +52,10 @@ def scrap_supermarket_page(url: str):
             )
         )
 
-        logger.info(f"Created temporary directory for {market_slug}: {new_temp_folder}")
-
+        # Represent the flyers list in the page
         img_tags = soup.select_one(".text").find_next("p").select("img")
         download_count = 0
 
-        # Looping through all flyers found in the page
         for index, img_tag in enumerate(img_tags):
             src = img_tag.get("data-src") or img_tag.get("src")
             if not src:
@@ -94,8 +77,6 @@ def scrap_supermarket_page(url: str):
 
             download_count += 1
 
-        logger.info(f"Successfully downloaded {download_count} flyers for {market_slug}")
-
         # Updating metrics for the final summary report
         metrics["downloaded_images"] = download_count
         return metrics
@@ -112,9 +93,10 @@ def scrap_supermarket_page(url: str):
 @shared_task
 def generate_scraping_report(results):
     """
-    CALLBACK TASK: Triggered automatically by Celery if and only when
+    Triggered automatically by Celery if and only when
     every single queued supermarket task completes execution.
     """
+
     if not results:
         logger.warning("No scraping results collected for the report.")
         return
@@ -154,7 +136,7 @@ def generate_scraping_report(results):
             "skipped": "⏩",
             "error": "❌",
         }
-        status_icon = icons.get(item["status"], "❌")
+        status_icon = icons.get(item["status"], icons["error"])
         reason_str = f" ({item['reason']})" if item['reason'] else ""
         report += (
             f"  {status_icon} {item['market'].upper()}:"
@@ -178,8 +160,6 @@ def scrap_home_page():
     URL = "https://encartesdf.com.br/"
     FLYERS_BASE_DIR.mkdir(parents=True, exist_ok=True)
 
-    logger.info("Starting Home Page scraping process...")
-
     try:
         response = requests.get(URL, headers={"User-Agent": "Mozilla/5.0"})
         response.raise_for_status()
@@ -189,7 +169,7 @@ def scrap_home_page():
         # Each supermarket link ('a' tag) is located in the following 'h1' tags.
         h1_tags = soup.select(".main-title")
 
-        # Array created to safely accumulate task signatures for the chord pipeline
+        # Array created to accumulate task signatures for the chord pipeline
         tasks_to_run = []
 
         for h1_tag in h1_tags:
@@ -201,29 +181,16 @@ def scrap_home_page():
 
             # If the supermarket offer is expired, we skip
             if a_tag.select_one(".badge-vencido"):
-                logger.debug(f"Skipping expired offer: {a_tag.text.strip()}")
                 continue
 
             market_url = a_tag.get("href")
-
-            # If this supermarket link has already been scrapped, we append it to the list
-            # with signature syntax (.s) so the final report knows it was skipped
-            if Offer.objects.filter(url=market_url).exists():
-                logger.debug(f"Offer already exists in database. Skipping: {market_url}")
-                tasks_to_run.append(scrap_supermarket_page.s(market_url))
-                continue
-
-            logger.info(f"Queueing new supermarket for scraping: {market_url}")
 
             # Appending active scraping tasks to the batch signature array
             tasks_to_run.append(scrap_supermarket_page.s(market_url))
 
         # Launching the parallel execution group and binding it to the report callback
         if tasks_to_run:
-            logger.info(
-                "Home Page analysis finished."
-                f" Launching chord workflow for {len(tasks_to_run)} tasks."
-            )
+            logger.info(f"Home Page analysis finished. Launching chord workflow for {len(tasks_to_run)} tasks.")
             chord(tasks_to_run)(generate_scraping_report.s())
         else:
             logger.info("No active supermarket offers found to process.")
