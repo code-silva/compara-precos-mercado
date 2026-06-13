@@ -18,6 +18,18 @@ import { OnboardingDots } from "../components/OnboardingDots";
 import { colors } from "../theme/colors";
 
 const SCALE_BASE = 375;
+const SMALL_SCREEN_HEIGHT = 700;
+const ILLUSTRATION_SCALE_SMALL = 0.55;
+const ILLUSTRATION_SCALE_LARGE = 0.72;
+const TITLE_FONT_SIZE = 24;
+const DESCRIPTION_FONT_SIZE = 14;
+const HEADER_TITLE_FONT_SIZE = 20;
+const SKIP_BACK_FONT_SIZE = 16;
+const CLOSE_ICON_SIZE = 24;
+const PADDING_TOP_OFFSET = 10;
+const PADDING_TOP_MIN = 40;
+const PADDING_BOTTOM_OFFSET = 20;
+const PADDING_BOTTOM_MIN = 40;
 
 interface OnboardingStep {
   title: string;
@@ -73,7 +85,7 @@ export const OnboardingLocal = ({
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const scale = Math.min(width, SCALE_BASE) / SCALE_BASE;
-  const isSmallScreen = height < 700;
+  const isSmallScreen = height < SMALL_SCREEN_HEIGHT;
 
   const finishOnboarding = async () => {
     try {
@@ -103,25 +115,39 @@ export const OnboardingLocal = ({
   };
 
   const step = ONBOARDING_DATA[currentStep];
-  const illustrationSize = isSmallScreen ? width * 0.55 : width * 0.72;
-  const titleSize = Math.round(24 * scale);
-  const descriptionSize = Math.round(14 * scale);
-  const paddingTop = Math.max(insets.top + 10, 40);
+  const illustrationSize = isSmallScreen
+    ? width * ILLUSTRATION_SCALE_SMALL
+    : width * ILLUSTRATION_SCALE_LARGE;
+  const titleSize = Math.round(TITLE_FONT_SIZE * scale);
+  const descriptionSize = Math.round(DESCRIPTION_FONT_SIZE * scale);
+  const paddingTop = Math.max(insets.top + PADDING_TOP_OFFSET, PADDING_TOP_MIN);
 
   return (
     <View style={[styles.container, { paddingTop }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-          <MaterialIcons name="close" size={24} color={colors.primary} />
+          <MaterialIcons
+            name="close"
+            size={CLOSE_ICON_SIZE}
+            color={colors.primary}
+          />
         </TouchableOpacity>
         <Text
-          style={[styles.headerTitle, { fontSize: Math.round(20 * scale) }]}
+          style={[
+            styles.headerTitle,
+            { fontSize: Math.round(HEADER_TITLE_FONT_SIZE * scale) },
+          ]}
         >
           Compara Preços
         </Text>
         <TouchableOpacity onPress={handleClose} style={styles.skipButton}>
-          <Text style={[styles.skipText, { fontSize: Math.round(16 * scale) }]}>
+          <Text
+            style={[
+              styles.skipText,
+              { fontSize: Math.round(SKIP_BACK_FONT_SIZE * scale) },
+            ]}
+          >
             Pular
           </Text>
         </TouchableOpacity>
@@ -159,7 +185,12 @@ export const OnboardingLocal = ({
       <View
         style={[
           styles.footer,
-          { paddingBottom: Math.max(insets.bottom + 20, 40) },
+          {
+            paddingBottom: Math.max(
+              insets.bottom + PADDING_BOTTOM_OFFSET,
+              PADDING_BOTTOM_MIN,
+            ),
+          },
         ]}
       >
         <OnboardingDots
@@ -172,7 +203,7 @@ export const OnboardingLocal = ({
               <Text
                 style={[
                   styles.backButtonText,
-                  { fontSize: Math.round(16 * scale) },
+                  { fontSize: Math.round(SKIP_BACK_FONT_SIZE * scale) },
                 ]}
               >
                 Voltar
