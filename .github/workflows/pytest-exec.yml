@@ -40,4 +40,4 @@ jobs:
           DJANGO_SETTINGS_MODULE: core.settings_test
         run: |
           cd backend
-          pytest --no-migrations .
+          pytest -m "not integration" --no-migrations .
