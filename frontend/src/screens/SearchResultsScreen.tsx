@@ -55,9 +55,10 @@ export function SearchResultsScreen({ route }: SearchResultsScreenProps) {
     [query, selectedMarket],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initial fetch on mount
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []);
 
   const renderFooter = () => {
     if (isLoading) {
