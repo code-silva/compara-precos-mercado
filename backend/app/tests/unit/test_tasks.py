@@ -41,14 +41,20 @@ class TestScrapHomePageTask:
     Class destined to the elaboration of tests of the 'scrap_home_page' task.
     """
 
-    @patch("app.tasks.scrap_supermarket_page.delay")
+    @patch("app.tasks.chord")
+    @patch("app.tasks.scrap_supermarket_page.s")
     @patch("app.tasks.requests.get")
     def test_scrap_home_page_with_real_snapshot(
-        self, mock_requests_get, mock_task_delay, home_page_html_content, mock_flyers_directory
+        self,
+        mock_requests_get,
+        mock_task_s,
+        mock_chord,
+        home_page_html_content,
+        mock_flyers_directory,
     ):
         """
         Testing the home page scraping logic using a real HTML snapshot.
-        It should parse the HTML correctly and queue the valid supermarkets.
+        It should parse the HTML correctly and queue the valid supermarkets using signatures.
         """
 
         mocked_response = MagicMock()
@@ -58,10 +64,10 @@ class TestScrapHomePageTask:
 
         scrap_home_page()
 
-        assert mock_task_delay.call_count > 0
-
-        first_queued_url = mock_task_delay.call_args_list[0][0][0]
+        assert mock_task_s.call_count > 0
+        first_queued_url = mock_task_s.call_args_list[0][0][0]
         assert "encartesdf.com.br" in first_queued_url
+        assert mock_chord.call_count == 1
 
 
 @pytest.mark.django_db
