@@ -35,7 +35,7 @@ export const MarketCarousel = (props: CarouselProps) => {
       activeOpacity={0.7}
     >
       <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.address}>{item.address}</Text>
+      {!!item.address && <Text style={styles.address}>{item.address}</Text>}
     </TouchableOpacity>
   );
 
