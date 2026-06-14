@@ -45,7 +45,6 @@ class HybridSearchView(APIView):
                 "product",
                 "product__category",
                 "branch_supermarket__parent_supermarket",
-                "branch_supermarket__location",
             )
             .order_by("-similarity_name")
         )
@@ -69,7 +68,6 @@ class BranchSupermarketListView(generics.ListAPIView):
         queryset = (
             BranchSupermarket.objects.select_related(
                 "parent_supermarket",
-                "location",
             )
             .filter(product_offers__isnull=False)
             .distinct()

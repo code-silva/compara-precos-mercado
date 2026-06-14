@@ -100,8 +100,8 @@ class Report(models.Model):
         return f"Report {self.get_reason_display()} - {self.get_status_display()}"
 
 
-class Location(models.Model):
-    """Class representing the 'Location' entity in the database."""
+class BranchSupermarket(models.Model):
+    """Class representing the 'BranchSupermarket' entity in the database."""
 
     class State(models.TextChoices):
         AC = "AC", "Acre"
@@ -132,22 +132,10 @@ class Location(models.Model):
         SE = "SE", "Sergipe"
         TO = "TO", "Tocantins"
 
-    state = models.CharField(max_length=20, choices=State.choices)
-    city = models.CharField(max_length=50, blank=False)
-
-    class Meta:
-        verbose_name = "Localização"
-        verbose_name_plural = "Localizações"
-
-    def __str__(self):
-        return f"State: {self.state}, City: {self.city}"
-
-
-class BranchSupermarket(models.Model):
-    """Class representing the 'BranchSupermarket' entity in the database."""
-
     coordinates = gis_models.PointField(geography=True, srid=4326)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="branches")
+    address = models.CharField(max_length=255, blank=False, default="")
+    state = models.CharField(max_length=20, choices=State.choices, default="DF")
+    city = models.CharField(max_length=50, blank=False, default="")
     parent_supermarket = models.ForeignKey(
         ParentSupermarket, on_delete=models.CASCADE, related_name="branches"
     )
@@ -163,7 +151,7 @@ class BranchSupermarket(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.parent_supermarket.name} - {self.location.city}"
+        return f"{self.parent_supermarket.name} - {self.city}"
 
 
 class BranchProductOffer(models.Model):
