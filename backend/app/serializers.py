@@ -89,11 +89,12 @@ class BranchSupermarketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BranchSupermarket
-        fields = ["id", "name", "state", "city", "distanceInKilometers"]
+        fields = ["id", "name", "state", "city", "address", "distanceInKilometers"]
 
     name = serializers.CharField(source="parent_supermarket.name", read_only=True)
     state = serializers.CharField(read_only=True)
     city = serializers.CharField(read_only=True)
+    address = serializers.CharField(read_only=True)
 
     distanceInKilometers = serializers.SerializerMethodField()
 
