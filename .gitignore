@@ -27,3 +27,7 @@ node_modules/
 # Expo
 .expo/
 dist/
+
+# Celery
+celerybeat-schedule
+celerybeat-schedule.db
