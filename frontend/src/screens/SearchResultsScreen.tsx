@@ -40,7 +40,7 @@ export function SearchResultsScreen({ route }: SearchResultsScreenProps) {
           <MarketBanner
             marketName={selectedMarket.name}
             subtitle={"OFERTAS DA REDE"}
-          ></MarketBanner>
+          />
         )}
 
         <InfoBanner />
@@ -64,11 +64,9 @@ export function SearchResultsScreen({ route }: SearchResultsScreenProps) {
     if (isLoading) {
       return <LoadingFooter isLoading={isLoading} />;
     }
-
     if (!hasMoreData && products.length > 0) {
       return <EmptyProductState />;
     }
-
     return null;
   };
 
