@@ -30,7 +30,9 @@ class ProductOfferSerializer(serializers.ModelSerializer):
     brand = serializers.ReadOnlyField(source="product.brand")
     image = serializers.ImageField(source="product.image", read_only=True)
     marketName = serializers.ReadOnlyField(source="branch_supermarket.parent_supermarket.name")
-    city = serializers.ReadOnlyField(source="branch_supermarket.location.city")
+    state = serializers.ReadOnlyField(source="branch_supermarket.state")
+    city = serializers.ReadOnlyField(source="branch_supermarket.city")
+    address = serializers.ReadOnlyField(source="branch_supermarket.address")
 
     class Meta:
         model = BranchProductOffer
@@ -41,7 +43,9 @@ class ProductOfferSerializer(serializers.ModelSerializer):
             "brand",
             "image",
             "marketName",
+            "state",
             "city",
+            "address",
         ]
 
 
@@ -89,11 +93,12 @@ class BranchSupermarketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BranchSupermarket
-        fields = ["id", "name", "state", "city", "distanceInKilometers"]
+        fields = ["id", "name", "state", "city", "address", "distanceInKilometers"]
 
     name = serializers.CharField(source="parent_supermarket.name", read_only=True)
-    state = serializers.CharField(source="location.state", read_only=True)
-    city = serializers.CharField(source="location.city", read_only=True)
+    state = serializers.CharField(read_only=True)
+    city = serializers.CharField(read_only=True)
+    address = serializers.CharField(read_only=True)
 
     distanceInKilometers = serializers.SerializerMethodField()
 

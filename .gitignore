@@ -32,5 +32,9 @@ node_modules/
 .expo/
 dist/
 
+# Celery
+celerybeat-schedule
+celerybeat-schedule.db
+
 # Flyers
 flyers/

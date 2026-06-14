@@ -3,7 +3,7 @@ from django.contrib.gis.geos import Point
 from model_bakery import baker
 from rest_framework.test import APIClient
 
-from app.models import BranchProductOffer, BranchSupermarket, Location, ParentSupermarket
+from app.models import BranchProductOffer, BranchSupermarket, ParentSupermarket
 
 # Sqlite doesn't support composite unique contraint.
 # So I had to remove it from testing
@@ -27,22 +27,19 @@ def api_client():
 
 
 @pytest.fixture
-def location(db):
-    return baker.make(Location, state="DF", city="Gama")
-
-
-@pytest.fixture
 def parent_supermarket(db):
     return baker.make(ParentSupermarket, name="Super Market")
 
 
 @pytest.fixture
-def branch_supermarket(db, location, parent_supermarket):
+def branch_supermarket(db, parent_supermarket):
     """Creates a branch store at a specific coordinate and links an offer to it."""
     branch = baker.make(
         BranchSupermarket,
         parent_supermarket=parent_supermarket,
-        location=location,
+        state="DF",
+        city="Gama",
+        address="Gama Sul, QI 01",
         coordinates=Point(-47.9292, -15.7801),
     )
 
@@ -59,7 +56,13 @@ def supermarkets_list(db):
     branch_supermarkets = []
 
     for parent in parent_supermarkets:
-        branch = baker.make(BranchSupermarket, parent_supermarket=parent)
+        branch = baker.make(
+            BranchSupermarket,
+            parent_supermarket=parent,
+            state="DF",
+            city="Gama",
+            address="Gama Sul",
+        )
         baker.make(BranchProductOffer, branch_supermarket=branch)
 
         branch_supermarkets.append(branch)
@@ -70,7 +73,7 @@ def supermarkets_list(db):
 
 
 @pytest.fixture
-def offers_list(db, location, parent_supermarket):
+def offers_list(db, parent_supermarket):
     """
     Returns an offers list for testing (from BracnProductOffer model).
     """
@@ -85,7 +88,9 @@ def offers_list(db, location, parent_supermarket):
             product__name="arroz",
             product__category=category1,
             branch_supermarket__parent_supermarket=parent_supermarket,
-            branch_supermarket__location=location,
+            branch_supermarket__state="DF",
+            branch_supermarket__city="Gama",
+            branch_supermarket__address="Gama Sul, QI 01",
             branch_supermarket__coordinates=Point(-47.9292, -15.7801, srid=4326),
         ),
         baker.make(
@@ -93,7 +98,9 @@ def offers_list(db, location, parent_supermarket):
             product__name="feijão",
             product__category=category2,
             branch_supermarket__parent_supermarket=parent_supermarket,
-            branch_supermarket__location=location,
+            branch_supermarket__state="DF",
+            branch_supermarket__city="Gama",
+            branch_supermarket__address="Gama Sul, QI 01",
             branch_supermarket__coordinates=Point(-47.9292, -15.7801, srid=4326),
         ),
         baker.make(
@@ -101,7 +108,9 @@ def offers_list(db, location, parent_supermarket):
             product__name="danone",
             product__category=category3,
             branch_supermarket__parent_supermarket=parent_supermarket,
-            branch_supermarket__location=location,
+            branch_supermarket__state="DF",
+            branch_supermarket__city="Gama",
+            branch_supermarket__address="Gama Sul, QI 01",
             branch_supermarket__coordinates=Point(-47.9292, -15.7801, srid=4326),
         ),
     ]

@@ -3,6 +3,7 @@ export interface Market {
   name: string;
   state: string;
   city: string;
+  address: string;
   distanceInKilometers: number | null;
   nameColor: null | string;
 }
