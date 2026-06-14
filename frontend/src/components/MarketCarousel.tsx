@@ -35,6 +35,7 @@ export const MarketCarousel = (props: CarouselProps) => {
       activeOpacity={0.7}
     >
       <Text style={styles.name}>{item.name}</Text>
+      <Text style={styles.address}>{item.address}</Text>
     </TouchableOpacity>
   );
 
@@ -85,7 +86,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Inter-Bold",
     color: "#333333",
-    marginBottom: 4,
+    marginBottom: 2,
+    textAlign: "center",
+  },
+  address: {
+    fontSize: 12,
+    fontFamily: "Inter-Regular",
+    color: "#666666",
     textAlign: "center",
   },
 });
