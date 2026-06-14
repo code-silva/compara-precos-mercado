@@ -23,3 +23,6 @@ indent-style = "space"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "core.settings_test"
 addopts = "--no-migrations"
+markers = [
+    "integration: marks tests that require external network access",
+]
