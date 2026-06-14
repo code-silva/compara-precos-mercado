@@ -30,7 +30,9 @@ class ProductOfferSerializer(serializers.ModelSerializer):
     brand = serializers.ReadOnlyField(source="product.brand")
     image = serializers.ImageField(source="product.image", read_only=True)
     marketName = serializers.ReadOnlyField(source="branch_supermarket.parent_supermarket.name")
+    state = serializers.ReadOnlyField(source="branch_supermarket.state")
     city = serializers.ReadOnlyField(source="branch_supermarket.city")
+    address = serializers.ReadOnlyField(source="branch_supermarket.address")
 
     class Meta:
         model = BranchProductOffer
@@ -41,7 +43,9 @@ class ProductOfferSerializer(serializers.ModelSerializer):
             "brand",
             "image",
             "marketName",
+            "state",
             "city",
+            "address",
         ]
 
 
