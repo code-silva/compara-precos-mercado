@@ -3,7 +3,7 @@ WORKDIR /app
 
 # Instalação das dependências do react
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci || npm install
 
 # Copiando o resto do projeto
 COPY . .

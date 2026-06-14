@@ -11,9 +11,13 @@ __pycache__/
 htmlcov/
 .coverage
 
+# Celery
+celerybeat-schedule*
+
 # Ambiente
 .venv/
 *.env
+.vscode/
 
 # Dependências
 node_modules/
@@ -27,3 +31,6 @@ node_modules/
 # Expo
 .expo/
 dist/
+
+# Flyers
+flyers/
