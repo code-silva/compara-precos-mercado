@@ -48,7 +48,9 @@ def scrap_supermarket_page(url: str):
         )
 
         # Represent the flyers list in the page
-        img_tags = soup.select_one(".text").find_next("p").select("img")
+        img_tags = soup.select_one(".text").find_all(
+            "img", class_=lambda c: c and c.startswith("wp-image")
+        )
         download_count = 0
 
         for index, img_tag in enumerate(img_tags):
