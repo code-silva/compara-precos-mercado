@@ -1,14 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 import type { Market } from "../types/market";
 import { formatDistance } from "../utils/formatDistance";
+import { Button } from "./Button";
 import { DistrictBadge } from "./DistrictBadge";
 
 // CONSTANTS
@@ -29,14 +23,9 @@ export interface CarouselProps {
   handleMarketPress: (market: Market) => void;
 }
 
-// COMPONENT
 export const MarketCarousel = (props: CarouselProps) => {
   const renderItem = ({ item }: { item: Market }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => props.handleMarketPress(item)}
-      activeOpacity={0.7}
-    >
+    <View style={styles.card}>
       <DistrictBadge neighborhood={item.address} city={item.city} />
 
       <Text style={styles.name}>{item.name}</Text>
@@ -49,7 +38,12 @@ export const MarketCarousel = (props: CarouselProps) => {
           </Text>
         </View>
       )}
-    </TouchableOpacity>
+
+      <Button
+        title="VER OFERTAS"
+        onPress={() => props.handleMarketPress(item)}
+      />
+    </View>
   );
 
   return (
@@ -87,27 +81,23 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
     width: cardWidth,
-    height: height * 0.15,
+    height: height * 0.19,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#E0E0E0",
     boxShadow: "0 2px 4px rgba(99, 12, 12, 0.1)",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    gap: 12,
     padding: 16,
   },
   name: {
     fontSize: 15,
     fontFamily: "Inter-Bold",
-    marginTop: 8,
     color: "#333333",
-    marginBottom: 2,
     textAlign: "left",
   },
   distanceContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
   },
   distanceText: {
     fontSize: 11,
