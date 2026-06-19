@@ -24,7 +24,7 @@ export function MarketBanner({
       <View style={styles.textContainer}>
         {!!address && (
           <View style={{ marginBottom: 4 }}>
-            <DistrictBadge address={address} />
+            <DistrictBadge neighborhood={address} />
           </View>
         )}
 

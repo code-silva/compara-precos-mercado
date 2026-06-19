@@ -35,7 +35,7 @@ export const MarketCarousel = (props: CarouselProps) => {
       onPress={() => props.handleMarketPress(item)}
       activeOpacity={0.7}
     >
-      <DistrictBadge address={item.address} />
+      <DistrictBadge neighborhood={item.address} city={item.city} />
 
       <Text style={styles.name}>{item.name}</Text>
     </TouchableOpacity>

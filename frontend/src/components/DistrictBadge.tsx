@@ -1,27 +1,23 @@
 import { Image, StyleSheet, Text, View } from "react-native";
+import { findFlag, getDisplayText } from "../utils/raFlags";
 
 interface DistrictBadgeProps {
-  address?: string;
+  neighborhood?: string;
+  city?: string;
 }
 
-export function DistrictBadge({ address }: DistrictBadgeProps) {
-  if (!address) return null;
+export function DistrictBadge({ neighborhood, city }: DistrictBadgeProps) {
+  const displayText = getDisplayText(neighborhood, city);
+  if (!displayText) return null;
 
-  const normalizedAddress = address.toLowerCase().trim();
-  const hasFlag =
-    normalizedAddress.includes("gama sul") ||
-    normalizedAddress.includes("gama centro");
+  const flag = findFlag(neighborhood, city);
 
   return (
     <View style={styles.badgeContainer}>
-      {hasFlag && (
-        <Image
-          source={require("../assets/flags/ra_gama.jpg")}
-          style={styles.flagIcon}
-          resizeMode="contain"
-        />
+      {flag && (
+        <Image source={flag} style={styles.flagIcon} resizeMode="contain" />
       )}
-      <Text style={styles.badgeText}>{address}</Text>
+      <Text style={styles.badgeText}>{displayText}</Text>
     </View>
   );
 }
