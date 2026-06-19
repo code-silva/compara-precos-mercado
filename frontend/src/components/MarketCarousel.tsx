@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import type { Market } from "../types/market";
+import { DistrictBadge } from "./DistrictBadge";
 
 // CONSTANTS
 const cardMinWidth = 160;
@@ -34,8 +35,8 @@ export const MarketCarousel = (props: CarouselProps) => {
       onPress={() => props.handleMarketPress(item)}
       activeOpacity={0.7}
     >
-      {!!item.address && <Text style={styles.address}>{item.address}</Text>}
-      
+      <DistrictBadge address={item.address} />
+
       <Text style={styles.name}>{item.name}</Text>
     </TouchableOpacity>
   );
@@ -90,12 +91,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     color: "#333333",
     marginBottom: 2,
-    textAlign: "left",
-  },
-  address: {
-    fontSize: 12,
-    fontFamily: "Inter-Regular",
-    color: "#666666",
     textAlign: "left",
   },
 });
