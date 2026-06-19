@@ -34,8 +34,9 @@ export const MarketCarousel = (props: CarouselProps) => {
       onPress={() => props.handleMarketPress(item)}
       activeOpacity={0.7}
     >
-      <Text style={styles.name}>{item.name}</Text>
       {!!item.address && <Text style={styles.address}>{item.address}</Text>}
+      
+      <Text style={styles.name}>{item.name}</Text>
     </TouchableOpacity>
   );
 
@@ -79,20 +80,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E0E0E0",
     boxShadow: "0 2px 4px rgba(99, 12, 12, 0.1)",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    padding: 16,
   },
   name: {
     fontSize: 15,
     fontFamily: "Inter-Bold",
+    marginTop: 8,
     color: "#333333",
     marginBottom: 2,
-    textAlign: "center",
+    textAlign: "left",
   },
   address: {
     fontSize: 12,
     fontFamily: "Inter-Regular",
     color: "#666666",
-    textAlign: "center",
+    textAlign: "left",
   },
 });

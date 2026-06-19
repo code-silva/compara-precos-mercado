@@ -1,20 +1,19 @@
-import { StyleSheet, Text, View, Image } from "react-native";
-
-const flagsMapping: Record<string, any> = {
-  "gama sul": require("../assets/flags/ra_gama.jpg"),
-};
+import { StyleSheet, Text, View } from "react-native";
+import { DistrictBadge } from "./DistrictBadge";
 
 interface MarketBannerProps {
   marketName: string;
   subtitle: string;
-  address?: string; 
+  address?: string;
 }
 
-export function MarketBanner({ marketName, subtitle, address }: MarketBannerProps) {
+export function MarketBanner({
+  marketName,
+  subtitle,
+  address,
+}: MarketBannerProps) {
   const firstLetter = marketName ? marketName[0].toUpperCase() : "?";
   const displayName = marketName ? marketName.toUpperCase() : "LOADING...";
-  const normalizedAddress = address ? address.toLowerCase().trim() : "";
-  const flagImage = flagsMapping[normalizedAddress];
 
   return (
     <View style={styles.marketBanner}>
@@ -22,19 +21,16 @@ export function MarketBanner({ marketName, subtitle, address }: MarketBannerProp
         <Text style={styles.marketInitials}>{firstLetter}</Text>
       </View>
 
-    <View style={styles.textContainer}>
-        
+      <View style={styles.textContainer}>
         {!!address && (
-          <View style={styles.badgeContainer}>
-            {!!flagImage && <Image source={flagImage} style={styles.flagIcon} />}
-            <Text style={styles.badgeText}>{address}</Text>
+          <View style={{ marginBottom: 4 }}>
+            <DistrictBadge address={address} />
           </View>
         )}
 
         <Text style={styles.marketName}>{displayName}</Text>
         <Text style={styles.marketStatus}>{subtitle}</Text>
       </View>
-
     </View>
   );
 }
@@ -42,7 +38,7 @@ export function MarketBanner({ marketName, subtitle, address }: MarketBannerProp
 const styles = StyleSheet.create({
   marketBanner: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     padding: 15,
     backgroundColor: "#FFF",
     marginHorizontal: 10,
@@ -54,7 +50,8 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     flexDirection: "column",
-    alignItems: "flex-start", 
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
   marketInitials: {
     fontSize: 20,
@@ -76,31 +73,11 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Bold",
     fontSize: 16,
     color: "#000",
+    marginTop: 6,
   },
   marketStatus: {
     fontSize: 10,
     color: "#28a8b5",
     fontFamily: "Inter-Bold",
-  },
-  badgeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F4F7F6", 
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#EAEFEF",
-  },
-  flagIcon: {
-    width: 18,
-    height: 12,
-    marginRight: 6,
-    resizeMode: "contain",
-  },
-  badgeText: {
-    fontSize: 11,
-    fontFamily: "Inter-Regular", 
-    color: "#555555",
   },
 });
