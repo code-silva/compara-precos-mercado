@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import {
   Dimensions,
   FlatList,
@@ -7,6 +8,7 @@ import {
   View,
 } from "react-native";
 import type { Market } from "../types/market";
+import { formatDistance } from "../utils/formatDistance";
 import { DistrictBadge } from "./DistrictBadge";
 
 // CONSTANTS
@@ -38,6 +40,15 @@ export const MarketCarousel = (props: CarouselProps) => {
       <DistrictBadge neighborhood={item.address} city={item.city} />
 
       <Text style={styles.name}>{item.name}</Text>
+
+      {item.distanceInKilometers != null && (
+        <View style={styles.distanceContainer}>
+          <Ionicons name="location-outline" size={13} color="#1A8A96" />
+          <Text style={styles.distanceText}>
+            {formatDistance(item.distanceInKilometers)} de distância
+          </Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 
@@ -92,5 +103,16 @@ const styles = StyleSheet.create({
     color: "#333333",
     marginBottom: 2,
     textAlign: "left",
+  },
+  distanceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  distanceText: {
+    fontSize: 11,
+    fontFamily: "Inter-Medium",
+    color: "#1A8A96",
+    marginLeft: 4,
   },
 });
