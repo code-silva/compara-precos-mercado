@@ -24,15 +24,12 @@ const raFlagsMap: Record<string, RAConfig> = {
       "cl",
     ],
   },
-  "guará": {
+  guara: {
     flag: require("../assets/flags/ra_guara.png"),
-    neighborhoodKeywords: ["guará i", 
-      "guará ii", 
-      "guará iii",
-    ],
+    neighborhoodKeywords: ["guará i", "guará ii", "guará iii"],
   },
-  // Future compound RAs follow the same pattern without accents in the key:
-  // "aguas claras": { ... }
+  // Future compound RAs follow the same pattern with ASCII keys:
+  // aguas_claras: { ... }
 };
 
 /**
