@@ -5,17 +5,8 @@ import { formatDistance } from "../utils/formatDistance";
 import { Button } from "./Button";
 import { DistrictBadge } from "./DistrictBadge";
 
-// CONSTANTS
-const cardMinWidth = 160;
-const minCardsVisible = 1;
-const nextCardPeek = 0.2;
-const cardMarginOffset = 16;
-
 const { width, height } = Dimensions.get("window");
-const fittingCards = Math.floor(width / cardMinWidth);
-const quantity = Math.max(minCardsVisible, fittingCards);
-const divisor = quantity + nextCardPeek;
-const cardWidth = width / divisor - cardMarginOffset;
+const cardWidth = width * 0.45;
 
 // INTERFACES
 export interface CarouselProps {
@@ -54,9 +45,7 @@ export const MarketCarousel = (props: CarouselProps) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         horizontal
-        ItemSeparatorComponent={() => (
-          <View style={{ width: cardMarginOffset }} />
-        )}
+        ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
           paddingVertical: 8,
@@ -81,12 +70,13 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
     width: cardWidth,
-    height: height * 0.19,
+    height: height * 0.21,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#E0E0E0",
     boxShadow: "0 2px 4px rgba(99, 12, 12, 0.1)",
-    gap: 12,
+    justifyContent: "space-between",
+    gap: 16,
     padding: 16,
   },
   name: {
