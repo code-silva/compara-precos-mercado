@@ -35,7 +35,7 @@ export function SupermarketsScreen({ location }: SupermarketsScreenProps) {
           location.coords.latitude,
           location.coords.longitude,
         );
-        
+
         const paginatedData = data as unknown as { results: Market[] };
 
         if (paginatedData && Array.isArray(paginatedData.results)) {
@@ -80,6 +80,18 @@ export function SupermarketsScreen({ location }: SupermarketsScreenProps) {
     return validMarkets.filter((m) => m.name.toLowerCase().includes(query));
   }, [validMarkets, searchQuery]);
 
+  const listHeader = useMemo(
+    () => (
+      <View style={styles.listHeader}>
+        <Text style={styles.headerTitle}>Principais Escolhas</Text>
+        <Text style={styles.headerSubtitle}>
+          Mercados com ofertas ativas e com baixo preço na região.
+        </Text>
+      </View>
+    ),
+    [],
+  );
+
   const handleMarketPress = useCallback(
     (market: Market) => {
       navigation.navigate("StoreProductsScreen", {
@@ -106,7 +118,7 @@ export function SupermarketsScreen({ location }: SupermarketsScreenProps) {
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <View style={styles.searchWrapper}>
         <SearchBar
-          placeholder="Buscar mercados com ofertas próximas..."
+          placeholder="Buscar mercados..."
           onChangeText={setSearchQuery}
           disableApiSearch
         />
@@ -115,6 +127,7 @@ export function SupermarketsScreen({ location }: SupermarketsScreenProps) {
       <MarketList
         markets={filteredMarkets}
         handleMarketPress={handleMarketPress}
+        listHeaderComponent={listHeader}
         listEmptyComponent={
           <View style={styles.centered}>
             <Text style={styles.emptyText}>
@@ -140,6 +153,23 @@ const styles = StyleSheet.create({
   },
   searchWrapper: {
     paddingHorizontal: 16,
+  },
+  listHeader: {
+    paddingHorizontal: 16,
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  headerTitle: {
+    fontSize: 19,
+    fontFamily: "Inter-Bold",
+    color: "#333333",
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    fontFamily: "Inter-Regular",
+    color: "#999999",
+    lineHeight: 20,
   },
   emptyText: {
     fontSize: 15,
